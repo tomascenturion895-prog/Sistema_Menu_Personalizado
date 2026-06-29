@@ -15,11 +15,18 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
+        // Usuario administrador de prueba, para validar el middleware EsAdmin y el panel admin
         User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            'name' => 'Admin Capa8Burger',
+            'email' => 'admin@capa8burger.com',
+            'rol' => 'admin',
+        ]);
+
+        // Usuario cliente de prueba, para validar el flujo normal de compra
+        User::factory()->create([
+            'name' => 'Cliente Prueba',
+            'email' => 'cliente@capa8burger.com',
+            'rol' => 'cliente',
         ]);
     }
 }

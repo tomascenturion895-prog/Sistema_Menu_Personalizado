@@ -20,7 +20,13 @@ new #[Layout('layouts.guest')] class extends Component
 
         Session::regenerate();
 
-        $this->redirectIntended(default: route('dashboard', absolute: false), navigate: true);
+        // Segun el rol del usuario logueado, lo mandamos a una pantalla distinta:
+        // admin -> panel de administracion, cliente -> dashboard normal (luego sera el menu publico)
+        $destino = auth()->user()->esAdmin()
+            ? route('admin.dashboard', absolute: false)
+            : route('dashboard', absolute: false);
+
+        $this->redirectIntended(default: $destino, navigate: true);
     }
 }; ?>
 
