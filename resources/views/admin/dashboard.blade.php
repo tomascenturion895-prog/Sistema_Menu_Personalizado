@@ -20,6 +20,9 @@
                         <a href="{{ route('admin.productos') }}" wire:navigate class="text-indigo-600 hover:text-indigo-900 underline">
                             Gestionar productos →
                         </a>
+                        <a href="{{ route('admin.ingredientes') }}" wire:navigate class="text-indigo-600 hover:text-indigo-900 underline">
+                            Gestionar ingredientes →
+                        </a>
                     </div>
                 </div>
             </div>
