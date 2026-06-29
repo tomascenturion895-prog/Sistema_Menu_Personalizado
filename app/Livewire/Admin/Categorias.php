@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Admin;
 
+use App\Livewire\Concerns\InteractsWithModals;
 use App\Models\Categoria;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
@@ -13,6 +14,10 @@ use Livewire\WithPagination;
 #[Layout('layouts.app')]
 class Categorias extends Component
 {
+    // InteractsWithModals nos da los metodos openModal()/closeModal() para no repetir
+    // el dispatch() de eventos en cada CRUD (ver app/Livewire/Concerns/InteractsWithModals.php)
+    use InteractsWithModals;
+
     // WithPagination agrega el metodo paginate() y mantiene la pagina actual en la URL
     use WithPagination;
 
@@ -56,9 +61,7 @@ class Categorias extends Component
         $this->reset(['nombre', 'descripcion', 'tipo_dieta', 'activo', 'categoriaId']);
         $this->activo = true;
 
-        // dispatch() envia un evento de navegador que el componente <x-modal name="categoria-form">
-        // escucha con x-on:open-modal.window para mostrarse
-        $this->dispatch('open-modal', 'categoria-form');
+        $this->openModal('categoria-form');
     }
 
     /**
@@ -75,7 +78,7 @@ class Categorias extends Component
         $this->activo = $categoria->activo;
 
         $this->resetValidation();
-        $this->dispatch('open-modal', 'categoria-form');
+        $this->openModal('categoria-form');
     }
 
     /**
@@ -92,8 +95,7 @@ class Categorias extends Component
             $datos
         );
 
-        // Cerramos el modal del formulario disparando el evento "close-modal"
-        $this->dispatch('close-modal', 'categoria-form');
+        $this->closeModal('categoria-form');
         $this->resetPage();
     }
 
@@ -103,7 +105,7 @@ class Categorias extends Component
     public function confirmarEliminar(int $id): void
     {
         $this->categoriaAEliminar = $id;
-        $this->dispatch('open-modal', 'categoria-confirmar-eliminar');
+        $this->openModal('categoria-confirmar-eliminar');
     }
 
     /**
@@ -113,6 +115,6 @@ class Categorias extends Component
     {
         Categoria::findOrFail($this->categoriaAEliminar)->delete();
         $this->categoriaAEliminar = null;
-        $this->dispatch('close-modal', 'categoria-confirmar-eliminar');
+        $this->closeModal('categoria-confirmar-eliminar');
     }
 }
