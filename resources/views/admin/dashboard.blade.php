@@ -13,9 +13,14 @@
                     {{-- Esta vista solo es accesible por usuarios con rol "admin" gracias al middleware --}}
                     <p class="mb-4">Bienvenido, {{ auth()->user()->name }}. Esta es el área administrativa de Capa8Burger.</p>
 
-                    <a href="{{ route('admin.categorias') }}" wire:navigate class="text-indigo-600 hover:text-indigo-900 underline">
-                        Gestionar categorías →
-                    </a>
+                    <div class="space-x-4">
+                        <a href="{{ route('admin.categorias') }}" wire:navigate class="text-indigo-600 hover:text-indigo-900 underline">
+                            Gestionar categorías →
+                        </a>
+                        <a href="{{ route('admin.productos') }}" wire:navigate class="text-indigo-600 hover:text-indigo-900 underline">
+                            Gestionar productos →
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>

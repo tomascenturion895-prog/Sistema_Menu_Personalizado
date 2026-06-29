@@ -1,6 +1,7 @@
 <?php
 
 use App\Livewire\Admin\Categorias;
+use App\Livewire\Admin\Productos;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome');
@@ -21,6 +22,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Route::get con un componente Livewire como segundo argumento renderiza ese
     // componente como pagina completa (no hace falta crear una vista Blade aparte)
     Route::get('categorias', Categorias::class)->name('categorias');
+    Route::get('productos', Productos::class)->name('productos');
 });
 
 require __DIR__.'/auth.php';
