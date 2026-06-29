@@ -34,6 +34,10 @@ new class extends Component
                         {{ __('Inicio') }}
                     </x-nav-link>
 
+                    <x-nav-link :href="route('menu.index')" :active="request()->routeIs('menu.*')" wire:navigate>
+                        {{ __('Menú') }}
+                    </x-nav-link>
+
                     {{-- Este link solo se muestra si el usuario logueado tiene rol admin --}}
                     @if (auth()->user()->esAdmin())
                         <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')" wire:navigate>
@@ -90,6 +94,10 @@ new class extends Component
         <div class="pt-2 pb-3 space-y-1">
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" wire:navigate>
                 {{ __('Inicio') }}
+            </x-responsive-nav-link>
+
+            <x-responsive-nav-link :href="route('menu.index')" :active="request()->routeIs('menu.*')" wire:navigate>
+                {{ __('Menú') }}
             </x-responsive-nav-link>
 
             @if (auth()->user()->esAdmin())
