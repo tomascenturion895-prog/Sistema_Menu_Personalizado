@@ -21,10 +21,10 @@ new #[Layout('layouts.guest')] class extends Component
         Session::regenerate();
 
         // Segun el rol del usuario logueado, lo mandamos a una pantalla distinta:
-        // admin -> panel de administracion, cliente -> dashboard normal (luego sera el menu publico)
+        // admin -> panel de administracion, cliente -> menu publico para armar su pedido
         $destino = auth()->user()->esAdmin()
             ? route('admin.dashboard', absolute: false)
-            : route('dashboard', absolute: false);
+            : route('menu.index', absolute: false);
 
         $this->redirectIntended(default: $destino, navigate: true);
     }
