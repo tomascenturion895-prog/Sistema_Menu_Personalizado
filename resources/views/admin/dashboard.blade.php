@@ -11,7 +11,11 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
                     {{-- Esta vista solo es accesible por usuarios con rol "admin" gracias al middleware --}}
-                    Bienvenido, {{ auth()->user()->name }}. Esta es el área administrativa de Capa8Burger.
+                    <p class="mb-4">Bienvenido, {{ auth()->user()->name }}. Esta es el área administrativa de Capa8Burger.</p>
+
+                    <a href="{{ route('admin.categorias') }}" wire:navigate class="text-indigo-600 hover:text-indigo-900 underline">
+                        Gestionar categorías →
+                    </a>
                 </div>
             </div>
         </div>
