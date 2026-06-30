@@ -4,6 +4,7 @@ use App\Livewire\Admin\Categorias;
 use App\Livewire\Admin\Ingredientes;
 use App\Livewire\Admin\Productos;
 use App\Livewire\Menu\Index as MenuIndex;
+use App\Livewire\Menu\Personalizar;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome');
@@ -16,6 +17,12 @@ Route::view('dashboard', 'dashboard')
 Route::get('menu', MenuIndex::class)
     ->middleware(['auth', 'verified'])
     ->name('menu.index');
+
+// {producto} se resuelve automaticamente a una instancia de Producto gracias al
+// route model binding: Laravel busca el id en la URL y lo inyecta en el componente
+Route::get('menu/productos/{producto}', Personalizar::class)
+    ->middleware(['auth', 'verified'])
+    ->name('menu.personalizar');
 
 Route::view('profile', 'profile')
     ->middleware(['auth'])
