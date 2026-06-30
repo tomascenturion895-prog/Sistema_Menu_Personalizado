@@ -1,4 +1,12 @@
 <div>
+    {{-- session()->flash() guarda un mensaje que solo dura UNA request: aparece despues de
+         agregar un producto al pedido, y desaparece solo si recargas la pagina de nuevo --}}
+    @if (session('mensaje'))
+        <div class="mb-4 px-4 py-3 bg-green-50 border border-green-200 text-green-800 rounded-md text-sm">
+            {{ session('mensaje') }}
+        </div>
+    @endif
+
     <div class="mb-6">
         <h2 class="text-2xl font-semibold text-gray-800">Nuestro menú</h2>
         <p class="text-gray-600">Elegí una categoría y armá tu hamburguesa como quieras.</p>
@@ -32,6 +40,11 @@
 
                         <div class="mt-3 flex items-center justify-between">
                             <span class="text-lg font-semibold text-gray-900">${{ number_format($producto->precio, 2) }}</span>
+
+                            <a href="{{ route('menu.personalizar', $producto) }}" wire:navigate
+                                class="text-sm bg-indigo-600 text-white px-3 py-1.5 rounded-md hover:bg-indigo-700">
+                                Personalizar
+                            </a>
                         </div>
                     </div>
                 @endforeach
