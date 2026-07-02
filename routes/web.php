@@ -7,6 +7,10 @@ use App\Livewire\Admin\Productos;
 use App\Livewire\Menu\Index as MenuIndex;
 use App\Livewire\Menu\MiPedido;
 use App\Livewire\Menu\Personalizar;
+use App\Models\Categoria;
+use App\Models\Ingrediente;
+use App\Models\Pedido;
+use App\Models\Producto;
 use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome');
@@ -38,7 +42,16 @@ Route::view('profile', 'profile')
 // Grupo de rutas exclusivo para administradores.
 // El middleware 'auth' exige estar logueado, y 'admin' exige tener rol admin (ver EsAdmin).
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::view('dashboard', 'admin.dashboard')->name('dashboard');
+    // Usamos un closure (en vez de Route::view) para poder pasarle a la vista
+    // los contadores que muestran las tarjetas de estadisticas del panel
+    Route::get('dashboard', function () {
+        return view('admin.dashboard', [
+            'totalCategorias' => Categoria::count(),
+            'totalProductos' => Producto::count(),
+            'totalIngredientes' => Ingrediente::count(),
+            'pedidosPendientes' => Pedido::whereIn('estado', ['pendiente', 'confirmado', 'en_preparacion'])->count(),
+        ]);
+    })->name('dashboard');
 
     // Route::get con un componente Livewire como segundo argumento renderiza ese
     // componente como pagina completa (no hace falta crear una vista Blade aparte)
