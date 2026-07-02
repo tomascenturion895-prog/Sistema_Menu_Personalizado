@@ -1,4 +1,12 @@
 <div>
+    {{-- session()->flash() guarda un mensaje que solo dura UNA request: aparece despues de
+         agregar un producto al pedido, y desaparece solo si recargas la pagina de nuevo --}}
+    @if (session('mensaje'))
+        <div class="mb-4 px-4 py-3 bg-exito-100 border border-exito-500 text-exito-700 rounded-md text-sm">
+            {{ session('mensaje') }}
+        </div>
+    @endif
+
     <div class="mb-6">
         <h2 class="text-2xl font-semibold text-gray-800">Nuestro menú</h2>
         <p class="text-gray-600">Elegí una categoría y armá tu hamburguesa como quieras.</p>
@@ -33,6 +41,11 @@
                         <div class="mt-3 flex items-center justify-between">
                             {{-- .precio aplica la fuente mono (definida en app.css), el guiño "de codigo" del tema --}}
                             <span class="precio text-lg">${{ number_format($producto->precio, 2) }}</span>
+
+                            <a href="{{ route('menu.personalizar', $producto) }}" wire:navigate
+                                class="text-sm bg-brand-500 text-white px-3 py-1.5 rounded-md hover:bg-brand-600">
+                                Personalizar
+                            </a>
                         </div>
                     </div>
                 @endforeach
