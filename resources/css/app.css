@@ -1,3 +1,35 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ============================================================
+   CLASES DE COMPONENTE — patrones que se repiten en varias vistas.
+   Se definen una sola vez aca con @apply (que "pega" utilidades de
+   Tailwind dentro de una clase propia) para no copiar la misma tira
+   de clases en cada tabla/tarjeta del sistema.
+   ============================================================ */
+@layer components {
+    /* Precio de producto: usa la fuente mono para el guiño "de codigo" */
+    .precio {
+        @apply font-mono font-semibold text-terminal-900;
+    }
+
+    /* Badge base: pastillita redondeada para estados y dietas */
+    .badge {
+        @apply inline-flex px-2 py-0.5 text-xs font-semibold rounded-full;
+    }
+
+    /* Variantes de estado (activo/inactivo en las tablas del admin) */
+    .badge-activo {
+        @apply badge bg-exito-100 text-exito-700;
+    }
+
+    .badge-inactivo {
+        @apply badge bg-terminal-100 text-terminal-700;
+    }
+
+    /* Tarjeta estandar del sistema (productos del menu, contenedores del admin) */
+    .tarjeta {
+        @apply bg-white rounded-card shadow-card border border-terminal-100;
+    }
+}

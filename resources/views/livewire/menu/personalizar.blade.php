@@ -1,5 +1,5 @@
 <div class="max-w-3xl mx-auto">
-    <a href="{{ route('menu.index') }}" wire:navigate class="text-sm text-indigo-600 hover:underline">&larr; Volver al menú</a>
+    <a href="{{ route('menu.index') }}" wire:navigate class="text-sm text-brand-600 hover:underline">&larr; Volver al menú</a>
 
     <div class="mt-2 mb-6">
         <h2 class="text-2xl font-semibold text-gray-800">{{ $producto->nombre }}</h2>
@@ -21,7 +21,8 @@
         ];
     @endphp
 
-    <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-6 space-y-6">
+    {{-- .tarjeta es la clase de componente definida en app.css (radio, sombra y borde estandar) --}}
+    <div class="tarjeta p-6 space-y-6">
         @foreach ($this->ingredientesPorTipo as $tipo => $opciones)
             <div wire:key="grupo-{{ $tipo }}">
                 <h3 class="font-medium text-gray-800 mb-2">{{ $etiquetas[$tipo] ?? $tipo }}</h3>
@@ -51,7 +52,7 @@
         @endforeach
 
         @if ($error)
-            <p class="text-sm text-red-600">{{ $error }}</p>
+            <p class="text-sm text-tomate-500">{{ $error }}</p>
         @endif
 
         <div class="border-t border-gray-200 pt-4 flex items-center justify-between">
@@ -63,7 +64,7 @@
 
             {{-- $this->precioTotal se recalcula automaticamente cada vez que cambia una seleccion,
                  porque Livewire vuelve a renderizar el componente en cada interaccion --}}
-            <span class="text-xl font-semibold text-gray-900">${{ number_format($this->precioTotal, 2) }}</span>
+            <span class="precio text-xl">${{ number_format($this->precioTotal, 2) }}</span>
         </div>
 
         <x-primary-button wire:click="agregarAlPedido" class="w-full justify-center">
