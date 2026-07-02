@@ -14,13 +14,13 @@
                     <p class="mb-4">Bienvenido, {{ auth()->user()->name }}. Esta es el área administrativa de Capa8Burger.</p>
 
                     <div class="space-x-4">
-                        <a href="{{ route('admin.categorias') }}" wire:navigate class="text-indigo-600 hover:text-indigo-900 underline">
+                        <a href="{{ route('admin.categorias') }}" wire:navigate class="text-brand-600 hover:text-brand-800 underline">
                             Gestionar categorías →
                         </a>
-                        <a href="{{ route('admin.productos') }}" wire:navigate class="text-indigo-600 hover:text-indigo-900 underline">
+                        <a href="{{ route('admin.productos') }}" wire:navigate class="text-brand-600 hover:text-brand-800 underline">
                             Gestionar productos →
                         </a>
-                        <a href="{{ route('admin.ingredientes') }}" wire:navigate class="text-indigo-600 hover:text-indigo-900 underline">
+                        <a href="{{ route('admin.ingredientes') }}" wire:navigate class="text-brand-600 hover:text-brand-800 underline">
                             Gestionar ingredientes →
                         </a>
                     </div>

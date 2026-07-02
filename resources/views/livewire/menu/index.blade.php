@@ -10,7 +10,7 @@
             <button
                 wire:click="filtrarPor('{{ $valor }}')"
                 class="px-4 py-2 rounded-full text-sm font-medium transition
-                    {{ $dieta === $valor ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}"
+                    {{ $dieta === $valor ? 'bg-brand-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}"
             >
                 {{ $etiqueta }}
             </button>
@@ -31,7 +31,8 @@
                         @endif
 
                         <div class="mt-3 flex items-center justify-between">
-                            <span class="text-lg font-semibold text-gray-900">${{ number_format($producto->precio, 2) }}</span>
+                            {{-- .precio aplica la fuente mono (definida en app.css), el guiño "de codigo" del tema --}}
+                            <span class="precio text-lg">${{ number_format($producto->precio, 2) }}</span>
                         </div>
                     </div>
                 @endforeach

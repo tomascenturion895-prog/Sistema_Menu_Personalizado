@@ -26,14 +26,15 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $categoria->nombre }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 capitalize">{{ $categoria->tipo_dieta }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            {{-- badge-activo / badge-inactivo son clases propias definidas en app.css --}}
                             @if ($categoria->activo)
-                                <span class="inline-flex px-2 text-xs font-semibold rounded-full bg-green-100 text-green-800">Activa</span>
+                                <span class="badge-activo">Activa</span>
                             @else
-                                <span class="inline-flex px-2 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">Inactiva</span>
+                                <span class="badge-inactivo">Inactiva</span>
                             @endif
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm space-x-3">
-                            <button wire:click="abrirModalEditar({{ $categoria->id }})" class="text-indigo-600 hover:text-indigo-900">Editar</button>
+                            <button wire:click="abrirModalEditar({{ $categoria->id }})" class="text-brand-600 hover:text-brand-800">Editar</button>
                             <button wire:click="confirmarEliminar({{ $categoria->id }})" class="text-red-600 hover:text-red-900">Eliminar</button>
                         </td>
                     </tr>

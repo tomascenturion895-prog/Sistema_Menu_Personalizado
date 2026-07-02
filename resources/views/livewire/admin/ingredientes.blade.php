@@ -24,7 +24,7 @@
                     <tr wire:key="ingrediente-{{ $ingrediente->id }}">
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $ingrediente->nombre }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 capitalize">{{ $ingrediente->tipo }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">${{ number_format($ingrediente->precio_extra, 2) }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm"><span class="precio">${{ number_format($ingrediente->precio_extra, 2) }}</span></td>
                         <td class="px-6 py-4 whitespace-nowrap text-xs space-x-1">
                             @if ($ingrediente->es_vegetariano)
                                 <span class="inline-flex px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Vegetariano</span>
@@ -38,13 +38,13 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm">
                             @if ($ingrediente->activo)
-                                <span class="inline-flex px-2 text-xs font-semibold rounded-full bg-green-100 text-green-800">Activo</span>
+                                <span class="badge-activo">Activo</span>
                             @else
-                                <span class="inline-flex px-2 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">Inactivo</span>
+                                <span class="badge-inactivo">Inactivo</span>
                             @endif
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm space-x-3">
-                            <button wire:click="abrirModalEditar({{ $ingrediente->id }})" class="text-indigo-600 hover:text-indigo-900">Editar</button>
+                            <button wire:click="abrirModalEditar({{ $ingrediente->id }})" class="text-brand-600 hover:text-brand-800">Editar</button>
                             <button wire:click="confirmarEliminar({{ $ingrediente->id }})" class="text-red-600 hover:text-red-900">Eliminar</button>
                         </td>
                     </tr>
