@@ -23,6 +23,9 @@
                         <a href="{{ route('admin.ingredientes') }}" wire:navigate class="text-brand-600 hover:text-brand-800 underline">
                             Gestionar ingredientes →
                         </a>
+                        <a href="{{ route('admin.pedidos') }}" wire:navigate class="text-brand-600 hover:text-brand-800 underline">
+                            Ver pedidos →
+                        </a>
                     </div>
                 </div>
             </div>

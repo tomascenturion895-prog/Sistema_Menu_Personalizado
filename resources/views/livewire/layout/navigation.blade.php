@@ -34,8 +34,16 @@ new class extends Component
                         {{ __('Inicio') }}
                     </x-nav-link>
 
-                    <x-nav-link :href="route('menu.index')" :active="request()->routeIs('menu.*')" wire:navigate>
+                    <x-nav-link :href="route('menu.index')" :active="request()->routeIs('menu.index') || request()->routeIs('menu.personalizar')" wire:navigate>
                         {{ __('Menú') }}
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('menu.mi-pedido')" :active="request()->routeIs('menu.mi-pedido')" wire:navigate>
+                        {{ __('Mi pedido') }}
+                        {{-- Contador de items del carrito, solo se muestra si hay algo cargado --}}
+                        @if (count(session('carrito', [])) > 0)
+                            <span class="ml-1.5 bg-brand-500 text-white text-xs font-semibold rounded-full px-1.5">{{ count(session('carrito', [])) }}</span>
+                        @endif
                     </x-nav-link>
 
                     {{-- Este link solo se muestra si el usuario logueado tiene rol admin --}}
@@ -96,8 +104,12 @@ new class extends Component
                 {{ __('Inicio') }}
             </x-responsive-nav-link>
 
-            <x-responsive-nav-link :href="route('menu.index')" :active="request()->routeIs('menu.*')" wire:navigate>
+            <x-responsive-nav-link :href="route('menu.index')" :active="request()->routeIs('menu.index') || request()->routeIs('menu.personalizar')" wire:navigate>
                 {{ __('Menú') }}
+            </x-responsive-nav-link>
+
+            <x-responsive-nav-link :href="route('menu.mi-pedido')" :active="request()->routeIs('menu.mi-pedido')" wire:navigate>
+                {{ __('Mi pedido') }}
             </x-responsive-nav-link>
 
             @if (auth()->user()->esAdmin())
