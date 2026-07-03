@@ -1,6 +1,7 @@
-<div>
-    <div class="flex items-center justify-between mb-6">
-        <h3 class="text-lg font-medium text-gray-900">Pedidos</h3>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="mb-6">
+        <span class="eyebrow">// admin / pedidos</span>
+        <h3 class="text-2xl font-semibold text-gray-900">Pedidos</h3>
     </div>
 
     {{-- Filtro por estado del pedido --}}
@@ -29,7 +30,7 @@
                     </div>
 
                     <div class="flex items-center gap-3">
-                        <span class="precio">${{ number_format($pedido->total, 2) }}</span>
+                        <span class="precio">${{ number_format($pedido->total, 0, ',', '.') }}</span>
 
                         {{-- Select para cambiar el estado: wire:change dispara el metodo al elegir otra opcion --}}
                         <select
@@ -50,13 +51,15 @@
                     @foreach ($pedido->items as $item)
                         <li wire:key="item-{{ $item->id }}">
                             {{ $item->cantidad }}x {{ $item->producto->nombre }}
-                            <span class="precio text-xs">${{ number_format($item->precio_unitario * $item->cantidad, 2) }}</span>
+                            <span class="precio text-xs">${{ number_format($item->precio_unitario * $item->cantidad, 0, ',', '.') }}</span>
                         </li>
                     @endforeach
                 </ul>
 
                 @if ($pedido->observaciones)
-                    <p class="text-sm text-cheddar-500 mt-2">📝 {{ $pedido->observaciones }}</p>
+                    <p class="text-sm text-gray-600 mt-2 border-l-2 border-cheddar-400 pl-2">
+                        <span class="font-mono text-xs text-gray-400">obs:</span> {{ $pedido->observaciones }}
+                    </p>
                 @endif
             </div>
         @empty

@@ -1,6 +1,9 @@
-<div>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
     <div class="flex items-center justify-between mb-6">
-        <h3 class="text-lg font-medium text-gray-900">Productos del menú</h3>
+        <div>
+            <span class="eyebrow">// admin / productos</span>
+            <h3 class="text-2xl font-semibold text-gray-900">Productos del menú</h3>
+        </div>
 
         <x-primary-button wire:click="abrirModalCrear">
             + Nuevo producto
@@ -11,13 +14,14 @@
          de su Categoria (via la relacion belongsTo cargada con with('categoria')) --}}
     <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
         <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
+            {{-- Cabecera de tabla oscura, estilo terminal, consistente con la navbar --}}
+            <thead class="bg-terminal-900">
                 <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Producto</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Categoría</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Precio</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
-                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Acciones</th>
+                    <th class="px-6 py-3 text-left text-xs font-mono font-medium text-terminal-300 uppercase">Producto</th>
+                    <th class="px-6 py-3 text-left text-xs font-mono font-medium text-terminal-300 uppercase">Categoría</th>
+                    <th class="px-6 py-3 text-left text-xs font-mono font-medium text-terminal-300 uppercase">Precio</th>
+                    <th class="px-6 py-3 text-left text-xs font-mono font-medium text-terminal-300 uppercase">Estado</th>
+                    <th class="px-6 py-3 text-right text-xs font-mono font-medium text-terminal-300 uppercase">Acciones</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-200">
@@ -25,7 +29,7 @@
                     <tr wire:key="producto-{{ $producto->id }}">
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $producto->nombre }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ $producto->categoria->nombre }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm"><span class="precio">${{ number_format($producto->precio, 2) }}</span></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm"><span class="precio">${{ number_format($producto->precio, 0, ',', '.') }}</span></td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm">
                             @if ($producto->activo)
                                 <span class="badge-activo">Activo</span>

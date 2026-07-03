@@ -1,7 +1,10 @@
-<div class="max-w-3xl mx-auto">
+<div class="max-w-3xl mx-auto px-4 sm:px-6 py-10">
     <a href="{{ route('menu.index') }}" wire:navigate class="text-sm text-brand-600 hover:underline">&larr; Seguir eligiendo</a>
 
-    <h2 class="text-2xl font-semibold text-gray-800 mt-2 mb-6">Mi pedido</h2>
+    <div class="mt-3 mb-6">
+        <span class="eyebrow">// mi pedido</span>
+        <h2 class="text-3xl font-semibold text-gray-900">Mi pedido</h2>
+    </div>
 
     @if (empty($this->carrito))
         <div class="tarjeta p-8 text-center text-gray-500">
@@ -26,7 +29,7 @@
                     </div>
 
                     <div class="text-right">
-                        <span class="precio">${{ number_format($item['precio_unitario'] * $item['cantidad'], 2) }}</span>
+                        <span class="precio">${{ number_format($item['precio_unitario'] * $item['cantidad'], 0, ',', '.') }}</span>
 
                         <button wire:click="quitarItem({{ $indice }})" class="block mt-1 text-xs text-tomate-500 hover:text-tomate-700">
                             Quitar
@@ -37,7 +40,7 @@
 
             <div class="p-4 flex items-center justify-between bg-gray-50">
                 <span class="font-medium text-gray-800">Total</span>
-                <span class="precio text-xl">${{ number_format($this->total, 2) }}</span>
+                <span class="precio text-xl">${{ number_format($this->total, 0, ',', '.') }}</span>
             </div>
         </div>
 
