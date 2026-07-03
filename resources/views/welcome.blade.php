@@ -12,24 +12,29 @@
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
-    <body class="font-sans antialiased bg-terminal-950 text-white">
+    <body class="font-sans antialiased bg-brand-500 text-terminal-950">
+
+        {{-- Cinta marquee superior (componente compartido con el layout de la app) --}}
+        <x-marquee />
 
         {{-- ============ NAVBAR ============ --}}
-        <nav class="border-b border-terminal-800">
+        <nav class="border-b-2 border-terminal-950">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-                <x-application-logo class="text-xl text-white" />
+                <x-application-logo variant="onbrand" class="text-xl text-terminal-950" />
 
                 <div class="flex items-center gap-3">
                     @auth
-                        <a href="{{ url('/dashboard') }}" class="px-4 py-2 text-sm font-semibold bg-brand-500 hover:bg-brand-600 rounded-md transition">
+                        <a href="{{ route('dashboard') }}"
+                            class="btn-retro px-4 py-2 text-sm bg-white">
                             Ir a mi cuenta
                         </a>
                     @else
-                        <a href="{{ route('login') }}" class="px-4 py-2 text-sm font-medium text-terminal-300 hover:text-white transition">
+                        <a href="{{ route('login') }}" class="px-4 py-2 text-sm font-semibold hover:underline underline-offset-4">
                             Iniciar sesión
                         </a>
                         @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="px-4 py-2 text-sm font-semibold bg-brand-500 hover:bg-brand-600 rounded-md transition">
+                            <a href="{{ route('register') }}"
+                                class="btn-retro px-4 py-2 text-sm bg-white">
                                 Registrarme
                             </a>
                         @endif
@@ -39,109 +44,135 @@
         </nav>
 
         {{-- ============ HERO ============ --}}
-        <header class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <header class="relative overflow-hidden border-b-2 border-terminal-950">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
 
                 {{-- Columna izquierda: mensaje principal --}}
                 <div>
-                    <p class="font-mono text-sm text-brand-400 mb-4">$ capa8burger --init</p>
+                    <p class="font-mono text-sm font-semibold mb-4">$ sumate a la revolución del sabor</p>
 
-                    <h1 class="font-display text-5xl sm:text-6xl lg:text-7xl leading-none uppercase">
+                    <h1 class="font-display text-6xl sm:text-7xl lg:text-8xl leading-[0.9] uppercase">
                         Tu burger,<br>
-                        <span class="text-brand-500">tus reglas</span>
+                        <span class="text-white" style="text-shadow: 3px 3px 0 #14171b;">tus reglas</span>
                     </h1>
 
-                    <p class="text-terminal-300 text-lg mt-6 max-w-md leading-relaxed">
-                        Cada hamburguesa se construye por capas, y acá las definís todas vos:
-                        el pan, los medallones, los toppings, las salsas y el acompañamiento.
+                    <p class="text-terminal-950/80 text-lg mt-6 max-w-md leading-relaxed font-medium">
+                        Combos de la casa o armada desde cero, capa por capa:
+                        pan, medallones, toppings, salsas y acompañamiento. Vos decidís todo.
                     </p>
 
-                    <div class="flex flex-wrap gap-3 mt-8">
+                    <div class="flex flex-wrap gap-4 mt-8">
                         <a href="{{ Route::has('register') ? route('register') : route('login') }}"
-                            class="px-6 py-3 bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-md transition">
+                            class="btn-retro shadow-retro px-7 py-3.5 bg-terminal-950 text-white">
                             Pedí la tuya →
                         </a>
                         <a href="{{ route('login') }}"
-                            class="px-6 py-3 border border-terminal-700 hover:border-terminal-500 text-terminal-200 font-semibold rounded-md transition">
+                            class="btn-retro shadow-retro px-7 py-3.5 bg-white">
                             Ver el menú
                         </a>
                     </div>
+                </div>
 
-                    {{-- Dietas disponibles, con su punto de color identificatorio --}}
-                    <div class="flex flex-wrap gap-4 mt-10 text-sm text-terminal-400">
-                        <span class="inline-flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-dieta-normal"></span> Clásicas</span>
-                        <span class="inline-flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-dieta-vegetariano"></span> Vegetarianas</span>
-                        <span class="inline-flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-dieta-vegano"></span> Veganas</span>
-                        <span class="inline-flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-dieta-celiaco"></span> Sin TACC</span>
+                {{-- Columna derecha: la hamburguesa de 8 capas con el sticker de promo --}}
+                <div class="relative max-w-md mx-auto w-full">
+                    {{-- Panel blanco tipo cartel, con la hamburguesa adentro --}}
+                    <div class="tarjeta shadow-retro p-8">
+                        <x-burger-capas class="max-w-[280px] mx-auto" />
+                        <p class="font-mono text-xs text-center text-terminal-500 mt-4">// 8 capas. la última la ponés vos.</p>
+                    </div>
+
+                    {{-- Sticker rotado, como los carteles de oferta de los locales --}}
+                    <div class="absolute -top-5 -right-3 sm:-right-6 rotate-6 bg-cheddar-400 border-2 border-terminal-950 rounded-lg shadow-retro-sm px-4 py-2.5 text-center">
+                        <span class="block font-display text-lg leading-none uppercase">100%</span>
+                        <span class="block font-mono text-[10px] uppercase tracking-wide mt-0.5">personalizable</span>
                     </div>
                 </div>
-
-                {{-- Columna derecha: la hamburguesa de 8 capas con su "stack" listado al costado --}}
-                <div class="grid grid-cols-[1fr_auto] gap-6 items-center max-w-lg mx-auto w-full">
-                    <x-burger-capas class="max-w-xs mx-auto" />
-
-                    {{-- Las capas listadas como si fueran un archivo de configuracion --}}
-                    <ol class="font-mono text-xs sm:text-sm text-terminal-400 space-y-2.5 select-none">
-                        <li><span class="text-terminal-600">1:</span> pan_superior</li>
-                        <li><span class="text-terminal-600">2:</span> <span class="text-cheddar-400">salsa</span></li>
-                        <li><span class="text-terminal-600">3:</span> <span class="text-tomate-500">tomate</span></li>
-                        <li><span class="text-terminal-600">4:</span> <span class="text-dieta-vegetariano">lechuga</span></li>
-                        <li><span class="text-terminal-600">5:</span> <span class="text-cheddar-400">cheddar</span></li>
-                        <li><span class="text-terminal-600">6:</span> medallon</li>
-                        <li><span class="text-terminal-600">7:</span> <span class="text-purple-400">cebolla</span></li>
-                        <li><span class="text-terminal-600">8:</span> pan_inferior</li>
-                    </ol>
-                </div>
             </div>
-
-            {{-- El chiste de la marca, como comentario de codigo --}}
-            <p class="font-mono text-sm text-terminal-500 mt-12 text-center">
-                // en el modelo OSI la capa 8 es el usuario. acá, la capa 8 <span class="text-brand-400">sos vos</span>.
-            </p>
         </header>
 
         {{-- ============ COMO FUNCIONA ============ --}}
-        <section class="border-t border-terminal-800 bg-terminal-900">
+        <section class="bg-brand-50 border-b-2 border-terminal-950">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-                <span class="eyebrow">// cómo funciona</span>
-                <h2 class="font-display text-3xl uppercase mb-10">En 3 pasos</h2>
+                <span class="font-mono text-sm font-semibold text-brand-600">// cómo funciona</span>
+                <h2 class="font-display text-4xl sm:text-5xl uppercase mt-1 mb-10">En 3 pasos</h2>
 
                 {{-- Numeracion justificada: es la secuencia real que el cliente sigue en orden --}}
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div>
-                        <p class="font-mono text-brand-500 text-sm mb-2">paso_1</p>
-                        <h3 class="font-semibold text-lg text-white">Elegí la base</h3>
-                        <p class="text-terminal-400 mt-2 text-sm leading-relaxed">
-                            Arrancá con una de nuestras hamburguesas del menú, filtrado por tu dieta:
-                            clásica, vegetariana, vegana o sin TACC.
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="tarjeta shadow-retro p-6">
+                        <span class="inline-flex items-center justify-center w-10 h-10 font-display bg-brand-500 text-white border-2 border-terminal-950 rounded-md">1</span>
+                        <h3 class="font-display text-xl uppercase mt-4">Elegí la base</h3>
+                        <p class="text-terminal-700 mt-2 text-sm leading-relaxed">
+                            Contanos qué buscás (carne, veggie, vegano o sin TACC) y te mostramos
+                            solo lo que va con vos: combos de la casa listos para pedir.
                         </p>
                     </div>
-                    <div>
-                        <p class="font-mono text-brand-500 text-sm mb-2">paso_2</p>
-                        <h3 class="font-semibold text-lg text-white">Personalizá cada capa</h3>
-                        <p class="text-terminal-400 mt-2 text-sm leading-relaxed">
-                            Cambiá el pan, sumá medallones, elegí toppings y salsas, y completá
-                            con papas y bebida. El precio se actualiza en el momento.
+                    <div class="tarjeta shadow-retro p-6">
+                        <span class="inline-flex items-center justify-center w-10 h-10 font-display bg-brand-500 text-white border-2 border-terminal-950 rounded-md">2</span>
+                        <h3 class="font-display text-xl uppercase mt-4">Personalizá las capas</h3>
+                        <p class="text-terminal-700 mt-2 text-sm leading-relaxed">
+                            Cambiá el pan, sumá medallones, elegí hasta 5 toppings y 3 salsas,
+                            y completá con papas y bebida. El precio se actualiza al instante.
                         </p>
                     </div>
-                    <div>
-                        <p class="font-mono text-brand-500 text-sm mb-2">paso_3</p>
-                        <h3 class="font-semibold text-lg text-white">Confirmá y listo</h3>
-                        <p class="text-terminal-400 mt-2 text-sm leading-relaxed">
-                            Revisá tu pedido, dejanos observaciones para la cocina y confirmá.
-                            Nosotros nos encargamos del deploy... digo, de la parrilla.
+                    <div class="tarjeta shadow-retro p-6">
+                        <span class="inline-flex items-center justify-center w-10 h-10 font-display bg-brand-500 text-white border-2 border-terminal-950 rounded-md">3</span>
+                        <h3 class="font-display text-xl uppercase mt-4">Confirmá y listo</h3>
+                        <p class="text-terminal-700 mt-2 text-sm leading-relaxed">
+                            Revisá tu pedido, dejale una nota a la cocina si querés,
+                            y seguí el estado hasta que esté lista para retirar.
                         </p>
                     </div>
                 </div>
             </div>
         </section>
 
-        {{-- ============ FOOTER ============ --}}
-        <footer class="border-t border-terminal-800">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-                <x-application-logo class="text-base text-white" />
-                <p class="font-mono text-xs text-terminal-500">© {{ date('Y') }} Capa8Burger — hecho con Laravel + Livewire</p>
+        {{-- ============ DIETAS ============ --}}
+        <section class="bg-white border-b-2 border-terminal-950">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+                <div class="grid grid-cols-1 lg:grid-cols-[auto_1fr] gap-8 items-center">
+                    <h2 class="font-display text-3xl sm:text-4xl uppercase max-w-xs leading-tight">Hay una burger para vos</h2>
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        @foreach ([
+                            ['nombre' => 'Clásicas', 'detalle' => 'Carne a la parrilla', 'color' => 'bg-dieta-normal'],
+                            ['nombre' => 'Vegetarianas', 'detalle' => 'Sin carne, con sabor', 'color' => 'bg-dieta-vegetariano'],
+                            ['nombre' => 'Veganas', 'detalle' => '100% plantas', 'color' => 'bg-dieta-vegano'],
+                            ['nombre' => 'Sin TACC', 'detalle' => 'Aptas celíacos', 'color' => 'bg-dieta-celiaco'],
+                        ] as $dieta)
+                            <div class="border-2 border-terminal-950 rounded-xl p-4 shadow-retro-sm">
+                                <span class="block w-3 h-3 rounded-full {{ $dieta['color'] }} border border-terminal-950"></span>
+                                <p class="font-semibold mt-2">{{ $dieta['nombre'] }}</p>
+                                <p class="text-sm text-terminal-500">{{ $dieta['detalle'] }}</p>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
             </div>
-        </footer>
+        </section>
+
+        {{-- ============ CTA FINAL ============ --}}
+        <section class="bg-terminal-950 text-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
+                <p class="font-mono text-sm text-brand-400">// en el modelo OSI la capa 8 es el usuario</p>
+                <h2 class="font-display text-4xl sm:text-6xl uppercase mt-3">Acá, la capa 8 <span class="text-brand-500">sos vos</span></h2>
+
+                <a href="{{ Route::has('register') ? route('register') : route('login') }}"
+                    class="inline-block mt-8 px-8 py-4 bg-brand-500 text-white font-semibold rounded-md border-2 border-white/20 hover:bg-brand-600 transition">
+                    Crear mi cuenta →
+                </a>
+            </div>
+
+            {{-- Wordmark gigante recortado, como cierre visual de la pagina --}}
+            <div class="overflow-hidden select-none" aria-hidden="true">
+                <p class="font-display uppercase text-center text-[17vw] leading-[0.75] text-terminal-900 -mb-[4vw]">capa8</p>
+            </div>
+
+            <div class="border-t border-terminal-800">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <x-application-logo class="text-base text-white" />
+                    <p class="font-mono text-xs text-terminal-500">© {{ date('Y') }} Capa8Burger — hecho con Laravel + Livewire</p>
+                </div>
+            </div>
+        </section>
     </body>
 </html>

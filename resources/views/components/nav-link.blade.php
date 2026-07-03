@@ -1,11 +1,12 @@
 @props(['active'])
 
 @php
-// Link del menu de navegacion (navbar oscura): el activo se subraya con el naranja
-// de marca y queda en blanco; los inactivos en gris claro de la paleta terminal
+// Link de la navbar (fondo naranja de marca): el activo es una pildora blanca con
+// borde negro y sombra dura (el mismo lenguaje retro de la landing y el login);
+// los inactivos son texto oscuro que gana borde al pasar el mouse
 $classes = ($active ?? false)
-            ? 'inline-flex items-center px-1 pt-1 border-b-2 border-brand-500 text-sm font-medium leading-5 text-white focus:outline-none focus:border-brand-300 transition duration-150 ease-in-out'
-            : 'inline-flex items-center px-1 pt-1 border-b-2 border-transparent text-sm font-medium leading-5 text-terminal-300 hover:text-white hover:border-terminal-600 focus:outline-none focus:text-white focus:border-terminal-600 transition duration-150 ease-in-out';
+            ? 'inline-flex items-center px-4 py-1.5 bg-white border-2 border-terminal-950 rounded-full shadow-retro-sm text-sm font-semibold text-terminal-950 transition'
+            : 'inline-flex items-center px-4 py-1.5 border-2 border-transparent rounded-full text-sm font-semibold text-terminal-950/70 hover:text-terminal-950 hover:border-terminal-950 transition';
 @endphp
 
 <a {{ $attributes->merge(['class' => $classes]) }}>

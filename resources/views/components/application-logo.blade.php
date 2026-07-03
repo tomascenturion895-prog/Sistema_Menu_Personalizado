@@ -1,4 +1,11 @@
 {{-- Logo de Capa8Burger: texto estilo terminal con cursor parpadeante.
-     Reemplaza el SVG default de Laravel. El guion bajo animado es el "sello" de la marca:
-     hamburgueseria + programacion (la capa 8 del modelo OSI es el usuario). --}}
-<span {{ $attributes->merge(['class' => 'font-mono font-semibold select-none']) }}>capa8<span class="text-brand-500">burger</span><span class="text-brand-500 logo-cursor">_</span></span>
+     El prop "variant" permite usarlo sobre fondos de distinto color:
+     - default: el acento "burger" va en naranja de marca (fondos claros u oscuros neutros)
+     - onbrand: el acento va en blanco (para fondos naranjas, donde el acento naranja no se veria) --}}
+@props(['variant' => 'default'])
+
+@php
+    $acento = $variant === 'onbrand' ? 'text-white' : 'text-brand-500';
+@endphp
+
+<span {{ $attributes->merge(['class' => 'font-mono font-semibold select-none']) }}>capa8<span class="{{ $acento }}">burger</span><span class="{{ $acento }} logo-cursor">_</span></span>

@@ -15,7 +15,9 @@ use Illuminate\Support\Facades\Route;
 
 Route::view('/', 'welcome');
 
-Route::view('dashboard', 'dashboard')
+// La URL es /inicio (en español, como pide la consigna) pero el nombre interno
+// sigue siendo "dashboard" porque Breeze y sus tests lo referencian asi
+Route::view('inicio', 'dashboard')
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
@@ -35,7 +37,7 @@ Route::get('mi-pedido', MiPedido::class)
     ->middleware(['auth', 'verified'])
     ->name('menu.mi-pedido');
 
-Route::view('profile', 'profile')
+Route::view('perfil', 'profile')
     ->middleware(['auth'])
     ->name('profile');
 

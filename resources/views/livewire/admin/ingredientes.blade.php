@@ -10,7 +10,7 @@
         </x-primary-button>
     </div>
 
-    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+    <div class="tarjeta overflow-hidden">
         <table class="min-w-full divide-y divide-gray-200">
             {{-- Cabecera de tabla oscura, estilo terminal, consistente con la navbar --}}
             <thead class="bg-terminal-900">

@@ -7,11 +7,16 @@
     </div>
 
     @if (empty($this->carrito))
-        <div class="tarjeta p-8 text-center text-gray-500">
-            Tu pedido está vacío. ¡Andá al menú y armá tu hamburguesa!
+        <div class="tarjeta shadow-retro p-10 text-center">
+            <p class="font-display text-xl uppercase text-terminal-950">Tu pedido está vacío</p>
+            <p class="text-sm text-gray-500 mt-2">Andá al menú y elegí tu primera burger.</p>
+            <a href="{{ route('menu.index') }}" wire:navigate
+                class="btn-retro mt-5 px-5 py-2.5 bg-brand-500 text-white text-sm">
+                Ir al menú →
+            </a>
         </div>
     @else
-        <div class="tarjeta divide-y divide-gray-100">
+        <div class="tarjeta shadow-retro divide-y divide-gray-100 overflow-hidden">
             @foreach ($this->carrito as $indice => $item)
                 {{-- Usamos el indice del array como clave: no hay id de BD porque el carrito vive en la sesion --}}
                 <div class="p-4 flex items-start justify-between gap-4" wire:key="item-{{ $indice }}">

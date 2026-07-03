@@ -12,7 +12,7 @@
     </div>
 
     {{-- Tabla con las categorias existentes --}}
-    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+    <div class="tarjeta overflow-hidden">
         <table class="min-w-full divide-y divide-gray-200">
             {{-- Cabecera de tabla oscura, estilo terminal, consistente con la navbar --}}
             <thead class="bg-terminal-900">
@@ -74,10 +74,10 @@
             <div class="mt-4">
                 <x-input-label for="tipo_dieta" value="Tipo de dieta" />
                 <select wire:model="tipo_dieta" id="tipo_dieta" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm">
-                    <option value="normal">Normal</option>
-                    <option value="vegetariano">Vegetariano</option>
-                    <option value="vegano">Vegano</option>
-                    <option value="celiaco">Celíaco</option>
+                    {{-- Las opciones salen del modelo: si se agrega una dieta nueva, se actualiza en un solo lugar --}}
+                    @foreach (\App\Models\Categoria::TIPOS_DIETA as $valor => $etiqueta)
+                        <option value="{{ $valor }}">{{ $etiqueta }}</option>
+                    @endforeach
                 </select>
                 <x-input-error :messages="$errors->get('tipo_dieta')" class="mt-2" />
             </div>

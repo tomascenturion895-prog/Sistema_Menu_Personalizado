@@ -85,10 +85,12 @@ export default {
 
             // ============================================================
             // TOKENS DE TIPOGRAFIA
-            // sans  -> texto general (Figtree, ya venia con Breeze)
-            // mono  -> acento "de programador": precios, badges, codigos de pedido
+            // display -> titulos grandes de la marca (gruesa, estilo cartel de hamburgueseria)
+            // sans    -> texto general (Figtree, ya venia con Breeze)
+            // mono    -> acento "de programador": precios, badges, codigos de pedido
             // ============================================================
             fontFamily: {
+                display: ['Archivo Black', ...defaultTheme.fontFamily.sans],
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
                 mono: ['JetBrains Mono', ...defaultTheme.fontFamily.mono],
             },
@@ -97,14 +99,11 @@ export default {
             // OTROS TOKENS REUTILIZABLES
             // ============================================================
 
-            // Radio de borde estandar para tarjetas y modales del sistema
-            borderRadius: {
-                card: '0.75rem',
-            },
-
-            // Sombra suave unica para todas las tarjetas (productos, tablas, formularios)
+            // Sombras duras desplazadas, estilo cartel retro: son LA sombra del sistema
+            // (tarjetas .tarjeta, botones .btn-retro, stickers de la landing)
             boxShadow: {
-                card: '0 1px 3px 0 rgb(0 0 0 / 0.08), 0 1px 2px -1px rgb(0 0 0 / 0.08)',
+                retro: '4px 4px 0 0 #14171b',
+                'retro-sm': '2px 2px 0 0 #14171b',
             },
         },
     },

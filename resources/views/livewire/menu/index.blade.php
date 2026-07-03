@@ -12,32 +12,26 @@
          Se muestra solo la primera vez. La respuesta filtra el menu para no
          ofrecerle carne a un vegano ni opciones veganas a un fan de la carne. --}}
     @if ($this->debePreguntarPreferencia)
-        <div class="tarjeta p-8 sm:p-10 mb-10 bg-terminal-900 border-terminal-800">
-            <span class="eyebrow">// antes de empezar</span>
-            <h2 class="font-display text-2xl sm:text-3xl uppercase text-white">¿Qué estás buscando hoy?</h2>
-            <p class="text-terminal-300 mt-2 text-sm">Con tu respuesta armamos el menú a tu medida. Podés cambiarla cuando quieras.</p>
+        {{-- Panel naranja estilo cartel, con las opciones como tarjetas blancas "hundibles" --}}
+        <div class="bg-brand-500 border-2 border-terminal-950 rounded-xl shadow-retro p-8 sm:p-10 mb-10">
+            <p class="font-mono text-sm font-semibold text-terminal-950 mb-1">// antes de empezar</p>
+            <h2 class="font-display text-3xl sm:text-4xl uppercase text-white" style="text-shadow: 2px 2px 0 #14171b;">¿Qué estás buscando hoy?</h2>
+            <p class="text-terminal-950/80 font-medium mt-2 text-sm">Con tu respuesta armamos el menú a tu medida. Podés cambiarla cuando quieras.</p>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 mt-6">
-                <button wire:click="elegirPreferencia('normal')" class="px-4 py-3 rounded-md border border-terminal-700 text-left hover:border-brand-500 hover:bg-terminal-800 transition">
-                    <span class="block font-semibold text-white text-sm">Soy fan de la carne</span>
-                    <span class="block text-terminal-400 text-xs mt-0.5">Hamburguesas clásicas</span>
-                </button>
-                <button wire:click="elegirPreferencia('vegetariano')" class="px-4 py-3 rounded-md border border-terminal-700 text-left hover:border-brand-500 hover:bg-terminal-800 transition">
-                    <span class="block font-semibold text-white text-sm">Como vegetariano</span>
-                    <span class="block text-terminal-400 text-xs mt-0.5">Sin carne, con lácteos y huevo</span>
-                </button>
-                <button wire:click="elegirPreferencia('vegano')" class="px-4 py-3 rounded-md border border-terminal-700 text-left hover:border-brand-500 hover:bg-terminal-800 transition">
-                    <span class="block font-semibold text-white text-sm">Como vegano</span>
-                    <span class="block text-terminal-400 text-xs mt-0.5">100% a base de plantas</span>
-                </button>
-                <button wire:click="elegirPreferencia('celiaco')" class="px-4 py-3 rounded-md border border-terminal-700 text-left hover:border-brand-500 hover:bg-terminal-800 transition">
-                    <span class="block font-semibold text-white text-sm">Necesito sin TACC</span>
-                    <span class="block text-terminal-400 text-xs mt-0.5">Apto para celíacos</span>
-                </button>
-                <button wire:click="elegirPreferencia('todos')" class="px-4 py-3 rounded-md border border-terminal-700 text-left hover:border-brand-500 hover:bg-terminal-800 transition">
-                    <span class="block font-semibold text-white text-sm">Quiero ver todo</span>
-                    <span class="block text-terminal-400 text-xs mt-0.5">El menú completo</span>
-                </button>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mt-6">
+                @foreach ([
+                    ['valor' => 'normal', 'titulo' => 'Soy fan de la carne', 'detalle' => 'Hamburguesas clásicas'],
+                    ['valor' => 'vegetariano', 'titulo' => 'Como vegetariano', 'detalle' => 'Sin carne, con lácteos y huevo'],
+                    ['valor' => 'vegano', 'titulo' => 'Como vegano', 'detalle' => '100% a base de plantas'],
+                    ['valor' => 'celiaco', 'titulo' => 'Necesito sin TACC', 'detalle' => 'Apto para celíacos'],
+                    ['valor' => 'todos', 'titulo' => 'Quiero ver todo', 'detalle' => 'El menú completo'],
+                ] as $opcion)
+                    <button wire:click="elegirPreferencia('{{ $opcion['valor'] }}')" wire:key="preferencia-{{ $opcion['valor'] }}"
+                        class="btn-retro rounded-lg px-4 py-3.5 bg-white justify-start text-left">
+                        <span class="block font-semibold text-terminal-950 text-sm">{{ $opcion['titulo'] }}</span>
+                        <span class="block text-terminal-500 text-xs mt-0.5">{{ $opcion['detalle'] }}</span>
+                    </button>
+                @endforeach
             </div>
         </div>
     @else
@@ -48,18 +42,9 @@
                 <h2 class="font-display text-4xl sm:text-5xl uppercase text-terminal-900">Armá tu <span class="text-brand-500">burger</span></h2>
             </div>
 
-            @php
-                $etiquetaDieta = [
-                    'todos' => 'Menú completo',
-                    'normal' => 'Clásicas de carne',
-                    'vegetariano' => 'Vegetarianas',
-                    'vegano' => 'Veganas',
-                    'celiaco' => 'Sin TACC',
-                ];
-            @endphp
-
             <div class="text-sm text-gray-500">
-                Estás viendo: <span class="font-medium text-gray-800">{{ $etiquetaDieta[$dieta] ?? $dieta }}</span>
+                {{-- Las etiquetas de dieta viven en el modelo Categoria (unica fuente de verdad) --}}
+                Estás viendo: <span class="font-medium text-gray-800">{{ \App\Models\Categoria::TIPOS_DIETA[$dieta] ?? 'Menú completo' }}</span>
                 <button wire:click="cambiarPreferencia" class="ml-2 text-brand-600 hover:underline font-medium">Cambiar</button>
             </div>
         </div>
@@ -91,8 +76,8 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     @foreach ($categoria->productos as $producto)
-                        {{-- Tarjeta de producto estilo carta digital: info a la izquierda, acciones a la derecha --}}
-                        <div class="tarjeta p-5 flex flex-col justify-between hover:border-brand-500 transition" wire:key="producto-{{ $producto->id }}">
+                        {{-- Tarjeta de producto estilo cartel retro: borde negro y sombra dura --}}
+                        <div class="tarjeta tarjeta-hover p-5 flex flex-col justify-between" wire:key="producto-{{ $producto->id }}">
                             <div>
                                 <div class="flex items-start justify-between gap-4">
                                     <h4 class="font-semibold text-gray-900">{{ $producto->nombre }}</h4>
@@ -104,15 +89,15 @@
                                 @endif
                             </div>
 
-                            <div class="flex gap-2 mt-4 pt-4 border-t border-gray-100">
+                            <div class="flex gap-2 mt-4 pt-4 border-t-2 border-gray-100">
                                 {{-- Combo de la casa: se agrega tal cual, sin pasar por la personalizacion --}}
                                 <button wire:click="agregarCombo({{ $producto->id }})"
-                                    class="flex-1 text-sm font-semibold border border-terminal-900 text-terminal-900 px-4 py-2 rounded-md hover:bg-terminal-900 hover:text-white transition">
+                                    class="flex-1 text-sm font-semibold border-2 border-terminal-950 text-terminal-950 px-4 py-2 rounded-md hover:bg-terminal-950 hover:text-white transition">
                                     Agregar como viene
                                 </button>
 
                                 <a href="{{ route('menu.personalizar', $producto) }}" wire:navigate
-                                    class="flex-1 text-center text-sm font-semibold bg-brand-500 text-white px-4 py-2 rounded-md hover:bg-brand-600 transition">
+                                    class="flex-1 text-center text-sm font-semibold bg-brand-500 text-white border-2 border-terminal-950 px-4 py-2 rounded-md hover:bg-brand-600 transition">
                                     Personalizar
                                 </a>
                             </div>

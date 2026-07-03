@@ -2,7 +2,6 @@
 
 namespace App\Livewire\Menu;
 
-use App\Models\Ingrediente;
 use App\Models\Producto;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Session;
@@ -86,7 +85,11 @@ class Personalizar extends Component
     {
         $idsSeleccionados = [...array_values($this->seleccionUnica), ...$this->seleccionMultiple];
 
-        $extras = Ingrediente::whereIn('id', $idsSeleccionados)->sum('precio_extra');
+        // Sumamos sobre la coleccion ya cargada en mount() (en memoria),
+        // en vez de hacer una consulta SQL nueva en cada interaccion
+        $extras = $this->producto->ingredientes
+            ->whereIn('id', $idsSeleccionados)
+            ->sum('precio_extra');
 
         return (float) $this->producto->precio + (float) $extras;
     }
@@ -177,7 +180,12 @@ class Personalizar extends Component
             'cantidad' => $this->cantidad,
             'precio_unitario' => $this->precioUnitario,
             'ingredientes_elegidos' => $idsSeleccionados,
-            'ingredientes_nombres' => Ingrediente::whereIn('id', $idsSeleccionados)->pluck('nombre')->all(),
+            // Nombres desde la coleccion en memoria: sin consulta extra a la base
+            'ingredientes_nombres' => $this->producto->ingredientes
+                ->whereIn('id', $idsSeleccionados)
+                ->pluck('nombre')
+                ->values()
+                ->all(),
         ];
 
         Session::put('carrito', $carrito);

@@ -13,8 +13,8 @@
         @endif
     </div>
 
-    {{-- .tarjeta es la clase de componente definida en app.css (radio, sombra y borde estandar) --}}
-    <div class="tarjeta p-6 space-y-7">
+    {{-- Tarjeta principal estilo cartel retro, consistente con el resto de la marca --}}
+    <div class="tarjeta shadow-retro p-6 space-y-7">
         @foreach ($this->ingredientesPorTipo as $tipo => $opciones)
             <div wire:key="grupo-{{ $tipo }}">
                 {{-- Encabezado del grupo con su regla de seleccion visible --}}
