@@ -1,0 +1,53 @@
+<?php
+
+namespace App\Livewire\Admin;
+
+use App\Models\Pedido;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Url;
+use Livewire\Component;
+use Livewire\WithPagination;
+
+#[Layout('layouts.app')]
+class Pedidos extends Component
+{
+    use WithPagination;
+
+    // Estados posibles de un pedido (los mismos del enum de la migracion de pedidos)
+    public const ESTADOS = ['pendiente', 'confirmado', 'en_preparacion', 'listo', 'cancelado'];
+
+    // Filtro por estado, sincronizado con la URL (ej: /admin/pedidos?estado=pendiente)
+    #[Url]
+    public string $estado = 'todos';
+
+    public function render()
+    {
+        return view('livewire.admin.pedidos', [
+            // Eager loading anidado: user (quien pidio) + items con su producto.
+            // 'items.producto' carga la relacion del item Y la del producto de cada item
+            'pedidos' => Pedido::with(['user', 'items.producto'])
+                ->when($this->estado !== 'todos', fn ($query) => $query->where('estado', $this->estado))
+                ->latest() // equivale a orderBy('created_at', 'desc'): los mas nuevos primero
+                ->paginate(10),
+        ]);
+    }
+
+    public function filtrarPor(string $estado): void
+    {
+        $this->estado = $estado;
+        $this->resetPage();
+    }
+
+    /**
+     * Avanza el pedido al estado siguiente del flujo de preparacion.
+     */
+    public function cambiarEstado(int $pedidoId, string $nuevoEstado): void
+    {
+        // Validamos contra la lista blanca de estados para evitar valores arbitrarios
+        if (! in_array($nuevoEstado, self::ESTADOS)) {
+            return;
+        }
+
+        Pedido::findOrFail($pedidoId)->update(['estado' => $nuevoEstado]);
+    }
+}

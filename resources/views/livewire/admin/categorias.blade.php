@@ -1,7 +1,10 @@
-<div>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
     {{-- Encabezado con boton para abrir el modal de creacion --}}
     <div class="flex items-center justify-between mb-6">
-        <h3 class="text-lg font-medium text-gray-900">Categorías del menú</h3>
+        <div>
+            <span class="eyebrow">// admin / categorías</span>
+            <h3 class="text-2xl font-semibold text-gray-900">Categorías del menú</h3>
+        </div>
 
         <x-primary-button wire:click="abrirModalCrear">
             + Nueva categoría
@@ -9,14 +12,15 @@
     </div>
 
     {{-- Tabla con las categorias existentes --}}
-    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+    <div class="tarjeta overflow-hidden">
         <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
+            {{-- Cabecera de tabla oscura, estilo terminal, consistente con la navbar --}}
+            <thead class="bg-terminal-900">
                 <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tipo de dieta</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
-                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Acciones</th>
+                    <th class="px-6 py-3 text-left text-xs font-mono font-medium text-terminal-300 uppercase">Nombre</th>
+                    <th class="px-6 py-3 text-left text-xs font-mono font-medium text-terminal-300 uppercase">Tipo de dieta</th>
+                    <th class="px-6 py-3 text-left text-xs font-mono font-medium text-terminal-300 uppercase">Estado</th>
+                    <th class="px-6 py-3 text-right text-xs font-mono font-medium text-terminal-300 uppercase">Acciones</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-200">
@@ -70,10 +74,10 @@
             <div class="mt-4">
                 <x-input-label for="tipo_dieta" value="Tipo de dieta" />
                 <select wire:model="tipo_dieta" id="tipo_dieta" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm">
-                    <option value="normal">Normal</option>
-                    <option value="vegetariano">Vegetariano</option>
-                    <option value="vegano">Vegano</option>
-                    <option value="celiaco">Celíaco</option>
+                    {{-- Las opciones salen del modelo: si se agrega una dieta nueva, se actualiza en un solo lugar --}}
+                    @foreach (\App\Models\Categoria::TIPOS_DIETA as $valor => $etiqueta)
+                        <option value="{{ $valor }}">{{ $etiqueta }}</option>
+                    @endforeach
                 </select>
                 <x-input-error :messages="$errors->get('tipo_dieta')" class="mt-2" />
             </div>

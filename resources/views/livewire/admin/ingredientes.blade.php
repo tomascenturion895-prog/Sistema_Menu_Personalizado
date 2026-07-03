@@ -1,22 +1,26 @@
-<div>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
     <div class="flex items-center justify-between mb-6">
-        <h3 class="text-lg font-medium text-gray-900">Ingredientes</h3>
+        <div>
+            <span class="eyebrow">// admin / ingredientes</span>
+            <h3 class="text-2xl font-semibold text-gray-900">Ingredientes</h3>
+        </div>
 
         <x-primary-button wire:click="abrirModalCrear">
             + Nuevo ingrediente
         </x-primary-button>
     </div>
 
-    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+    <div class="tarjeta overflow-hidden">
         <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
+            {{-- Cabecera de tabla oscura, estilo terminal, consistente con la navbar --}}
+            <thead class="bg-terminal-900">
                 <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nombre</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tipo</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Precio extra</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Dieta</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Estado</th>
-                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Acciones</th>
+                    <th class="px-6 py-3 text-left text-xs font-mono font-medium text-terminal-300 uppercase">Nombre</th>
+                    <th class="px-6 py-3 text-left text-xs font-mono font-medium text-terminal-300 uppercase">Tipo</th>
+                    <th class="px-6 py-3 text-left text-xs font-mono font-medium text-terminal-300 uppercase">Precio extra</th>
+                    <th class="px-6 py-3 text-left text-xs font-mono font-medium text-terminal-300 uppercase">Dieta</th>
+                    <th class="px-6 py-3 text-left text-xs font-mono font-medium text-terminal-300 uppercase">Estado</th>
+                    <th class="px-6 py-3 text-right text-xs font-mono font-medium text-terminal-300 uppercase">Acciones</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-gray-200">
@@ -24,7 +28,7 @@
                     <tr wire:key="ingrediente-{{ $ingrediente->id }}">
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $ingrediente->nombre }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 capitalize">{{ $ingrediente->tipo }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm"><span class="precio">${{ number_format($ingrediente->precio_extra, 2) }}</span></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm"><span class="precio">${{ number_format($ingrediente->precio_extra, 0, ',', '.') }}</span></td>
                         <td class="px-6 py-4 whitespace-nowrap text-xs space-x-1">
                             @if ($ingrediente->es_vegetariano)
                                 <span class="inline-flex px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Vegetariano</span>
