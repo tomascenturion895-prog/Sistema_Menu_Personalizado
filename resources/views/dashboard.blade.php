@@ -13,7 +13,7 @@
 
             {{-- Hero de bienvenida: presenta el negocio y lleva directo al menu --}}
             <div class="border-2 border-terminal-950 rounded-xl shadow-retro overflow-hidden">
-                <div class="bg-terminal-900 px-8 py-10 sm:px-12 grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-8 items-center">
+                <div class="bg-terminal-950 px-8 py-10 sm:px-12 grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-8 items-center">
                     <div>
                         <p class="font-mono text-sm text-brand-400 mb-3">$ hamburguesas --personalizadas</p>
                         <h3 class="font-display text-3xl sm:text-4xl uppercase text-white leading-tight">
