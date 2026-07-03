@@ -13,7 +13,12 @@ use App\Models\Pedido;
 use App\Models\Producto;
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'welcome');
+// Landing publica: ademas del hero, muestra una seleccion real de productos destacados
+Route::get('/', function () {
+    return view('welcome', [
+        'destacados' => Producto::where('activo', true)->with('categoria')->take(3)->get(),
+    ]);
+})->name('home');
 
 // La URL es /inicio (en español, como pide la consigna) pero el nombre interno
 // sigue siendo "dashboard" porque Breeze y sus tests lo referencian asi
@@ -21,18 +26,16 @@ Route::view('inicio', 'dashboard')
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
-// Menu publico: cualquier usuario autenticado (cliente o admin) puede verlo y armar su pedido
-Route::get('menu', MenuIndex::class)
-    ->middleware(['auth', 'verified'])
-    ->name('menu.index');
+// Menu PUBLICO: cualquiera puede ver la carta y armar su hamburguesa sin registrarse.
+// El login se exige recien al momento de agregar al pedido (dentro de los componentes)
+Route::get('menu', MenuIndex::class)->name('menu.index');
 
 // {producto} se resuelve automaticamente a una instancia de Producto gracias al
 // route model binding: Laravel busca el id en la URL y lo inyecta en el componente
-Route::get('menu/productos/{producto}', Personalizar::class)
-    ->middleware(['auth', 'verified'])
-    ->name('menu.personalizar');
+Route::get('menu/productos/{producto}', Personalizar::class)->name('menu.personalizar');
 
-// Carrito del cliente: revisa lo elegido y confirma el pedido (lo guarda en la BD)
+// Carrito del cliente: revisa lo elegido y confirma el pedido (lo guarda en la BD).
+// Esto si requiere estar logueado: aca ya se esta comprando
 Route::get('mi-pedido', MiPedido::class)
     ->middleware(['auth', 'verified'])
     ->name('menu.mi-pedido');

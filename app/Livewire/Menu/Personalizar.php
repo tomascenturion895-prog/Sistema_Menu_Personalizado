@@ -141,6 +141,16 @@ class Personalizar extends Component
      */
     public function agregarAlPedido(): void
     {
+        // Armar la hamburguesa es libre, pero para pedirla hay que tener cuenta:
+        // el visitante va al login y vuelve a esta misma pagina al autenticarse
+        if (! auth()->check()) {
+            session()->put('url.intended', route('menu.personalizar', $this->producto));
+
+            $this->redirect(route('login', absolute: false), navigate: true);
+
+            return;
+        }
+
         // Regla 1: cada grupo de eleccion unica disponible debe tener una opcion marcada
         foreach ($this->ingredientesPorTipo as $tipo => $opciones) {
             if (in_array($tipo, self::TIPOS_UNICOS) && empty($this->seleccionUnica[$tipo])) {

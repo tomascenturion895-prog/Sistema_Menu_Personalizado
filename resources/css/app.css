@@ -40,10 +40,12 @@
         @apply hover:shadow-retro transition-shadow;
     }
 
-    /* Boton retro base: borde negro y efecto "hundirse" al hover.
+    /* Boton retro base: borde negro y sombra dura.
+       - hover: se ACLARA (brightness) para invitar al click
+       - active (mientras esta presionado): se HUNDE (se desplaza y pierde la sombra)
        El color de fondo y el padding los pone cada uso (bg-brand-500, bg-white, etc.) */
     .btn-retro {
-        @apply inline-flex items-center justify-center font-semibold border-2 border-terminal-950 rounded-md shadow-retro-sm hover:translate-x-[2px] hover:translate-y-[2px] hover:shadow-none transition;
+        @apply inline-flex items-center justify-center font-semibold border-2 border-terminal-950 rounded-md shadow-retro-sm transition hover:brightness-110 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none;
     }
 
     /* Etiqueta de seccion estilo "comentario de codigo": // menú, // pedidos, etc.

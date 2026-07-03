@@ -15,7 +15,7 @@
     <div class="tarjeta overflow-hidden">
         <table class="min-w-full divide-y divide-gray-200">
             {{-- Cabecera de tabla oscura, estilo terminal, consistente con la navbar --}}
-            <thead class="bg-terminal-900">
+            <thead class="bg-terminal-950">
                 <tr>
                     <th class="px-6 py-3 text-left text-xs font-mono font-medium text-terminal-300 uppercase">Producto</th>
                     <th class="px-6 py-3 text-left text-xs font-mono font-medium text-terminal-300 uppercase">Categoría</th>

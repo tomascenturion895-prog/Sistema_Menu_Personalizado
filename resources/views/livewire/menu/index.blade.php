@@ -55,7 +55,7 @@
                 <div class="flex gap-2 overflow-x-auto">
                     @foreach ($categorias as $categoria)
                         <a href="#categoria-{{ $categoria->id }}"
-                            class="whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium bg-gray-100 text-gray-700 hover:bg-terminal-900 hover:text-white transition">
+                            class="whitespace-nowrap px-4 py-1.5 rounded-full text-sm font-medium bg-gray-100 text-gray-700 hover:bg-terminal-950 hover:text-white transition">
                             {{ $categoria->nombre }}
                         </a>
                     @endforeach
@@ -120,7 +120,7 @@
     {{-- ============ BARRA FLOTANTE DEL PEDIDO ============
          Aparece abajo cuando hay items en el carrito, como en las cartas digitales --}}
     @if ($this->itemsEnCarrito > 0)
-        <div class="fixed bottom-0 inset-x-0 z-20 bg-terminal-900 border-t border-terminal-800">
+        <div class="fixed bottom-0 inset-x-0 z-20 bg-terminal-950 border-t-2 border-terminal-950">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-4">
                 <div class="text-sm text-terminal-300">
                     <span class="font-mono font-semibold text-white">{{ $this->itemsEnCarrito }}</span>

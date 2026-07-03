@@ -2,11 +2,14 @@
 
 namespace Tests\Feature;
 
-// use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class ExampleTest extends TestCase
 {
+    // La landing consulta productos destacados, asi que el test necesita las tablas migradas
+    use RefreshDatabase;
+
     /**
      * A basic test example.
      */
