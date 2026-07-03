@@ -15,11 +15,27 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Usuario administrador de prueba, para validar el middleware EsAdmin y el panel admin.
+        // firstOrCreate busca por email y solo crea si no existe: el seeder se puede correr
+        // varias veces sin fallar por emails duplicados
+        if (! User::where('email', 'admin@capa8burger.com')->exists()) {
+            User::factory()->create([
+                'name' => 'Admin Capa8Burger',
+                'email' => 'admin@capa8burger.com',
+                'rol' => 'admin',
+            ]);
+        }
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // Usuario cliente de prueba, para validar el flujo normal de compra
+        if (! User::where('email', 'cliente@capa8burger.com')->exists()) {
+            User::factory()->create([
+                'name' => 'Cliente Prueba',
+                'email' => 'cliente@capa8burger.com',
+                'rol' => 'cliente',
+            ]);
+        }
+
+        // Datos de demostracion: categorias, ingredientes y productos de la hamburgueseria
+        $this->call(DatosDemoSeeder::class);
     }
 }

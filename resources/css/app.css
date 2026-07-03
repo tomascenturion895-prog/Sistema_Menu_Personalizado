@@ -1,3 +1,90 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ============================================================
+   CLASES DE COMPONENTE — patrones que se repiten en varias vistas.
+   Se definen una sola vez aca con @apply (que "pega" utilidades de
+   Tailwind dentro de una clase propia) para no copiar la misma tira
+   de clases en cada tabla/tarjeta del sistema.
+   ============================================================ */
+@layer components {
+    /* Precio de producto: usa la fuente mono para el guiño "de codigo" */
+    .precio {
+        @apply font-mono font-semibold text-terminal-900;
+    }
+
+    /* Badge base: pastillita redondeada para estados y dietas */
+    .badge {
+        @apply inline-flex px-2 py-0.5 text-xs font-semibold rounded-full;
+    }
+
+    /* Variantes de estado (activo/inactivo en las tablas del admin) */
+    .badge-activo {
+        @apply badge bg-exito-100 text-exito-700;
+    }
+
+    .badge-inactivo {
+        @apply badge bg-terminal-100 text-terminal-700;
+    }
+
+    /* Tarjeta estandar del sistema: cartel retro con borde negro y sombra dura.
+       Es LA tarjeta de toda la app (menu, admin, perfil); definirla una sola vez
+       aca evita repetir la misma tira de clases en cada vista */
+    .tarjeta {
+        @apply bg-white border-2 border-terminal-950 rounded-xl shadow-retro-sm;
+    }
+
+    /* Variante interactiva: la sombra crece al pasar el mouse (tarjetas clickeables) */
+    .tarjeta-hover {
+        @apply hover:shadow-retro transition-shadow;
+    }
+
+    /* Boton retro base: borde negro y sombra dura.
+       - hover: se ACLARA (brightness) para invitar al click
+       - active (mientras esta presionado): se HUNDE (se desplaza y pierde la sombra)
+       El color de fondo y el padding los pone cada uso (bg-brand-500, bg-white, etc.) */
+    .btn-retro {
+        @apply inline-flex items-center justify-center font-semibold border-2 border-terminal-950 rounded-md shadow-retro-sm transition hover:brightness-110 active:translate-x-[2px] active:translate-y-[2px] active:shadow-none;
+    }
+
+    /* Etiqueta de seccion estilo "comentario de codigo": // menú, // pedidos, etc.
+       Encabeza cada seccion del sistema y refuerza el tema de programacion */
+    .eyebrow {
+        @apply block font-mono text-xs text-brand-600 tracking-widest mb-1;
+    }
+}
+
+/* Cursor parpadeante del logo (el "_" al final de capa8burger) */
+.logo-cursor {
+    animation: parpadeo 1.2s steps(2) infinite;
+}
+
+@keyframes parpadeo {
+    50% { opacity: 0; }
+}
+
+/* Cinta "marquee": texto que se desplaza en loop infinito, como los carteles
+   luminosos de los locales de comida. El contenido se duplica en el HTML y
+   la animacion corre hasta -50% para que el loop sea invisible. */
+.marquee {
+    overflow: hidden;
+}
+
+.marquee-contenido {
+    display: flex;
+    width: max-content;
+    animation: desplazar 30s linear infinite;
+}
+
+@keyframes desplazar {
+    to { transform: translateX(-50%); }
+}
+
+/* Si el usuario configuro su sistema para reducir el movimiento, apagamos las animaciones */
+@media (prefers-reduced-motion: reduce) {
+    .logo-cursor,
+    .marquee-contenido {
+        animation: none;
+    }
+}

@@ -30,9 +30,27 @@ class AuthenticationTest extends TestCase
 
         $component->call('login');
 
+        // Los usuarios con rol cliente (el default de la factory) van al menu al loguearse
         $component
             ->assertHasNoErrors()
-            ->assertRedirect(route('dashboard', absolute: false));
+            ->assertRedirect(route('menu.index', absolute: false));
+
+        $this->assertAuthenticated();
+    }
+
+    public function test_admins_are_redirected_to_the_admin_panel(): void
+    {
+        $admin = User::factory()->create(['rol' => 'admin']);
+
+        $component = Volt::test('pages.auth.login')
+            ->set('form.email', $admin->email)
+            ->set('form.password', 'password');
+
+        $component->call('login');
+
+        $component
+            ->assertHasNoErrors()
+            ->assertRedirect(route('admin.dashboard', absolute: false));
 
         $this->assertAuthenticated();
     }
@@ -60,7 +78,7 @@ class AuthenticationTest extends TestCase
 
         $this->actingAs($user);
 
-        $response = $this->get('/dashboard');
+        $response = $this->get('/inicio');
 
         $response
             ->assertOk()
