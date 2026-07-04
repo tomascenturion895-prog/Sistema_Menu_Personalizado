@@ -17,6 +17,10 @@ class Index extends Component
     #[Url]
     public string $dieta = 'todos';
 
+    // Texto de busqueda: filtra productos por nombre o descripcion en vivo
+    #[Url]
+    public string $busqueda = '';
+
     /**
      * Al cargar la pagina, si el cliente ya respondio la pregunta de preferencia
      * en una visita anterior, aplicamos su eleccion como filtro inicial.
@@ -35,7 +39,16 @@ class Index extends Component
             ->when($this->dieta !== 'todos', function ($query) {
                 $query->where('tipo_dieta', $this->dieta);
             })
-            ->with(['productos' => fn ($query) => $query->where('activo', true)])
+            ->with(['productos' => function ($query) {
+                $query->where('activo', true)
+                    // Busqueda por texto: matchea el nombre O la descripcion del producto
+                    ->when($this->busqueda !== '', function ($query) {
+                        $query->where(function ($query) {
+                            $query->where('nombre', 'like', "%{$this->busqueda}%")
+                                ->orWhere('descripcion', 'like', "%{$this->busqueda}%");
+                        });
+                    });
+            }])
             ->orderBy('nombre')
             ->get()
             ->filter(fn (Categoria $categoria) => $categoria->productos->isNotEmpty());
@@ -56,22 +69,6 @@ class Index extends Component
     }
 
     /**
-     * Total de items en el carrito, para la barra flotante de "ver mi pedido".
-     */
-    #[Computed]
-    public function itemsEnCarrito(): int
-    {
-        return count(Session::get('carrito', []));
-    }
-
-    #[Computed]
-    public function totalCarrito(): float
-    {
-        return collect(Session::get('carrito', []))
-            ->sum(fn (array $item) => $item['precio_unitario'] * $item['cantidad']);
-    }
-
-    /**
      * Guarda la respuesta a la pregunta inicial ("¿que estas buscando hoy?")
      * y la aplica como filtro. Queda en sesion para las proximas visitas.
      */
@@ -88,13 +85,6 @@ class Index extends Component
     {
         Session::forget('preferencia_dieta');
         $this->dieta = 'todos';
-    }
-
-    public function filtrarPor(string $dieta): void
-    {
-        $this->dieta = $dieta;
-        // Si cambia el filtro a mano, actualizamos tambien su preferencia guardada
-        Session::put('preferencia_dieta', $dieta);
     }
 
     /**
@@ -128,6 +118,10 @@ class Index extends Component
         ];
 
         Session::put('carrito', $carrito);
+
+        // Avisa a la navbar (y a quien escuche) que el carrito cambio,
+        // para que el contador de "Mi pedido" se actualice al instante
+        $this->dispatch('carrito-actualizado');
 
         session()->flash('mensaje', "{$producto->nombre} se agregó a tu pedido.");
     }

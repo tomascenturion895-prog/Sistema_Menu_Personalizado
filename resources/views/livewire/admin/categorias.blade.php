@@ -12,7 +12,8 @@
     </div>
 
     {{-- Tabla con las categorias existentes --}}
-    <div class="tarjeta overflow-hidden">
+    {{-- overflow-x-auto: en pantallas chicas la tabla se scrollea horizontal en vez de cortarse --}}
+    <div class="tarjeta overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
             {{-- Cabecera de tabla oscura, estilo terminal, consistente con la navbar --}}
             <thead class="bg-terminal-950">

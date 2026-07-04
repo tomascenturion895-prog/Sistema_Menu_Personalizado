@@ -12,26 +12,22 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
 
-            {{-- Tarjetas de estadisticas: los contadores vienen de la ruta (routes/web.php) --}}
+            {{-- Estadisticas estilo editorial: numeros grandes con regla superior,
+                 sin encajonar (los contadores vienen del PanelController) --}}
             <div>
                 <span class="eyebrow">// resumen</span>
-                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mt-2">
-                    <div class="tarjeta p-5">
-                        <p class="text-sm text-gray-500">Pedidos activos</p>
-                        <p class="font-mono text-3xl font-semibold text-brand-600 mt-1">{{ $pedidosPendientes }}</p>
-                    </div>
-                    <div class="tarjeta p-5">
-                        <p class="text-sm text-gray-500">Productos</p>
-                        <p class="font-mono text-3xl font-semibold text-terminal-900 mt-1">{{ $totalProductos }}</p>
-                    </div>
-                    <div class="tarjeta p-5">
-                        <p class="text-sm text-gray-500">Categorías</p>
-                        <p class="font-mono text-3xl font-semibold text-terminal-900 mt-1">{{ $totalCategorias }}</p>
-                    </div>
-                    <div class="tarjeta p-5">
-                        <p class="text-sm text-gray-500">Ingredientes</p>
-                        <p class="font-mono text-3xl font-semibold text-terminal-900 mt-1">{{ $totalIngredientes }}</p>
-                    </div>
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-6 mt-3">
+                    @foreach ([
+                        ['etiqueta' => 'Pedidos activos', 'valor' => $pedidosPendientes, 'destacado' => true],
+                        ['etiqueta' => 'Productos', 'valor' => $totalProductos, 'destacado' => false],
+                        ['etiqueta' => 'Categorías', 'valor' => $totalCategorias, 'destacado' => false],
+                        ['etiqueta' => 'Ingredientes', 'valor' => $totalIngredientes, 'destacado' => false],
+                    ] as $stat)
+                        <div class="border-t-2 border-terminal-950 pt-3">
+                            <p class="font-mono text-xs uppercase tracking-wider text-gray-500">{{ $stat['etiqueta'] }}</p>
+                            <p class="font-mono text-4xl font-semibold {{ $stat['destacado'] ? 'text-brand-600' : 'text-terminal-950' }} mt-1">{{ $stat['valor'] }}</p>
+                        </div>
+                    @endforeach
                 </div>
             </div>
 

@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Livewire\Menu\Index;
 use App\Livewire\Menu\Personalizar;
+use App\Models\Categoria;
 use App\Models\Producto;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
@@ -68,5 +69,17 @@ class MenuPublicoTest extends TestCase
         $response
             ->assertOk()
             ->assertSee('La Clásica Capa8');
+    }
+
+    public function test_la_busqueda_filtra_los_productos_del_menu(): void
+    {
+        $categoria = Categoria::factory()->create(['activo' => true]);
+        Producto::factory()->create(['categoria_id' => $categoria->id, 'activo' => true, 'nombre' => 'Veggie Refactor']);
+        Producto::factory()->create(['categoria_id' => $categoria->id, 'activo' => true, 'nombre' => 'Doble Deploy']);
+
+        Livewire::test(Index::class)
+            ->set('busqueda', 'veggie')
+            ->assertSee('Veggie Refactor')
+            ->assertDontSee('Doble Deploy');
     }
 }

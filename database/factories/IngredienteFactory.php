@@ -19,7 +19,7 @@ class IngredienteFactory extends Factory
     {
         return [
             'nombre' => fake()->word(),
-            'tipo' => fake()->randomElement(['pan', 'medallon', 'topping', 'salsa', 'papas', 'bebida', 'extra']),
+            'tipo' => fake()->randomElement(array_keys(Ingrediente::TIPOS)),
             'precio_extra' => fake()->randomFloat(2, 0, 1500),
             'es_vegetariano' => fake()->boolean(),
             'es_vegano' => fake()->boolean(),
