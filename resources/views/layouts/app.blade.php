@@ -18,6 +18,9 @@
     </head>
     {{-- Fondo crema calido (brand-50), mas acorde a la marca que el gris default de Breeze --}}
     <body class="font-sans antialiased">
+        <x-barra-carga />
+        <x-loader-navegacion />
+
         <div class="min-h-screen bg-brand-50">
             {{-- Cinta de marca, la misma que abre la landing. Solo en las paginas del cliente:
                  en el back-office del admin la animacion permanente distrae del trabajo --}}

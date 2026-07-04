@@ -18,6 +18,9 @@
     </head>
     {{-- Fondo naranja de marca con la tarjeta blanca estilo cartel retro (borde negro + sombra dura) --}}
     <body class="font-sans text-gray-900 antialiased">
+        <x-barra-carga />
+        <x-loader-navegacion />
+
         <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-brand-500 px-4">
             <div>
                 <a href="/" wire:navigate>
