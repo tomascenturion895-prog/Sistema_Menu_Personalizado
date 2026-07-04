@@ -52,10 +52,10 @@ new #[Layout('layouts.guest')] class extends Component
         <div class="mt-4">
             <x-input-label for="password" value="Contraseña" />
 
-            <x-text-input wire:model="form.password" id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
+            {{-- Campo con boton de mostrar/ocultar (componente propio con Alpine) --}}
+            <div class="mt-1">
+                <x-input-password wire:model="form.password" id="password" name="password" required autocomplete="current-password" />
+            </div>
 
             <x-input-error :messages="$errors->get('form.password')" class="mt-2" />
         </div>
