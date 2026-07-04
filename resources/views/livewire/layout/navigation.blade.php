@@ -3,8 +3,7 @@
 use App\Livewire\Actions\Logout;
 use Livewire\Volt\Component;
 
-new class extends Component
-{
+new class extends Component {
     /**
      * Log the current user out of the application.
      */
@@ -17,8 +16,8 @@ new class extends Component
 }; ?>
 
 {{-- Navbar blanca con borde negro: se separa visualmente del marquee (negro) y del
-     contenido, y hace que los acentos naranjas (logo, tab activa, boton registrarme)
-     resalten de verdad. Funciona para visitantes y logueados via @auth / @guest --}}
+contenido, y hace que los acentos naranjas (logo, tab activa, boton registrarme)
+resalten de verdad. Funciona para visitantes y logueados via @auth / @guest --}}
 <nav x-data="{ open: false }" class="bg-white border-b-2 border-terminal-950">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -45,11 +44,13 @@ new class extends Component
                     </x-nav-link>
 
                     @auth
-                        <x-nav-link :href="route('menu.mi-pedido')" :active="request()->routeIs('menu.mi-pedido')" wire:navigate>
+                        <x-nav-link :href="route('menu.mi-pedido')" :active="request()->routeIs('menu.mi-pedido')"
+                            wire:navigate>
                             {{ __('Mi pedido') }}
                             {{-- Contador de items del carrito, solo se muestra si hay algo cargado --}}
                             @if (count(session('carrito', [])) > 0)
-                                <span class="ml-1.5 bg-terminal-950 text-white text-xs font-mono font-semibold rounded-full px-1.5">{{ count(session('carrito', [])) }}</span>
+                                <span
+                                    class="ml-1.5 bg-terminal-950 text-white text-xs font-mono font-semibold rounded-full px-1.5">{{ count(session('carrito', [])) }}</span>
                             @endif
                         </x-nav-link>
 
@@ -68,11 +69,15 @@ new class extends Component
                 @auth
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
-                            <button class="btn-retro rounded-full gap-1 px-4 py-1.5 bg-white text-sm text-terminal-950 focus:outline-none">
-                                <div x-data="{{ json_encode(['name' => auth()->user()->name]) }}" x-text="name" x-on:profile-updated.window="name = $event.detail.name"></div>
+                            <button
+                                class="btn-retro rounded-full gap-1 px-4 py-1.5 bg-white text-sm text-terminal-950 focus:outline-none">
+                                <div x-data="{{ json_encode(['name' => auth()->user()->name]) }}" x-text="name"
+                                    x-on:profile-updated.window="name = $event.detail.name"></div>
 
                                 <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                    <path fill-rule="evenodd"
+                                        d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                                        clip-rule="evenodd" />
                                 </svg>
                             </button>
                         </x-slot>
@@ -91,12 +96,14 @@ new class extends Component
                         </x-slot>
                     </x-dropdown>
                 @else
-                    <a href="{{ route('login') }}" wire:navigate class="text-sm font-semibold text-terminal-600 hover:text-terminal-950 hover:underline underline-offset-4">
+                    <a href="{{ route('login') }}" wire:navigate
+                        class="text-sm font-semibold text-terminal-600 hover:text-terminal-950 hover:underline underline-offset-4">
                         Iniciar sesión
                     </a>
                     @if (Route::has('register'))
                         {{-- Naranja sobre navbar blanca: el CTA principal resalta de verdad --}}
-                        <a href="{{ route('register') }}" wire:navigate class="btn-retro px-4 py-1.5 bg-brand-500 text-white text-sm">
+                        <a href="{{ route('register') }}" wire:navigate
+                            class="btn-retro px-4 py-1.5 bg-brand-500 text-white text-sm">
                             Registrarme
                         </a>
                     @endif
@@ -105,10 +112,14 @@ new class extends Component
 
             <!-- Hamburger -->
             <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md border-2 border-terminal-950 bg-white text-terminal-950 shadow-retro-sm focus:outline-none transition">
+                <button @click="open = ! open"
+                    class="inline-flex items-center justify-center p-2 rounded-md border-2 border-terminal-950 bg-white text-terminal-950 shadow-retro-sm focus:outline-none transition">
                     <svg class="h-5 w-5" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex"
+                            stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16M4 18h16" />
+                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round"
+                            stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                     </svg>
                 </button>
             </div>
@@ -129,12 +140,14 @@ new class extends Component
             </x-responsive-nav-link>
 
             @auth
-                <x-responsive-nav-link :href="route('menu.mi-pedido')" :active="request()->routeIs('menu.mi-pedido')" wire:navigate>
+                <x-responsive-nav-link :href="route('menu.mi-pedido')" :active="request()->routeIs('menu.mi-pedido')"
+                    wire:navigate>
                     {{ __('Mi pedido') }}
                 </x-responsive-nav-link>
 
                 @if (auth()->user()->esAdmin())
-                    <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')" wire:navigate>
+                    <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')"
+                        wire:navigate>
                         {{ __('Panel Admin') }}
                     </x-responsive-nav-link>
                 @endif
@@ -145,7 +158,9 @@ new class extends Component
         <div class="pt-4 pb-4 border-t-2 border-terminal-950/20 px-4">
             @auth
                 <div class="px-1">
-                    <div class="font-semibold text-base text-terminal-950" x-data="{{ json_encode(['name' => auth()->user()->name]) }}" x-text="name" x-on:profile-updated.window="name = $event.detail.name"></div>
+                    <div class="font-semibold text-base text-terminal-950"
+                        x-data="{{ json_encode(['name' => auth()->user()->name]) }}" x-text="name"
+                        x-on:profile-updated.window="name = $event.detail.name"></div>
                     <div class="font-medium text-sm text-terminal-950/60">{{ auth()->user()->email }}</div>
                 </div>
 

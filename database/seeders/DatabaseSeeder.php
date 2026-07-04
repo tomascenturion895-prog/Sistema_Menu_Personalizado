@@ -25,7 +25,6 @@ class DatabaseSeeder extends Seeder
                 'rol' => 'admin',
             ]);
         }
-
         // Usuario cliente de prueba, para validar el flujo normal de compra
         if (! User::where('email', 'cliente@capa8burger.com')->exists()) {
             User::factory()->create([

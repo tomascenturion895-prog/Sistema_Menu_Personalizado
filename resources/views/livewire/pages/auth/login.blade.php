@@ -44,18 +44,43 @@ new #[Layout('layouts.guest')] class extends Component
         <!-- Correo -->
         <div>
             <x-input-label for="email" value="Correo electrónico" />
-            <x-text-input wire:model="form.email" id="email" class="block mt-1 w-full" type="email" name="email" required autofocus autocomplete="username" />
+            <x-text-input
+                wire:model="form.email"
+                id="email"
+                class="block mt-1 w-full"
+                type="email"
+                name="email"
+                required
+                autofocus
+                autocomplete="username"
+            />
             <x-input-error :messages="$errors->get('form.email')" class="mt-2" />
         </div>
 
         <!-- Contraseña -->
-        <div class="mt-4">
+        <div class="mt-4" x-data="{ showPassword: false }">
             <x-input-label for="password" value="Contraseña" />
 
-            <x-text-input wire:model="form.password" id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
+            <div class="relative">
+                <x-text-input
+                    wire:model="form.password"
+                    id="password"
+                    class="block mt-1 w-full pr-12"
+                    x-bind:type="showPassword ? 'text' : 'password'"
+                    name="password"
+                    required
+                    autocomplete="current-password"
+                />
+
+                <button
+                    type="button"
+                    class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 hover:text-gray-800"
+                    @click="showPassword = !showPassword"
+                >
+                    <span x-show="!showPassword">👁️</span>
+                    <span x-show="showPassword">🙈</span>
+                </button>
+            </div>
 
             <x-input-error :messages="$errors->get('form.password')" class="mt-2" />
         </div>
@@ -63,14 +88,24 @@ new #[Layout('layouts.guest')] class extends Component
         <!-- Recordarme -->
         <div class="block mt-4">
             <label for="remember" class="inline-flex items-center">
-                <input wire:model="form.remember" id="remember" type="checkbox" class="rounded border-gray-300 text-brand-600 shadow-sm focus:ring-brand-500" name="remember">
+                <input
+                    wire:model="form.remember"
+                    id="remember"
+                    type="checkbox"
+                    class="rounded border-gray-300 text-brand-600 shadow-sm focus:ring-brand-500"
+                    name="remember"
+                >
                 <span class="ms-2 text-sm text-gray-600">Recordarme</span>
             </label>
         </div>
 
         <div class="flex items-center justify-between mt-6">
             @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500" href="{{ route('password.request') }}" wire:navigate>
+                <a
+                    class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500"
+                    href="{{ route('password.request') }}"
+                    wire:navigate
+                >
                     ¿Olvidaste tu contraseña?
                 </a>
             @endif
