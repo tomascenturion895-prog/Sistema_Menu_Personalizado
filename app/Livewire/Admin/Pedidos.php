@@ -13,9 +13,6 @@ class Pedidos extends Component
 {
     use WithPagination;
 
-    // Estados posibles de un pedido (los mismos del enum de la migracion de pedidos)
-    public const ESTADOS = ['pendiente', 'confirmado', 'en_preparacion', 'listo', 'cancelado'];
-
     // Filtro por estado, sincronizado con la URL (ej: /admin/pedidos?estado=pendiente)
     #[Url]
     public string $estado = 'todos';
@@ -43,8 +40,8 @@ class Pedidos extends Component
      */
     public function cambiarEstado(int $pedidoId, string $nuevoEstado): void
     {
-        // Validamos contra la lista blanca de estados para evitar valores arbitrarios
-        if (! in_array($nuevoEstado, self::ESTADOS)) {
+        // Validamos contra la lista blanca de estados del modelo para evitar valores arbitrarios
+        if (! array_key_exists($nuevoEstado, Pedido::ESTADOS)) {
             return;
         }
 

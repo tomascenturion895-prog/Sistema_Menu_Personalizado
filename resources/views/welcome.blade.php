@@ -6,6 +6,13 @@
 
         <title>Capa8Burger — Tu burger, tus reglas</title>
 
+        {{-- Identidad de la pestaña y metadatos para compartir el link (WhatsApp, redes) --}}
+        <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+        <meta name="description" content="Hamburguesería en Resistencia, Chaco. Combos de la casa o armá tu hamburguesa 100% personalizada: opciones clásicas, vegetarianas, veganas y sin TACC.">
+        <meta property="og:title" content="Capa8Burger — Tu burger, tus reglas">
+        <meta property="og:description" content="Combos de la casa o armá tu hamburguesa capa por capa. Opciones para todas las dietas.">
+        <meta property="og:type" content="website">
+
         {{-- Fuentes de la marca: Archivo Black (display), Figtree (texto), JetBrains Mono (acentos) --}}
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600|jetbrains-mono:400,600|archivo-black:400&display=swap" rel="stylesheet" />
@@ -31,7 +38,7 @@
                     </a>
 
                     @auth
-                        <a href="{{ route('dashboard') }}" class="btn-retro px-4 py-2 text-sm bg-brand-500 text-white">
+                        <a href="{{ route('dashboard') }}" class="btn-retro px-4 py-2 text-sm bg-brand-500 text-terminal-950">
                             Ir a mi cuenta
                         </a>
                     @else
@@ -39,7 +46,7 @@
                             Iniciar sesión
                         </a>
                         @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="btn-retro px-4 py-2 text-sm bg-brand-500 text-white">
+                            <a href="{{ route('register') }}" class="btn-retro px-4 py-2 text-sm bg-brand-500 text-terminal-950">
                                 Registrarme
                             </a>
                         @endif
@@ -81,10 +88,9 @@
 
                     {{-- Dietas disponibles, con su punto de color identificatorio --}}
                     <div class="flex flex-wrap gap-4 mt-10 text-sm font-medium text-terminal-950/80">
-                        <span class="inline-flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-dieta-normal border border-terminal-950"></span> Clásicas</span>
-                        <span class="inline-flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-dieta-vegetariano border border-terminal-950"></span> Vegetarianas</span>
-                        <span class="inline-flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-dieta-vegano border border-terminal-950"></span> Veganas</span>
-                        <span class="inline-flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-dieta-celiaco border border-terminal-950"></span> Sin TACC</span>
+                        @foreach (['normal' => 'Clásicas', 'vegetariano' => 'Vegetarianas', 'vegano' => 'Veganas', 'celiaco' => 'Sin TACC'] as $dieta => $etiqueta)
+                            <span class="inline-flex items-center gap-2"><x-punto-dieta :dieta="$dieta" /> {{ $etiqueta }}</span>
+                        @endforeach
                     </div>
                 </div>
 
@@ -123,9 +129,12 @@
                 @else
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         @foreach ($destacados as $producto)
-                            <div class="tarjeta shadow-retro p-6 flex flex-col">
+                            <div class="tarjeta shadow-retro overflow-hidden flex flex-col">
+                                <x-foto-producto :producto="$producto" />
+
+                                <div class="p-6 flex flex-col flex-1">
                                 <span class="inline-flex items-center gap-1.5 text-xs font-medium text-terminal-500">
-                                    <span class="w-2 h-2 rounded-full bg-dieta-{{ $producto->categoria->tipo_dieta }} border border-terminal-950"></span>
+                                    <x-punto-dieta :dieta="$producto->categoria->tipo_dieta" />
                                     {{ $producto->categoria->nombre }}
                                 </span>
 
@@ -136,11 +145,12 @@
                                 @endif
 
                                 <div class="mt-5 pt-4 border-t-2 border-gray-100 flex items-center justify-between">
-                                    <span class="precio text-xl">${{ number_format($producto->precio, 0, ',', '.') }}</span>
+                                    <span class="precio text-xl">@precio($producto->precio)</span>
 
-                                    <a href="{{ route('menu.personalizar', $producto) }}" class="btn-retro px-4 py-2 bg-brand-500 text-white text-sm">
+                                    <a href="{{ route('menu.personalizar', $producto) }}" class="btn-retro px-4 py-2 bg-brand-500 text-terminal-950 text-sm">
                                         La quiero
                                     </a>
+                                </div>
                                 </div>
                             </div>
                         @endforeach
@@ -155,32 +165,20 @@
                 <span class="font-mono text-sm font-semibold text-brand-600">// cómo funciona</span>
                 <h2 class="font-display text-4xl sm:text-5xl uppercase mt-1 mb-10">En 3 pasos</h2>
 
-                {{-- Numeracion justificada: es la secuencia real que el cliente sigue en orden --}}
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="tarjeta shadow-retro p-6">
-                        <span class="inline-flex items-center justify-center w-10 h-10 font-display bg-brand-500 text-white border-2 border-terminal-950 rounded-md">1</span>
-                        <h3 class="font-display text-xl uppercase mt-4">Mirá el menú</h3>
-                        <p class="text-terminal-700 mt-2 text-sm leading-relaxed">
-                            Sin registrarte. Contanos qué buscás (carne, veggie, vegano o sin TACC)
-                            y te mostramos solo lo que va con vos.
-                        </p>
-                    </div>
-                    <div class="tarjeta shadow-retro p-6">
-                        <span class="inline-flex items-center justify-center w-10 h-10 font-display bg-brand-500 text-white border-2 border-terminal-950 rounded-md">2</span>
-                        <h3 class="font-display text-xl uppercase mt-4">Elegí o personalizá</h3>
-                        <p class="text-terminal-700 mt-2 text-sm leading-relaxed">
-                            Pedí un combo de la casa tal como viene, o armá el tuyo capa por capa:
-                            hasta 5 toppings, 3 salsas, papas y bebida. El precio se actualiza al instante.
-                        </p>
-                    </div>
-                    <div class="tarjeta shadow-retro p-6">
-                        <span class="inline-flex items-center justify-center w-10 h-10 font-display bg-brand-500 text-white border-2 border-terminal-950 rounded-md">3</span>
-                        <h3 class="font-display text-xl uppercase mt-4">Creá tu cuenta y pedí</h3>
-                        <p class="text-terminal-700 mt-2 text-sm leading-relaxed">
-                            Al confirmar tu pedido te pedimos registrarte (una sola vez).
-                            Después seguís el estado hasta que esté lista para retirar.
-                        </p>
-                    </div>
+                {{-- Columnas editoriales con regla superior: el numero grande ordena la secuencia,
+                     el espacio en blanco separa — sin encajonar cada paso --}}
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-x-10 gap-y-8">
+                    @foreach ([
+                        ['numero' => '1', 'titulo' => 'Mirá el menú', 'detalle' => 'Sin registrarte. Contanos qué buscás (carne, veggie, vegano o sin TACC) y te mostramos solo lo que va con vos.'],
+                        ['numero' => '2', 'titulo' => 'Elegí o personalizá', 'detalle' => 'Pedí un combo de la casa tal como viene, o armá el tuyo capa por capa: hasta 5 toppings, 3 salsas, papas y bebida. El precio se actualiza al instante.'],
+                        ['numero' => '3', 'titulo' => 'Creá tu cuenta y pedí', 'detalle' => 'Al confirmar tu pedido te pedimos registrarte (una sola vez). Después seguís el estado hasta que esté lista para retirar.'],
+                    ] as $paso)
+                        <div class="border-t-2 border-terminal-950 pt-5">
+                            <span class="font-display text-5xl text-brand-500" aria-hidden="true">{{ $paso['numero'] }}</span>
+                            <h3 class="font-display text-xl uppercase mt-3">{{ $paso['titulo'] }}</h3>
+                            <p class="text-terminal-700 mt-2 text-sm leading-relaxed">{{ $paso['detalle'] }}</p>
+                        </div>
+                    @endforeach
                 </div>
             </div>
         </section>
@@ -223,33 +221,44 @@
                 <span class="font-mono text-sm font-semibold text-brand-600">// dónde encontrarnos</span>
                 <h2 class="font-display text-4xl sm:text-5xl uppercase mt-1 mb-10">Vení a probarla</h2>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div class="tarjeta shadow-retro-sm p-6">
-                        <h3 class="font-semibold text-terminal-950">Ubicación</h3>
-                        <p class="text-terminal-700 text-sm mt-2 leading-relaxed">
-                            Av. Sarmiento 1234<br>
-                            Resistencia, Chaco<br>
-                            Argentina
-                        </p>
+                {{-- Datos en columnas editoriales (regla superior, sin cajas);
+                     el mapa es el unico elemento enmarcado, porque es contenido embebido --}}
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10 items-start">
+                    <div class="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-1 lg:grid-cols-3 gap-x-8 gap-y-6">
+                        <div class="border-t-2 border-terminal-950 pt-4">
+                            <h3 class="font-semibold text-terminal-950">Ubicación</h3>
+                            <p class="text-terminal-700 text-sm mt-2 leading-relaxed">
+                                Av. Sarmiento 1234<br>
+                                Resistencia, Chaco<br>
+                                Argentina
+                            </p>
+                        </div>
+
+                        <div class="border-t-2 border-terminal-950 pt-4">
+                            <h3 class="font-semibold text-terminal-950">Horarios</h3>
+                            <p class="text-terminal-700 text-sm mt-2 leading-relaxed">
+                                Martes a domingo<br>
+                                19:30 — 00:30 hs<br>
+                                <span class="font-mono text-xs text-terminal-500">// lunes: deploy</span>
+                            </p>
+                        </div>
+
+                        <div class="border-t-2 border-terminal-950 pt-4">
+                            <h3 class="font-semibold text-terminal-950">Contacto</h3>
+                            <p class="text-terminal-700 text-sm mt-2 leading-relaxed">
+                                Tel: (0362) 400-8080<br>
+                                hola@capa8burger.com<br>
+                                Instagram: @capa8burger
+                            </p>
+                        </div>
                     </div>
 
-                    <div class="tarjeta shadow-retro-sm p-6">
-                        <h3 class="font-semibold text-terminal-950">Horarios</h3>
-                        <p class="text-terminal-700 text-sm mt-2 leading-relaxed">
-                            Martes a domingo<br>
-                            19:30 — 00:30 hs<br>
-                            <span class="font-mono text-xs text-terminal-500">// lunes deploy... digo, cerrado</span>
-                        </p>
-                    </div>
-
-                    <div class="tarjeta shadow-retro-sm p-6">
-                        <h3 class="font-semibold text-terminal-950">Contacto</h3>
-                        <p class="text-terminal-700 text-sm mt-2 leading-relaxed">
-                            Tel: (0362) 400-8080<br>
-                            hola@capa8burger.com<br>
-                            Instagram: @capa8burger
-                        </p>
-                    </div>
+                    {{-- Mapa embebido de OpenStreetMap (no requiere API key) --}}
+                    <iframe
+                        title="Mapa de la ubicación de Capa8Burger en Resistencia, Chaco"
+                        src="https://www.openstreetmap.org/export/embed.html?bbox=-59.0050%2C-27.4620%2C-58.9650%2C-27.4400&layer=mapnik&marker=-27.4510%2C-58.9850"
+                        class="w-full h-56 rounded-xl border-2 border-terminal-950 shadow-retro-sm"
+                        loading="lazy"></iframe>
                 </div>
             </div>
         </section>
@@ -261,7 +270,7 @@
                 <h2 class="font-display text-4xl sm:text-6xl uppercase mt-3">Acá, la capa 8 <span class="text-brand-500">sos vos</span></h2>
 
                 <a href="{{ route('menu.index') }}"
-                    class="inline-block mt-8 px-8 py-4 bg-brand-500 text-white font-semibold rounded-md border-2 border-white/20 hover:bg-brand-600 transition">
+                    class="inline-block mt-8 px-8 py-4 bg-brand-500 text-terminal-950 font-semibold rounded-md border-2 border-white/20 hover:bg-brand-600 transition">
                     Ver el menú →
                 </a>
             </div>

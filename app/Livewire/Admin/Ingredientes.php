@@ -4,6 +4,7 @@ namespace App\Livewire\Admin;
 
 use App\Livewire\Concerns\InteractsWithModals;
 use App\Models\Ingrediente;
+use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -18,7 +19,8 @@ class Ingredientes extends Component
     #[Validate('required|string|max:255')]
     public string $nombre = '';
 
-    #[Validate('required|in:pan,medallon,topping,salsa,papas,bebida,extra')]
+    // La regla de este campo vive en rules() (abajo) porque necesita leer
+    // Ingrediente::TIPOS, y los atributos #[Validate] solo aceptan constantes
     public string $tipo = 'topping';
 
     #[Validate('required|numeric|min:0')]
@@ -37,6 +39,19 @@ class Ingredientes extends Component
     public bool $activo = true;
 
     public ?int $ingredienteId = null;
+
+    /**
+     * Reglas dinamicas: Livewire las combina con los atributos #[Validate].
+     * El tipo se valida contra la lista del modelo (unica fuente de verdad).
+     *
+     * @return array<string, array<int, mixed>>
+     */
+    protected function rules(): array
+    {
+        return [
+            'tipo' => ['required', Rule::in(array_keys(Ingrediente::TIPOS))],
+        ];
+    }
 
     public ?int $ingredienteAEliminar = null;
 

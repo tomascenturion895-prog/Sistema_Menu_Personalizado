@@ -5,7 +5,9 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>{{ config('app.name', 'Capa8Burger') }}</title>
+
+        <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
 
         <!-- Fuentes: Figtree para texto general, JetBrains Mono para precios y acentos "de codigo" -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -17,8 +19,11 @@
     {{-- Fondo crema calido (brand-50), mas acorde a la marca que el gris default de Breeze --}}
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-brand-50">
-            {{-- Cinta de marca, la misma que abre la landing: mantiene la identidad dentro de la app --}}
-            <x-marquee />
+            {{-- Cinta de marca, la misma que abre la landing. Solo en las paginas del cliente:
+                 en el back-office del admin la animacion permanente distrae del trabajo --}}
+            @unless (request()->routeIs('admin.*'))
+                <x-marquee />
+            @endunless
 
             <livewire:layout.navigation />
 

@@ -9,12 +9,16 @@ use App\Models\Producto;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 use Livewire\WithPagination;
 
 #[Layout('layouts.app')]
 class Productos extends Component
 {
     use InteractsWithModals;
+
+    // WithFileUploads habilita subir archivos via wire:model (la foto del producto)
+    use WithFileUploads;
     use WithPagination;
 
     #[Validate('required|exists:categorias,id')]
@@ -31,6 +35,14 @@ class Productos extends Component
 
     #[Validate('boolean')]
     public bool $activo = true;
+
+    // Foto nueva subida desde el formulario (archivo temporal de Livewire).
+    // Es opcional: si no se sube nada, el producto conserva su imagen actual
+    #[Validate('nullable|image|max:2048')]
+    public $foto = null;
+
+    // Ruta de la imagen que el producto ya tiene guardada (para mostrarla al editar)
+    public ?string $imagenActual = null;
 
     // Array con los IDs de los ingredientes marcados en los checkboxes del formulario.
     // 'exists:ingredientes,id' valida cada elemento del array contra la tabla ingredientes
@@ -55,7 +67,7 @@ class Productos extends Component
     public function abrirModalCrear(): void
     {
         $this->resetValidation();
-        $this->reset(['categoria_id', 'nombre', 'descripcion', 'precio', 'activo', 'ingredientesSeleccionados', 'productoId']);
+        $this->reset(['categoria_id', 'nombre', 'descripcion', 'precio', 'activo', 'foto', 'imagenActual', 'ingredientesSeleccionados', 'productoId']);
         $this->activo = true;
 
         $this->openModal('producto-form');
@@ -71,6 +83,8 @@ class Productos extends Component
         $this->descripcion = (string) $producto->descripcion;
         $this->precio = (string) $producto->precio;
         $this->activo = $producto->activo;
+        $this->foto = null;
+        $this->imagenActual = $producto->imagen;
         // pluck('id') saca solo los IDs de la coleccion de ingredientes ya asociados
         $this->ingredientesSeleccionados = $producto->ingredientes->pluck('id')->toArray();
 
@@ -85,7 +99,13 @@ class Productos extends Component
         // Separamos los ingredientes del resto de los datos: no son una columna de la tabla
         // productos, sino una relacion muchos a muchos que se guarda aparte con sync()
         $ingredientes = $datos['ingredientesSeleccionados'];
-        unset($datos['ingredientesSeleccionados']);
+        unset($datos['ingredientesSeleccionados'], $datos['foto']);
+
+        // Si se subio una foto nueva, se guarda en storage/app/public/productos y se
+        // persiste su ruta. Si no, el producto conserva la imagen que ya tenia
+        if ($this->foto) {
+            $datos['imagen'] = $this->foto->store('productos', 'public');
+        }
 
         $producto = Producto::updateOrCreate(['id' => $this->productoId], $datos);
 

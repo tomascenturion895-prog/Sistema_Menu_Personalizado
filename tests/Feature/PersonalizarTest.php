@@ -84,7 +84,9 @@ class PersonalizarTest extends TestCase
 
         Livewire::actingAs($user)
             ->test(Index::class)
-            ->call('agregarCombo', $producto->id);
+            ->call('agregarCombo', $producto->id)
+            // El evento que actualiza el contador de la navbar en vivo
+            ->assertDispatched('carrito-actualizado');
 
         $carrito = session('carrito');
         $this->assertCount(1, $carrito);

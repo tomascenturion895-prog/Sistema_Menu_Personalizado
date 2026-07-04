@@ -12,7 +12,8 @@
 
     {{-- Esta tabla relaciona dos modelos: cada fila de Producto muestra el nombre
          de su Categoria (via la relacion belongsTo cargada con with('categoria')) --}}
-    <div class="tarjeta overflow-hidden">
+    {{-- overflow-x-auto: en pantallas chicas la tabla se scrollea horizontal en vez de cortarse --}}
+    <div class="tarjeta overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
             {{-- Cabecera de tabla oscura, estilo terminal, consistente con la navbar --}}
             <thead class="bg-terminal-950">
@@ -29,7 +30,7 @@
                     <tr wire:key="producto-{{ $producto->id }}">
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $producto->nombre }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{{ $producto->categoria->nombre }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm"><span class="precio">${{ number_format($producto->precio, 0, ',', '.') }}</span></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm"><span class="precio">@precio($producto->precio)</span></td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm">
                             @if ($producto->activo)
                                 <span class="badge-activo">Activo</span>
@@ -86,6 +87,22 @@
                 <x-input-label for="descripcion" value="Descripción" />
                 <textarea wire:model="descripcion" id="descripcion" rows="2" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm"></textarea>
                 <x-input-error :messages="$errors->get('descripcion')" class="mt-2" />
+            </div>
+
+            {{-- Foto del producto: se sube via Livewire (WithFileUploads) y se guarda en storage --}}
+            <div class="mt-4">
+                <x-input-label for="foto" value="Foto (opcional, máx. 2MB)" />
+                <input type="file" wire:model="foto" id="foto" accept="image/*"
+                    class="block mt-1 w-full text-sm text-gray-600 file:mr-3 file:px-3 file:py-1.5 file:rounded-md file:border-2 file:border-terminal-950 file:bg-white file:text-sm file:font-semibold">
+
+                {{-- Feedback de estado del archivo: subiendo, seleccionado, o la foto actual --}}
+                <div wire:loading wire:target="foto" class="text-xs text-gray-500 mt-1">Subiendo foto…</div>
+                @if ($foto)
+                    <p class="text-xs text-exito-700 mt-1">Foto nueva seleccionada: se guardará al confirmar.</p>
+                @elseif ($imagenActual)
+                    <img src="{{ asset('storage/'.$imagenActual) }}" alt="Foto actual" class="mt-2 h-16 rounded-md border border-gray-200 object-cover">
+                @endif
+                <x-input-error :messages="$errors->get('foto')" class="mt-2" />
             </div>
 
             {{-- Checkboxes de ingredientes, agrupados por tipo. Cada checkbox usa wire:model

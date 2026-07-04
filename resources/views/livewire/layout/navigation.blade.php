@@ -1,6 +1,7 @@
 <?php
 
 use App\Livewire\Actions\Logout;
+use Livewire\Attributes\On;
 use Livewire\Volt\Component;
 
 new class extends Component
@@ -13,6 +14,17 @@ new class extends Component
         $logout();
 
         $this->redirect('/', navigate: true);
+    }
+
+    /**
+     * Cuando otro componente agrega o quita items del carrito, dispara el evento
+     * "carrito-actualizado"; este listener re-renderiza la navbar para que el
+     * contador de "Mi pedido" se actualice EN VIVO, sin recargar la pagina.
+     */
+    #[On('carrito-actualizado')]
+    public function refrescarContadorCarrito(): void
+    {
+        // No necesita logica: con re-renderizar alcanza (el contador lee la sesion)
     }
 }; ?>
 
@@ -78,6 +90,10 @@ new class extends Component
                         </x-slot>
 
                         <x-slot name="content">
+                            <x-dropdown-link :href="route('cliente.pedidos.index')" wire:navigate>
+                                {{ __('Mis pedidos') }}
+                            </x-dropdown-link>
+
                             <x-dropdown-link :href="route('profile')" wire:navigate>
                                 {{ __('Perfil') }}
                             </x-dropdown-link>
@@ -96,7 +112,7 @@ new class extends Component
                     </a>
                     @if (Route::has('register'))
                         {{-- Naranja sobre navbar blanca: el CTA principal resalta de verdad --}}
-                        <a href="{{ route('register') }}" wire:navigate class="btn-retro px-4 py-1.5 bg-brand-500 text-white text-sm">
+                        <a href="{{ route('register') }}" wire:navigate class="btn-retro px-4 py-1.5 bg-brand-500 text-terminal-950 text-sm">
                             Registrarme
                         </a>
                     @endif
@@ -150,6 +166,10 @@ new class extends Component
                 </div>
 
                 <div class="mt-3 space-y-1.5">
+                    <x-responsive-nav-link :href="route('cliente.pedidos.index')" wire:navigate>
+                        {{ __('Mis pedidos') }}
+                    </x-responsive-nav-link>
+
                     <x-responsive-nav-link :href="route('profile')" wire:navigate>
                         {{ __('Perfil') }}
                     </x-responsive-nav-link>

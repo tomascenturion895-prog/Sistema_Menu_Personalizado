@@ -10,7 +10,8 @@
         </x-primary-button>
     </div>
 
-    <div class="tarjeta overflow-hidden">
+    {{-- overflow-x-auto: en pantallas chicas la tabla se scrollea horizontal en vez de cortarse --}}
+    <div class="tarjeta overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
             {{-- Cabecera de tabla oscura, estilo terminal, consistente con la navbar --}}
             <thead class="bg-terminal-950">
@@ -28,7 +29,7 @@
                     <tr wire:key="ingrediente-{{ $ingrediente->id }}">
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $ingrediente->nombre }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 capitalize">{{ $ingrediente->tipo }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm"><span class="precio">${{ number_format($ingrediente->precio_extra, 0, ',', '.') }}</span></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm"><span class="precio">@precio($ingrediente->precio_extra)</span></td>
                         <td class="px-6 py-4 whitespace-nowrap text-xs space-x-1">
                             @if ($ingrediente->es_vegetariano)
                                 <span class="inline-flex px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Vegetariano</span>
@@ -84,13 +85,10 @@
             <div class="mt-4">
                 <x-input-label for="tipo" value="Tipo" />
                 <select wire:model="tipo" id="tipo" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm">
-                    <option value="pan">Pan</option>
-                    <option value="medallon">Medallón</option>
-                    <option value="topping">Topping</option>
-                    <option value="salsa">Salsa</option>
-                    <option value="papas">Papas</option>
-                    <option value="bebida">Bebida</option>
-                    <option value="extra">Extra</option>
+                    {{-- Los tipos salen del modelo: agregar uno nuevo se hace en un solo lugar --}}
+                    @foreach (\App\Models\Ingrediente::TIPOS as $valor => $etiqueta)
+                        <option value="{{ $valor }}">{{ $etiqueta }}</option>
+                    @endforeach
                 </select>
                 <x-input-error :messages="$errors->get('tipo')" class="mt-2" />
             </div>
