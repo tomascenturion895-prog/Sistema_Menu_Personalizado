@@ -10,7 +10,6 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
 use Livewire\WithFileUploads;
-use Livewire\WithPagination;
 
 #[Layout('layouts.admin')]
 class Productos extends Component
@@ -19,7 +18,6 @@ class Productos extends Component
 
     // WithFileUploads habilita subir archivos via wire:model (la foto del producto)
     use WithFileUploads;
-    use WithPagination;
 
     #[Validate('required|exists:categorias,id')]
     public ?int $categoria_id = null;
@@ -56,19 +54,28 @@ class Productos extends Component
     public function render()
     {
         return view('livewire.admin.productos', [
-            // with('categoria') evita el problema N+1: en vez de una consulta SQL por cada
-            // fila para buscar su categoria, trae todas las categorias relacionadas de una sola vez
-            'productos' => Producto::with('categoria')->orderBy('nombre')->paginate(8),
-            'categorias' => Categoria::orderBy('nombre')->get(),
+            // Agrupados por categoria (igual criterio que el menu publico): el admin
+            // ve y carga productos en el mismo contexto en el que despues los va a
+            // ver el cliente, en vez de una tabla plana con una columna "categoria".
+            // with('productos') evita el problema N+1 de una consulta por categoria
+            'categorias' => Categoria::with(['productos' => fn ($query) => $query->orderBy('nombre')])
+                ->orderBy('nombre')
+                ->get(),
             'ingredientes' => Ingrediente::orderBy('tipo')->orderBy('nombre')->get(),
         ]);
     }
 
-    public function abrirModalCrear(): void
+    /**
+     * Abre el formulario de alta. Si se abre desde el boton de una categoria puntual
+     * (ej. "+ Nuevo producto" dentro de "Sin TACC"), esa categoria ya viene precargada
+     * y el admin se ahorra elegirla a mano del desplegable.
+     */
+    public function abrirModalCrear(?int $categoriaId = null): void
     {
         $this->resetValidation();
         $this->reset(['categoria_id', 'nombre', 'descripcion', 'precio', 'activo', 'foto', 'imagenActual', 'ingredientesSeleccionados', 'productoId']);
         $this->activo = true;
+        $this->categoria_id = $categoriaId;
 
         $this->openModal('producto-form');
     }
@@ -117,7 +124,6 @@ class Productos extends Component
         $producto->ingredientes()->sync($ingredientes);
 
         $this->closeModal('producto-form');
-        $this->resetPage();
     }
 
     public function confirmarEliminar(int $id): void
