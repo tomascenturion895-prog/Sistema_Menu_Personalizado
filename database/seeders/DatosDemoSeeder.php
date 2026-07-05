@@ -107,6 +107,7 @@ class DatosDemoSeeder extends Seeder
                 'categoria' => $clasicas,
                 'descripcion' => 'Carne, cheddar, lechuga, tomate y salsa Capa8. El commit inicial.',
                 'precio' => 7500,
+                'imagen' => 'la-clasica-capa8.jpg',
                 // whereIn filtra los ingredientes aptos: esta acepta cualquier ingrediente no vegano
                 'ingredientes' => Ingrediente::whereIn('tipo', ['pan', 'medallon', 'topping', 'salsa', 'papas', 'bebida'])
                     ->where(fn ($q) => $q->where('tipo', '!=', 'medallon')->orWhere('es_vegetariano', false))
@@ -116,6 +117,7 @@ class DatosDemoSeeder extends Seeder
                 'categoria' => $clasicas,
                 'descripcion' => 'Doble medallón, doble cheddar, panceta. Para producción.',
                 'precio' => 9800,
+                'imagen' => 'doble-deploy.jpg',
                 'ingredientes' => Ingrediente::whereIn('tipo', ['pan', 'medallon', 'topping', 'salsa', 'papas', 'bebida'])
                     ->where(fn ($q) => $q->where('tipo', '!=', 'medallon')->orWhere('es_vegetariano', false))
                     ->pluck('id'),
@@ -124,6 +126,7 @@ class DatosDemoSeeder extends Seeder
                 'categoria' => $vegetarianas,
                 'descripcion' => 'Medallón de garbanzos o lentejas, queso y huevo. Código limpio.',
                 'precio' => 7200,
+                'imagen' => 'veggie-refactor.jpg',
                 // Solo ingredientes vegetarianos
                 'ingredientes' => Ingrediente::where('es_vegetariano', true)->pluck('id'),
             ],
@@ -131,6 +134,7 @@ class DatosDemoSeeder extends Seeder
                 'categoria' => $veganas,
                 'descripcion' => 'NotBurger plant based con queso vegano. Sin dependencias animales.',
                 'precio' => 8500,
+                'imagen' => 'vegan-mode-on.jpg',
                 // Solo ingredientes veganos
                 'ingredientes' => Ingrediente::where('es_vegano', true)->pluck('id'),
             ],
@@ -138,12 +142,21 @@ class DatosDemoSeeder extends Seeder
                 'categoria' => $sinTacc,
                 'descripcion' => 'Pan sin TACC y medallón a elección. Testeada al 100%.',
                 'precio' => 8200,
+                'imagen' => 'sin-gluten-sin-bugs.jpg',
                 // Solo ingredientes sin gluten
                 'ingredientes' => Ingrediente::where('sin_gluten', true)->pluck('id'),
             ],
         ];
 
         foreach ($productos as $nombre => $datos) {
+            // La foto es opcional: si el archivo todavia no existe en
+            // public/images/productos (se van agregando de a poco, a mano),
+            // el producto queda sin imagen y usa el fallback de marca de
+            // <x-foto-producto>. Apenas se agrega el archivo y se re-corre el
+            // seeder, la foto aparece sola, sin tocar una linea de codigo mas.
+            $rutaImagen = 'images/productos/'.$datos['imagen'];
+            $tieneFoto = file_exists(public_path($rutaImagen));
+
             $producto = Producto::updateOrCreate(
                 ['nombre' => $nombre],
                 [
@@ -151,6 +164,7 @@ class DatosDemoSeeder extends Seeder
                     'descripcion' => $datos['descripcion'],
                     'precio' => $datos['precio'],
                     'activo' => true,
+                    'imagen' => $tieneFoto ? $rutaImagen : null,
                 ]
             );
 
