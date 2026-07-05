@@ -198,7 +198,7 @@ new #[Layout('layouts.guest')] class extends Component
         </div>
 
         <!-- Terminos y condiciones -->
-        <div class="mt-4">
+        <div class="mt-4" x-data="{ mostrarTerminos: false }">
             <label for="terminos" class="inline-flex items-start gap-2">
                 <input
                     wire:model="terminos"
@@ -209,9 +209,29 @@ new #[Layout('layouts.guest')] class extends Component
                 >
                 <span class="text-sm text-gray-600">
                     Acepto los
-                    <a href="{{ route('terminos') }}" target="_blank" class="font-semibold text-brand-600 hover:underline">términos y condiciones</a>
+                    {{-- Boton en vez de link: despliega el texto aca abajo, sin sacar
+                         al usuario de la pantalla de registro --}}
+                    <button
+                        type="button"
+                        @click="mostrarTerminos = ! mostrarTerminos"
+                        class="font-semibold text-brand-600 hover:underline"
+                    >
+                        términos y condiciones
+                        <span x-text="mostrarTerminos ? '▴' : '▾'"></span>
+                    </button>
                 </span>
             </label>
+
+            {{-- Panel desplegable con scroll propio: se puede leer sin navegar a otra pagina --}}
+            <div
+                x-show="mostrarTerminos"
+                x-transition
+                x-cloak
+                class="mt-3 max-h-48 overflow-y-auto border-2 border-terminal-950/10 rounded-md p-4 bg-brand-50 text-sm"
+            >
+                <x-terminos-contenido />
+            </div>
+
             <x-input-error :messages="$errors->get('terminos')" class="mt-2" />
         </div>
 
