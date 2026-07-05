@@ -5,9 +5,13 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>{{ config('app.name', 'Capa8Burger') }}</title>
+        {{-- $titulo y $meta son slots OPCIONALES: si una vista no los pasa, caen al
+             titulo generico. La pagina de inicio los usa para su propio SEO
+             (description, Open Graph) sin necesitar un <head> propio duplicado. --}}
+        <title>{{ $titulo ?? config('app.name', 'Capa8Burger') }}</title>
 
         <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+        {{ $meta ?? '' }}
 
         <!-- Fuentes: Figtree para texto general, JetBrains Mono para precios y acentos "de codigo" -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -43,6 +47,14 @@
             <main>
                 {{ $slot }}
             </main>
+
+            {{-- Footer con info del negocio: sin esto, un usuario logueado no tenia
+                 forma de volver a ver direccion/horario/contacto. Se omite en el
+                 admin (zona de trabajo) y en "home"/"dashboard" porque esa pagina
+                 ya incluye su propia seccion completa de contacto y ubicacion --}}
+            @unless (request()->routeIs('admin.*') || request()->routeIs('home') || request()->routeIs('dashboard'))
+                <x-footer-sitio />
+            @endunless
         </div>
     </body>
 </html>

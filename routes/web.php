@@ -1,7 +1,6 @@
 <?php
 
 use App\Http\Controllers\Admin\PanelController as AdminPanelController;
-use App\Http\Controllers\Cliente\PanelController;
 use App\Http\Controllers\Cliente\PedidoController;
 use App\Http\Controllers\InicioController;
 use App\Livewire\Admin\Categorias;
@@ -13,17 +12,23 @@ use App\Livewire\Menu\MiPedido;
 use App\Livewire\Menu\Personalizar;
 use Illuminate\Support\Facades\Route;
 
-// Landing publica: el controlador consulta los productos destacados y los pasa a la vista
+// Pagina de inicio: MISMO controlador y MISMA vista en ambas URLs, para que
+// un visitante (en "/") y un cliente logueado (en "/inicio") vean exactamente
+// lo mismo. La unica diferencia posible (el banner del ultimo pedido) la
+// resuelve la propia vista con @auth, no una vista distinta.
 Route::get('/', InicioController::class)->name('home');
 
 // La URL es /inicio (en español, como pide la consigna) pero el nombre interno
-// sigue siendo "dashboard" porque Breeze y sus tests lo referencian asi
-Route::get('inicio', [PanelController::class, 'inicio'])
-    ->middleware(['auth', 'verified'])
+// sigue siendo "dashboard" porque Breeze y sus tests lo referencian asi.
+// Sin 'verified': el .env no tiene un mailer real (MAIL_MAILER=log), asi que
+// exigir el correo verificado dejaria a cualquier cliente nuevo sin poder
+// comprar. 'auth' alcanza: sigue exigiendo estar logueado.
+Route::get('inicio', InicioController::class)
+    ->middleware(['auth'])
     ->name('dashboard');
 
 // Historial de pedidos del cliente (controlador clasico, patron MVC completo)
-Route::middleware(['auth', 'verified'])->prefix('mis-pedidos')->name('cliente.pedidos.')->group(function () {
+Route::middleware(['auth'])->prefix('mis-pedidos')->name('cliente.pedidos.')->group(function () {
     Route::get('/', [PedidoController::class, 'index'])->name('index');
 
     // La ruta fija va ANTES que la variable {pedido}, para que "exito" no se
@@ -46,9 +51,10 @@ Route::get('menu', MenuIndex::class)->name('menu.index');
 Route::get('menu/productos/{producto}', Personalizar::class)->name('menu.personalizar');
 
 // Carrito del cliente: revisa lo elegido y confirma el pedido (lo guarda en la BD).
-// Esto si requiere estar logueado: aca ya se esta comprando
+// Esto si requiere estar logueado: aca ya se esta comprando (sin 'verified',
+// por la misma razon que las rutas de arriba)
 Route::get('mi-pedido', MiPedido::class)
-    ->middleware(['auth', 'verified'])
+    ->middleware(['auth'])
     ->name('menu.mi-pedido');
 
 Route::view('perfil', 'profile')
