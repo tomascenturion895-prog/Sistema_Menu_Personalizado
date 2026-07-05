@@ -41,13 +41,15 @@ new class extends Component
     >Eliminar cuenta</x-danger-button>
 
     <x-modal name="confirm-user-deletion" :show="$errors->isNotEmpty()" focusable>
+        {{-- Mismo lenguaje visual que el resto de los modales de "eliminar" del
+             sistema: eyebrow + titulo editorial, en vez del texto generico de Breeze --}}
         <form wire:submit="deleteUser" class="p-6">
-
-            <h2 class="text-lg font-medium text-gray-900">
+            <span class="eyebrow">// eliminar cuenta</span>
+            <h2 class="font-display text-xl uppercase text-terminal-950">
                 ¿Seguro que querés eliminar tu cuenta?
             </h2>
 
-            <p class="mt-1 text-sm text-gray-600">
+            <p class="mt-2 text-sm text-gray-600">
                 Esta acción es permanente y no se puede deshacer.
                 Ingresá tu contraseña para confirmar.
             </p>
