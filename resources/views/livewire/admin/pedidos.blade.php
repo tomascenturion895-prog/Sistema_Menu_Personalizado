@@ -1,7 +1,15 @@
-<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-    <div class="mb-6">
-        <span class="eyebrow">// admin / pedidos</span>
-        <h3 class="text-2xl font-semibold text-gray-900">Pedidos</h3>
+{{-- wire:poll.10s: la bandeja se refresca sola cada 10 segundos, como una pantalla
+     de cocina real — los pedidos nuevos aparecen sin que el admin recargue nada --}}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10" wire:poll.10s>
+    <div class="mb-6 flex items-center justify-between">
+        <div>
+            <span class="eyebrow">// admin / pedidos</span>
+            <h3 class="text-2xl font-semibold text-gray-900">Pedidos</h3>
+        </div>
+
+        <span class="font-mono text-xs text-gray-400" title="La bandeja se actualiza sola cada 10 segundos">
+            <span class="inline-block w-2 h-2 rounded-full bg-exito-500 animate-pulse mr-1"></span>en vivo
+        </span>
     </div>
 
     {{-- Filtro por estado del pedido --}}
@@ -10,7 +18,7 @@
             <button
                 wire:click="filtrarPor('{{ $valor }}')"
                 class="px-3 py-1.5 rounded-full text-sm font-medium transition
-                    {{ $estado === $valor ? 'bg-brand-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}"
+                    {{ $estado === $valor ? 'bg-brand-500 text-terminal-950' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}"
             >
                 {{ $etiqueta }}
             </button>
@@ -24,22 +32,23 @@
                 <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
                     <div>
                         {{-- Numero de pedido con fuente mono, estilo "ticket" --}}
-                        <span class="font-mono font-semibold text-terminal-900">#{{ str_pad($pedido->id, 5, '0', STR_PAD_LEFT) }}</span>
+                        <span class="font-mono font-semibold text-terminal-900">{{ $pedido->numero }}</span>
                         <span class="text-sm text-gray-600 ml-2">{{ $pedido->user->name }}</span>
                         <span class="text-xs text-gray-400 ml-2">{{ $pedido->created_at->format('d/m/Y H:i') }}</span>
                     </div>
 
                     <div class="flex items-center gap-3">
-                        <span class="precio">${{ number_format($pedido->total, 0, ',', '.') }}</span>
+                        <span class="precio">@precio($pedido->total)</span>
 
                         {{-- Select para cambiar el estado: wire:change dispara el metodo al elegir otra opcion --}}
                         <select
                             wire:change="cambiarEstado({{ $pedido->id }}, $event.target.value)"
                             class="text-sm border-gray-300 rounded-md focus:border-brand-500 focus:ring-brand-500"
                         >
-                            @foreach (\App\Livewire\Admin\Pedidos::ESTADOS as $opcion)
-                                <option value="{{ $opcion }}" @selected($pedido->estado === $opcion)>
-                                    {{ str_replace('_', ' ', ucfirst($opcion)) }}
+                            {{-- Estados desde el modelo (unica fuente de verdad) --}}
+                            @foreach (\App\Models\Pedido::ESTADOS as $valor => $etiqueta)
+                                <option value="{{ $valor }}" @selected($pedido->estado === $valor)>
+                                    {{ $etiqueta }}
                                 </option>
                             @endforeach
                         </select>
@@ -51,7 +60,7 @@
                     @foreach ($pedido->items as $item)
                         <li wire:key="item-{{ $item->id }}">
                             {{ $item->cantidad }}x {{ $item->producto->nombre }}
-                            <span class="precio text-xs">${{ number_format($item->precio_unitario * $item->cantidad, 0, ',', '.') }}</span>
+                            <span class="precio text-xs">@precio($item->precio_unitario * $item->cantidad)</span>
                         </li>
                     @endforeach
                 </ul>

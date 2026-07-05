@@ -55,14 +55,9 @@ new class extends Component
             <div class="mt-6">
                 <x-input-label for="password" value="Contraseña" class="sr-only" />
 
-                <x-text-input
-                    wire:model="password"
-                    id="password"
-                    name="password"
-                    type="password"
-                    class="mt-1 block w-3/4"
-                    placeholder="Contraseña"
-                />
+                <div class="mt-1 w-full sm:w-3/4">
+                    <x-input-password wire:model="password" id="password" name="password" placeholder="Contraseña" />
+                </div>
 
                 <x-input-error :messages="$errors->get('password')" class="mt-2" />
             </div>

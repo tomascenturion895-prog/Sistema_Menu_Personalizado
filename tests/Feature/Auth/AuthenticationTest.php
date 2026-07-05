@@ -38,6 +38,41 @@ class AuthenticationTest extends TestCase
         $this->assertAuthenticated();
     }
 
+    public function test_recordarme_genera_el_token_de_sesion_persistente(): void
+    {
+        $user = User::factory()->create();
+
+        // Antes de loguearse, el usuario no tiene token de "recordarme"...
+        // (la factory le pone uno random, asi que lo limpiamos para la prueba)
+        $user->forceFill(['remember_token' => null])->save();
+
+        Volt::test('pages.auth.login')
+            ->set('form.email', $user->email)
+            ->set('form.password', 'password')
+            ->set('form.remember', true)
+            ->call('login');
+
+        // Con "Recordarme" marcado, Laravel genera y guarda el remember_token:
+        // es la mitad servidor de la cookie de larga duracion que re-autentica
+        // al usuario cuando su sesion normal (120 min) ya expiro
+        $this->assertNotNull($user->fresh()->remember_token);
+    }
+
+    public function test_sin_recordarme_no_se_genera_token_persistente(): void
+    {
+        $user = User::factory()->create();
+        $user->forceFill(['remember_token' => null])->save();
+
+        Volt::test('pages.auth.login')
+            ->set('form.email', $user->email)
+            ->set('form.password', 'password')
+            ->set('form.remember', false)
+            ->call('login');
+
+        // Sin el checkbox, el login es solo por sesion: no queda token persistente
+        $this->assertNull($user->fresh()->remember_token);
+    }
+
     public function test_admins_are_redirected_to_the_admin_panel(): void
     {
         $admin = User::factory()->create(['rol' => 'admin']);

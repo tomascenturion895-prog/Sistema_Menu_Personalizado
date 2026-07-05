@@ -2,7 +2,7 @@
     use App\Livewire\Menu\Personalizar;
 @endphp
 
-<div class="max-w-3xl mx-auto px-4 sm:px-6 py-10">
+<div class="max-w-3xl mx-auto px-4 sm:px-6 py-10 pb-24">
     <a href="{{ route('menu.index') }}" wire:navigate class="text-sm text-brand-600 hover:underline">&larr; Volver al menú</a>
 
     <div class="mt-3 mb-6">
@@ -12,6 +12,13 @@
             <p class="text-gray-600 mt-2">{{ $producto->descripcion }}</p>
         @endif
     </div>
+
+    {{-- Foto del producto (solo si el admin cargo una: aca el fallback seria redundante) --}}
+    @if ($producto->imagen)
+        <div class="tarjeta overflow-hidden mb-6">
+            <x-foto-producto :producto="$producto" alto="h-48" />
+        </div>
+    @endif
 
     {{-- Tarjeta principal estilo cartel retro, consistente con el resto de la marca --}}
     <div class="tarjeta shadow-retro p-6 space-y-7">
@@ -49,7 +56,7 @@
                             </span>
 
                             @if ($ingrediente->precio_extra > 0)
-                                <span class="font-mono text-xs text-gray-500">+${{ number_format($ingrediente->precio_extra, 0, ',', '.') }}</span>
+                                <span class="font-mono text-xs text-gray-500">+@precio($ingrediente->precio_extra)</span>
                             @endif
                         </label>
                     @endforeach
@@ -74,12 +81,18 @@
             <div class="text-right">
                 <span class="block text-xs text-gray-400 mb-1">Total</span>
                 {{-- Se recalcula en cada interaccion porque Livewire re-renderiza el componente --}}
-                <span class="precio text-2xl">${{ number_format($this->precioTotal, 0, ',', '.') }}</span>
+                <span class="precio text-2xl">@precio($this->precioTotal)</span>
             </div>
         </div>
 
-        <x-primary-button wire:click="agregarAlPedido" class="w-full justify-center py-3">
-            Agregar al pedido
+        {{-- wire:loading da feedback inmediato: el boton se deshabilita y cambia el texto --}}
+        <x-primary-button wire:click="agregarAlPedido" wire:loading.attr="disabled" wire:target="agregarAlPedido"
+            class="w-full justify-center py-3 disabled:opacity-50">
+            <span wire:loading.remove wire:target="agregarAlPedido">Agregar al pedido</span>
+            <span wire:loading wire:target="agregarAlPedido">Agregando…</span>
         </x-primary-button>
     </div>
+
+    {{-- Barra flotante del pedido en curso, la misma que acompaña en el menu --}}
+    <x-barra-carrito />
 </div>

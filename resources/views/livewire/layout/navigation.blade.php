@@ -1,6 +1,7 @@
 <?php
 
 use App\Livewire\Actions\Logout;
+use Livewire\Attributes\On;
 use Livewire\Volt\Component;
 
 new class extends Component {
@@ -11,7 +12,18 @@ new class extends Component {
     {
         $logout();
 
-        $this->redirect('/', navigate: true);
+        $this->redirect(route('home', absolute: false), navigate: true);
+    }
+
+    /**
+     * Cuando otro componente agrega o quita items del carrito, dispara el evento
+     * "carrito-actualizado"; este listener re-renderiza la navbar para que el
+     * contador de "Mi pedido" se actualice EN VIVO, sin recargar la pagina.
+     */
+    #[On('carrito-actualizado')]
+    public function refrescarContadorCarrito(): void
+    {
+        // No necesita logica: con re-renderizar alcanza (el contador lee la sesion)
     }
 }; ?>
 
@@ -83,6 +95,10 @@ resalten de verdad. Funciona para visitantes y logueados via @auth / @guest --}}
                         </x-slot>
 
                         <x-slot name="content">
+                            <x-dropdown-link :href="route('cliente.pedidos.index')" wire:navigate>
+                                {{ __('Mis pedidos') }}
+                            </x-dropdown-link>
+
                             <x-dropdown-link :href="route('profile')" wire:navigate>
                                 {{ __('Perfil') }}
                             </x-dropdown-link>
@@ -165,6 +181,10 @@ resalten de verdad. Funciona para visitantes y logueados via @auth / @guest --}}
                 </div>
 
                 <div class="mt-3 space-y-1.5">
+                    <x-responsive-nav-link :href="route('cliente.pedidos.index')" wire:navigate>
+                        {{ __('Mis pedidos') }}
+                    </x-responsive-nav-link>
+
                     <x-responsive-nav-link :href="route('profile')" wire:navigate>
                         {{ __('Perfil') }}
                     </x-responsive-nav-link>
