@@ -58,28 +58,13 @@ new #[Layout('layouts.guest')] class extends Component
         </div>
 
         <!-- Contraseña -->
-        <div class="mt-4" x-data="{ showPassword: false }">
+        <div class="mt-4">
             <x-input-label for="password" value="Contraseña" />
 
-            <div class="relative">
-                <x-text-input
-                    wire:model="form.password"
-                    id="password"
-                    class="block mt-1 w-full pr-12"
-                    x-bind:type="showPassword ? 'text' : 'password'"
-                    name="password"
-                    required
-                    autocomplete="current-password"
-                />
-
-                <button
-                    type="button"
-                    class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 hover:text-gray-800"
-                    @click="showPassword = !showPassword"
-                >
-                    <span x-show="!showPassword">👁️</span>
-                    <span x-show="showPassword">🙈</span>
-                </button>
+            {{-- Campo con boton de mostrar/ocultar (componente propio con Alpine, una sola
+                 implementacion compartida por login, registro, reset y perfil) --}}
+            <div class="mt-1">
+                <x-input-password wire:model="form.password" id="password" name="password" required autocomplete="current-password" />
             </div>
 
             <x-input-error :messages="$errors->get('form.password')" class="mt-2" />

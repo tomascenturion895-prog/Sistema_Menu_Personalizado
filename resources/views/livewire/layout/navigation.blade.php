@@ -124,7 +124,7 @@ resalten de verdad. Funciona para visitantes y logueados via @auth / @guest --}}
                     @if (Route::has('register'))
                         {{-- Naranja sobre navbar blanca: el CTA principal resalta de verdad --}}
                         <a href="{{ route('register') }}" wire:navigate
-                            class="btn-retro px-4 py-1.5 bg-brand-500 text-white text-sm">
+                            class="btn-retro px-4 py-1.5 bg-brand-500 text-terminal-950 text-sm">
                             Registrarme
                         </a>
                     @endif

@@ -98,56 +98,22 @@ new #[Layout('layouts.guest')] class extends Component
         </div>
 
         <!-- Contraseña -->
-        <div class="mt-4" x-data="{ showPassword: false }">
+        <div class="mt-4">
             <x-input-label for="password" value="Contraseña" />
 
-            <div class="relative">
-                <x-text-input
-                    wire:model="password"
-                    id="password"
-                    class="block mt-1 w-full pr-12"
-                    x-bind:type="showPassword ? 'text' : 'password'"
-                    name="password"
-                    required
-                    autocomplete="new-password"
-                />
-
-                <button
-                    type="button"
-                    class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 hover:text-gray-800"
-                    @click="showPassword = !showPassword"
-                >
-                    <span x-show="!showPassword">👁️</span>
-                    <span x-show="showPassword">🙈</span>
-                </button>
+            <div class="mt-1">
+                <x-input-password wire:model="password" id="password" name="password" required autocomplete="new-password" />
             </div>
 
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
         <!-- Confirmar contraseña -->
-        <div class="mt-4" x-data="{ showPasswordConfirm: false }">
+        <div class="mt-4">
             <x-input-label for="password_confirmation" value="Confirmar contraseña" />
 
-            <div class="relative">
-                <x-text-input
-                    wire:model="password_confirmation"
-                    id="password_confirmation"
-                    class="block mt-1 w-full pr-12"
-                    x-bind:type="showPasswordConfirm ? 'text' : 'password'"
-                    name="password_confirmation"
-                    required
-                    autocomplete="new-password"
-                />
-
-                <button
-                    type="button"
-                    class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 hover:text-gray-800"
-                    @click="showPasswordConfirm = !showPasswordConfirm"
-                >
-                    <span x-show="!showPasswordConfirm">👁️</span>
-                    <span x-show="showPasswordConfirm">🙈</span>
-                </button>
+            <div class="mt-1">
+                <x-input-password wire:model="password_confirmation" id="password_confirmation" name="password_confirmation" required autocomplete="new-password" />
             </div>
 
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
