@@ -1,6 +1,8 @@
 {{-- wire:poll.10s: la bandeja se refresca sola cada 10 segundos, como una pantalla
      de cocina real — los pedidos nuevos aparecen sin que el admin recargue nada --}}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10" wire:poll.10s>
+    <x-mensaje-flash />
+
     <div class="mb-6 flex items-center justify-between">
         <div>
             <span class="eyebrow">// admin / pedidos</span>

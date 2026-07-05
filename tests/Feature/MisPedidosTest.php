@@ -47,7 +47,7 @@ class MisPedidosTest extends TestCase
 
         $response
             ->assertOk()
-            ->assertSee($item->producto->nombre)
+            ->assertSee($item->nombre_producto)
             // El badge de estado es un componente Livewire con wire:poll (estado en vivo)
             ->assertSeeLivewire(EstadoPedido::class);
     }

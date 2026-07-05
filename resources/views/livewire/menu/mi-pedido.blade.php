@@ -32,17 +32,19 @@
                         @endif
 
                         {{-- Controles de cantidad: se puede ajustar sin rearmar la hamburguesa --}}
+                        {{-- wire:loading.attr="disabled" scopeado con wire:target: evita clicks
+                             repetidos sobre EL MISMO item mientras su request esta en curso --}}
                         <div class="flex items-center gap-2.5 mt-2">
-                            <button wire:click="decrementarItem({{ $indice }})" class="w-7 h-7 rounded-md border-2 border-gray-300 text-gray-600 hover:border-terminal-950 transition text-sm">&minus;</button>
+                            <button wire:click="decrementarItem({{ $indice }})" wire:loading.attr="disabled" wire:target="decrementarItem({{ $indice }}), incrementarItem({{ $indice }}), quitarItem({{ $indice }})" class="w-7 h-7 rounded-md border-2 border-gray-300 text-gray-600 hover:border-terminal-950 transition text-sm">&minus;</button>
                             <span class="font-mono font-semibold text-sm w-5 text-center">{{ $item['cantidad'] }}</span>
-                            <button wire:click="incrementarItem({{ $indice }})" class="w-7 h-7 rounded-md border-2 border-gray-300 text-gray-600 hover:border-terminal-950 transition text-sm">+</button>
+                            <button wire:click="incrementarItem({{ $indice }})" wire:loading.attr="disabled" wire:target="decrementarItem({{ $indice }}), incrementarItem({{ $indice }}), quitarItem({{ $indice }})" class="w-7 h-7 rounded-md border-2 border-gray-300 text-gray-600 hover:border-terminal-950 transition text-sm">+</button>
                         </div>
                     </div>
 
                     <div class="text-right">
                         <span class="precio">@precio($item['precio_unitario'] * $item['cantidad'])</span>
 
-                        <button wire:click="quitarItem({{ $indice }})" class="block mt-1 text-xs text-tomate-700 hover:underline">
+                        <button wire:click="quitarItem({{ $indice }})" wire:loading.attr="disabled" wire:target="decrementarItem({{ $indice }}), incrementarItem({{ $indice }}), quitarItem({{ $indice }})" class="block mt-1 text-xs text-tomate-700 hover:underline">
                             Quitar
                         </button>
                     </div>

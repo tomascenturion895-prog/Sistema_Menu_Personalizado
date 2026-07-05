@@ -26,12 +26,44 @@ class Pedido extends Model
         'cancelado' => 'Cancelado',
     ];
 
+    // Orden del flujo de cocina: el admin puede saltar etapas hacia ADELANTE
+    // (ej. marcar "listo" directo sin pasar por "en_preparacion"), pero nunca
+    // retroceder. "listo" y "cancelado" quedan fuera de este orden: son estados
+    // terminales, no forman parte del avance normal.
+    private const ORDEN_FLUJO = ['pendiente', 'confirmado', 'en_preparacion', 'listo'];
+
+    // Estados desde los que ya no se puede cambiar a NINGUN otro estado
+    private const ESTADOS_TERMINALES = ['listo', 'cancelado'];
+
     /**
      * Un pedido solo se puede cancelar mientras la cocina no lo haya tomado.
      */
     public function esCancelable(): bool
     {
         return $this->estado === 'pendiente';
+    }
+
+    /**
+     * Valida que el cambio de estado respete el flujo de cocina: no se puede
+     * "revivir" un pedido ya cancelado o entregado, ni retroceder a una etapa
+     * anterior (ej. de "listo" de vuelta a "en_preparacion"). Se puede
+     * avanzar salteando etapas (ej. "pendiente" directo a "listo").
+     * Usado tanto por el panel admin Livewire como por la API.
+     */
+    public function puedeTransicionarA(string $nuevoEstado): bool
+    {
+        if (in_array($this->estado, self::ESTADOS_TERMINALES, true)) {
+            return false;
+        }
+
+        if ($nuevoEstado === 'cancelado') {
+            return true;
+        }
+
+        $posicionActual = array_search($this->estado, self::ORDEN_FLUJO, true);
+        $posicionNueva = array_search($nuevoEstado, self::ORDEN_FLUJO, true);
+
+        return $posicionActual !== false && $posicionNueva !== false && $posicionNueva > $posicionActual;
     }
 
     /**

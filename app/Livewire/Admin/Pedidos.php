@@ -47,6 +47,16 @@ class Pedidos extends Component
             return;
         }
 
-        Pedido::findOrFail($pedidoId)->update(['estado' => $nuevoEstado]);
+        $pedido = Pedido::findOrFail($pedidoId);
+
+        // Ademas de ser un estado valido, tiene que ser una transicion valida
+        // desde el estado actual (ej. no se puede "revivir" uno cancelado)
+        if (! $pedido->puedeTransicionarA($nuevoEstado)) {
+            session()->flash('mensaje', 'Ese cambio de estado no es válido para este pedido.');
+
+            return;
+        }
+
+        $pedido->update(['estado' => $nuevoEstado]);
     }
 }

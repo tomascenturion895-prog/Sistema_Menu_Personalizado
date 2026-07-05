@@ -15,6 +15,10 @@ class PedidoPolicy
     /**
      * Un cliente solo puede ver (o actuar sobre) SUS PROPIOS pedidos.
      * Se usa para consultar el detalle, cancelar y repetir un pedido.
+     *
+     * Esta policy es SOLO para el lado cliente: el panel admin (web y API)
+     * consulta y modifica pedidos de cualquier usuario a proposito, y usa sus
+     * propios controladores en vez de este Gate::authorize('view', ...).
      */
     public function view(User $user, Pedido $pedido): bool
     {

@@ -18,11 +18,13 @@ return [
     |
     */
 
+    // Bug del stub original de Sanctum: sprintf('%s%s', ...) concatenaba la
+    // lista de dominios con la URL actual SIN separador (ej.
+    // "...::1capa8burger.test"), rompiendo el ultimo dominio al hacer explode(',')
     'stateful' => explode(',', env('SANCTUM_STATEFUL_DOMAINS', sprintf(
-        '%s%s',
+        '%s,%s',
         'localhost,localhost:3000,127.0.0.1,127.0.0.1:8000,::1',
         Sanctum::currentApplicationUrlWithPort(),
-        // Sanctum::currentRequestHost(),
     ))),
 
     /*

@@ -143,24 +143,27 @@
                     Cancelar
                 </x-secondary-button>
 
-                <x-primary-button class="ms-3">
+                {{-- wire:loading deshabilita el boton mientras el request esta en curso:
+                     evita que un doble click cree dos productos idénticos --}}
+                <x-primary-button class="ms-3" wire:loading.attr="disabled" wire:target="guardar">
                     Guardar
                 </x-primary-button>
             </div>
         </form>
     </x-modal>
 
-    <x-modal name="producto-confirmar-eliminar" focusable>
+    <x-modal name="producto-confirmar-eliminar" :show="$errors->has('eliminar')" focusable>
         <div class="p-6">
             <h2 class="text-lg font-medium text-gray-900">¿Eliminar este producto?</h2>
             <p class="mt-1 text-sm text-gray-600">Esta acción no se puede deshacer.</p>
+            <x-input-error :messages="$errors->get('eliminar')" class="mt-2" />
 
             <div class="mt-6 flex justify-end">
                 <x-secondary-button x-on:click="$dispatch('close')">
                     Cancelar
                 </x-secondary-button>
 
-                <x-danger-button wire:click="eliminar" class="ms-3">
+                <x-danger-button wire:click="eliminar" class="ms-3" wire:loading.attr="disabled" wire:target="eliminar">
                     Eliminar
                 </x-danger-button>
             </div>

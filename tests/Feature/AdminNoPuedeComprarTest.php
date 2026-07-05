@@ -77,11 +77,14 @@ class AdminNoPuedeComprarTest extends TestCase
 
         // "/" es una de las pocas paginas de cliente a las que el admin SI puede
         // entrar (no esta bloqueada por el middleware 'cliente'), asi que sirve
-        // para confirmar que la navbar compartida le oculta estos links
+        // para confirmar que la navbar compartida le oculta estos links.
+        // El carrito ya no es un link de texto (es un icono con aria-label), asi
+        // que se busca el aria-label en vez de la palabra suelta "Carrito" (que
+        // podria seguir apareciendo en otro lado del HTML sin que esto pruebe nada)
         $this->actingAs($admin)->get('/')
             ->assertOk()
             ->assertDontSee(__('Menú'))
-            ->assertDontSee(__('Carrito'))
+            ->assertDontSee('aria-label="Carrito"', false)
             ->assertDontSee(__('Mis pedidos'))
             ->assertSee('Panel Admin');
     }
@@ -93,7 +96,32 @@ class AdminNoPuedeComprarTest extends TestCase
         $this->actingAs($cliente)->get('/')
             ->assertOk()
             ->assertSee(__('Menú'))
-            ->assertSee(__('Carrito'))
+            ->assertSee('aria-label="Carrito"', false)
             ->assertSee(__('Mis pedidos'));
+    }
+
+    public function test_el_mini_carrito_muestra_vacio_cuando_no_hay_items(): void
+    {
+        $cliente = User::factory()->create(['rol' => 'cliente']);
+
+        $this->actingAs($cliente)->get('/')
+            ->assertOk()
+            ->assertSee('Tu carrito está vacío.');
+    }
+
+    public function test_el_mini_carrito_lista_los_items_cargados_con_su_total(): void
+    {
+        $cliente = User::factory()->create(['rol' => 'cliente']);
+        $producto = Producto::factory()->create(['nombre' => 'La Clásica Capa8', 'precio' => 5000]);
+
+        $this->withSession(['carrito' => [
+            ['producto_id' => $producto->id, 'nombre' => $producto->nombre, 'cantidad' => 2, 'precio_unitario' => 5000.0, 'ingredientes_elegidos' => [], 'ingredientes_nombres' => []],
+        ]]);
+
+        $this->actingAs($cliente)->get('/')
+            ->assertOk()
+            ->assertSee('La Clásica Capa8')
+            ->assertSee('Finalizar compra')
+            ->assertDontSee('Tu carrito está vacío.');
     }
 }

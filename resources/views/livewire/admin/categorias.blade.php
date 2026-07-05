@@ -93,7 +93,7 @@
                     Cancelar
                 </x-secondary-button>
 
-                <x-primary-button class="ms-3">
+                <x-primary-button class="ms-3" wire:loading.attr="disabled" wire:target="guardar">
                     Guardar
                 </x-primary-button>
             </div>
@@ -101,19 +101,20 @@
     </x-modal>
 
     {{-- Modal de confirmacion antes de eliminar --}}
-    <x-modal name="categoria-confirmar-eliminar" focusable>
+    <x-modal name="categoria-confirmar-eliminar" :show="$errors->has('eliminar')" focusable>
         <div class="p-6">
             <h2 class="text-lg font-medium text-gray-900">¿Eliminar esta categoría?</h2>
             <p class="mt-1 text-sm text-gray-600">
-                Esta acción no se puede deshacer. Los productos asociados también se eliminarán.
+                Esta acción no se puede deshacer. Solo se puede borrar una categoría vacía.
             </p>
+            <x-input-error :messages="$errors->get('eliminar')" class="mt-2" />
 
             <div class="mt-6 flex justify-end">
                 <x-secondary-button x-on:click="$dispatch('close')">
                     Cancelar
                 </x-secondary-button>
 
-                <x-danger-button wire:click="eliminar" class="ms-3">
+                <x-danger-button wire:click="eliminar" class="ms-3" wire:loading.attr="disabled" wire:target="eliminar">
                     Eliminar
                 </x-danger-button>
             </div>

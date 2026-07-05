@@ -22,6 +22,7 @@ class ItemPedidoFactory extends Factory
         return [
             'pedido_id' => Pedido::factory(),
             'producto_id' => Producto::factory(),
+            'nombre_producto' => fake()->words(3, true),
             'cantidad' => fake()->numberBetween(1, 3),
             'precio_unitario' => fake()->randomFloat(2, 1000, 8000),
             'ingredientes_elegidos' => null,

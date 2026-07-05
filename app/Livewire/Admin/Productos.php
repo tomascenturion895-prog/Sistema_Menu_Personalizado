@@ -6,6 +6,7 @@ use App\Livewire\Concerns\InteractsWithModals;
 use App\Models\Categoria;
 use App\Models\Ingrediente;
 use App\Models\Producto;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -134,7 +135,25 @@ class Productos extends Component
 
     public function eliminar(): void
     {
-        Producto::findOrFail($this->productoAEliminar)->delete();
+        // findOrFail sobre un id ya borrado (doble click en "Eliminar") lanza
+        // ModelNotFoundException: se ignora en vez de mostrar una pantalla de error
+        try {
+            $producto = Producto::findOrFail($this->productoAEliminar);
+        } catch (ModelNotFoundException) {
+            $this->closeModal('producto-confirmar-eliminar');
+
+            return;
+        }
+
+        // Un producto ya vendido no se puede borrar (rompe el historial de esos
+        // pedidos): se avisa en vez de dejar que la base de datos tire un error
+        if ($producto->tieneVentasAsociadas()) {
+            $this->addError('eliminar', 'Este producto ya tiene pedidos asociados y no se puede eliminar. Marcalo como inactivo en su lugar.');
+
+            return;
+        }
+
+        $producto->delete();
         $this->productoAEliminar = null;
         $this->closeModal('producto-confirmar-eliminar');
     }

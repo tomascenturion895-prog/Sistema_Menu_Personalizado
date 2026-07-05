@@ -9,6 +9,7 @@ use App\Models\Pedido;
 use App\Models\Producto;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Livewire\Livewire;
 use Tests\TestCase;
 
@@ -157,6 +158,32 @@ class MiPedidoTest extends TestCase
             ->call('confirmarPedido');
 
         $this->assertDatabaseCount('pedidos', 0);
+    }
+
+    public function test_no_crea_un_segundo_pedido_si_ya_hay_una_confirmacion_en_curso(): void
+    {
+        // Simula un doble click: el candado ya esta tomado (por otra request
+        // "en curso") cuando esta llamada intenta confirmar
+        $user = User::factory()->create();
+        $producto = Producto::factory()->create(['precio' => 5000, 'activo' => true]);
+
+        session()->put('carrito', [
+            ['producto_id' => $producto->id, 'nombre' => $producto->nombre, 'cantidad' => 1, 'precio_unitario' => 5000.0, 'ingredientes_elegidos' => [], 'ingredientes_nombres' => []],
+        ]);
+
+        $candado = Cache::lock('checkout:'.$user->id, 10);
+        $candado->get();
+
+        try {
+            Livewire::actingAs($user)
+                ->test(MiPedido::class)
+                ->call('confirmarPedido');
+
+            // No se creo ningun pedido: la segunda confirmacion no hizo nada
+            $this->assertDatabaseCount('pedidos', 0);
+        } finally {
+            $candado->release();
+        }
     }
 
     public function test_cambiar_cantidad_actualiza_el_total_en_la_misma_interaccion(): void

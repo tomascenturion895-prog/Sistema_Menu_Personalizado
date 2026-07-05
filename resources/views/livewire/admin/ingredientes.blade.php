@@ -153,7 +153,7 @@
                     Cancelar
                 </x-secondary-button>
 
-                <x-primary-button class="ms-3">
+                <x-primary-button class="ms-3" wire:loading.attr="disabled" wire:target="guardar">
                     Guardar
                 </x-primary-button>
             </div>
@@ -173,7 +173,7 @@
                     Cancelar
                 </x-secondary-button>
 
-                <x-danger-button wire:click="eliminar" class="ms-3">
+                <x-danger-button wire:click="eliminar" class="ms-3" wire:loading.attr="disabled" wire:target="eliminar">
                     Eliminar
                 </x-danger-button>
             </div>

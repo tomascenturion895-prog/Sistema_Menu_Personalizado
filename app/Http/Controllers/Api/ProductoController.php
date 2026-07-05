@@ -23,6 +23,9 @@ class ProductoController extends Controller
     {
         $productos = Producto::query()
             ->where('activo', true)
+            // Igual criterio que el menu web: un producto de una categoria
+            // desactivada tampoco deberia listarse publicamente por API
+            ->whereHas('categoria', fn ($query) => $query->where('activo', true))
             ->with('categoria')
             ->when($request->filled('categoria_id'), fn ($query) => $query->where('categoria_id', $request->integer('categoria_id')))
             ->when($request->filled('dieta'), fn ($query) => $query->whereHas('categoria', fn ($query) => $query->where('tipo_dieta', $request->string('dieta'))))
@@ -44,9 +47,12 @@ class ProductoController extends Controller
      */
     public function show(Producto $producto): ProductoResource
     {
-        // Un producto desactivado no es distinto de "no existe" para un visitante publico
-        abort_unless($producto->activo, 404);
+        $producto->load('categoria', 'ingredientes');
 
-        return new ProductoResource($producto->load('categoria', 'ingredientes'));
+        // Un producto desactivado (o de una categoria desactivada) no es
+        // distinto de "no existe" para un visitante publico
+        abort_unless($producto->activo && $producto->categoria->activo, 404);
+
+        return new ProductoResource($producto);
     }
 }

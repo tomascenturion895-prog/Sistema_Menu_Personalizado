@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Admin\ActualizarEstadoPedidoRequest;
 use App\Http\Resources\PedidoResource;
 use App\Models\Pedido;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
@@ -33,11 +34,21 @@ class PedidoController extends Controller
 
     /**
      * Avanza (o cambia) el estado del pedido. Misma lista blanca de estados
-     * que el panel admin Livewire (Pedido::ESTADOS), validada en el FormRequest.
+     * que el panel admin Livewire (Pedido::ESTADOS), validada en el FormRequest,
+     * mas la misma regla de transicion valida (no se puede "revivir" un pedido
+     * cancelado, ni retroceder de "listo" a un estado anterior).
      */
-    public function actualizarEstado(ActualizarEstadoPedidoRequest $request, Pedido $pedido): PedidoResource
+    public function actualizarEstado(ActualizarEstadoPedidoRequest $request, Pedido $pedido): PedidoResource|JsonResponse
     {
-        $pedido->update(['estado' => $request->validated('estado')]);
+        $nuevoEstado = $request->validated('estado');
+
+        if (! $pedido->puedeTransicionarA($nuevoEstado)) {
+            return response()->json([
+                'mensaje' => 'Ese cambio de estado no es válido para este pedido.',
+            ], 422);
+        }
+
+        $pedido->update(['estado' => $nuevoEstado]);
 
         return new PedidoResource($pedido->load(['user', 'items.producto.ingredientes']));
     }

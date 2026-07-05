@@ -5,6 +5,7 @@ namespace App\Livewire\Admin;
 use App\Livewire\Concerns\InteractsWithModals;
 use App\Livewire\Concerns\UsaPaginacionPropia;
 use App\Models\Ingrediente;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
@@ -115,7 +116,14 @@ class Ingredientes extends Component
 
     public function eliminar(): void
     {
-        Ingrediente::findOrFail($this->ingredienteAEliminar)->delete();
+        // findOrFail sobre un id ya borrado (doble click en "Eliminar") lanza
+        // ModelNotFoundException: se ignora en vez de mostrar una pantalla de error
+        try {
+            Ingrediente::findOrFail($this->ingredienteAEliminar)->delete();
+        } catch (ModelNotFoundException) {
+            //
+        }
+
         $this->ingredienteAEliminar = null;
         $this->closeModal('ingrediente-confirmar-eliminar');
     }

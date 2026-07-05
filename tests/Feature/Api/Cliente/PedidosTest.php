@@ -8,6 +8,7 @@ use App\Models\Pedido;
 use App\Models\Producto;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
 use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
@@ -136,6 +137,28 @@ class PedidosTest extends TestCase
 
         $response->assertUnprocessable();
         $response->assertJsonValidationErrors('items');
+    }
+
+    public function test_no_crea_un_segundo_pedido_si_ya_hay_una_confirmacion_en_curso(): void
+    {
+        $cliente = User::factory()->create();
+        $producto = Producto::factory()->create(['precio' => 5000, 'activo' => true]);
+
+        Sanctum::actingAs($cliente);
+
+        $candado = Cache::lock('checkout:'.$cliente->id, 10);
+        $candado->get();
+
+        try {
+            $response = $this->postJson('/api/v1/pedidos', [
+                'items' => [['producto_id' => $producto->id, 'cantidad' => 1]],
+            ]);
+
+            $response->assertStatus(409);
+            $this->assertDatabaseCount('pedidos', 0);
+        } finally {
+            $candado->release();
+        }
     }
 
     public function test_requiere_autenticacion_para_confirmar_un_pedido(): void

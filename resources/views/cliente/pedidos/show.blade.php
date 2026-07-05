@@ -26,7 +26,9 @@
                 @foreach ($pedido->items as $item)
                     <div class="p-4 flex items-start justify-between gap-4">
                         <div>
-                            <span class="font-medium text-gray-900">{{ $item->cantidad }}x {{ $item->producto->nombre }}</span>
+                            {{-- nombre_producto es el snapshot al momento de la compra: si el
+                                 producto se renombro despues, este pedido viejo no lo refleja --}}
+                            <span class="font-medium text-gray-900">{{ $item->cantidad }}x {{ $item->nombre_producto }}</span>
 
                             @if (! empty($item->ingredientes_elegidos))
                                 <p class="text-sm text-gray-500 mt-1">

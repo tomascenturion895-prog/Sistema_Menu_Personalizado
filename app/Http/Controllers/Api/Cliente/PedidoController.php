@@ -11,6 +11,7 @@ use App\Models\Producto;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
@@ -47,6 +48,25 @@ class PedidoController extends Controller
      */
     public function store(StorePedidoRequest $request): JsonResponse
     {
+        // Candado por usuario: un reintento automatico del cliente API (o dos
+        // requests casi simultaneas) no debe poder crear el mismo pedido dos veces
+        $candado = Cache::lock('checkout:'.$request->user()->id, 10);
+
+        if (! $candado->get()) {
+            return response()->json([
+                'mensaje' => 'Ya hay una confirmación de pedido en curso, esperá un momento.',
+            ], 409);
+        }
+
+        try {
+            return $this->confirmar($request);
+        } finally {
+            $candado->release();
+        }
+    }
+
+    private function confirmar(StorePedidoRequest $request): JsonResponse
+    {
         $itemsSolicitados = $request->validated('items');
 
         $productos = Producto::conIngredientesPorIds(
@@ -68,6 +88,9 @@ class PedidoController extends Controller
 
             $items[] = [
                 'producto_id' => $producto->id,
+                // Snapshot del nombre AL MOMENTO DE CONFIRMAR: si el admin lo
+                // renombra despues, este pedido no debe mostrar el nombre nuevo
+                'nombre_producto' => $producto->nombre,
                 'cantidad' => $itemSolicitado['cantidad'],
                 'precio_unitario' => $vigente['precio_unitario'],
                 'ingredientes_elegidos' => $vigente['ingredientes']->pluck('id')->values()->all(),
@@ -97,6 +120,7 @@ class PedidoController extends Controller
                 ItemPedido::create([
                     'pedido_id' => $pedido->id,
                     'producto_id' => $item['producto_id'],
+                    'nombre_producto' => $item['nombre_producto'],
                     'cantidad' => $item['cantidad'],
                     'precio_unitario' => $item['precio_unitario'],
                     'ingredientes_elegidos' => $item['ingredientes_elegidos'],

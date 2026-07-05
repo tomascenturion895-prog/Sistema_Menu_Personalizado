@@ -56,4 +56,30 @@ class PedidosTest extends TestCase
 
         $this->getJson("/api/v1/admin/pedidos/{$pedido->id}")->assertForbidden();
     }
+
+    public function test_no_se_puede_revivir_un_pedido_cancelado(): void
+    {
+        Sanctum::actingAs(User::factory()->create(['rol' => 'admin']));
+        $pedido = Pedido::factory()->create(['estado' => 'cancelado']);
+
+        $response = $this->patchJson("/api/v1/admin/pedidos/{$pedido->id}/estado", [
+            'estado' => 'pendiente',
+        ]);
+
+        $response->assertUnprocessable();
+        $this->assertDatabaseHas('pedidos', ['id' => $pedido->id, 'estado' => 'cancelado']);
+    }
+
+    public function test_no_se_puede_retroceder_de_listo_a_en_preparacion(): void
+    {
+        Sanctum::actingAs(User::factory()->create(['rol' => 'admin']));
+        $pedido = Pedido::factory()->create(['estado' => 'listo']);
+
+        $response = $this->patchJson("/api/v1/admin/pedidos/{$pedido->id}/estado", [
+            'estado' => 'en_preparacion',
+        ]);
+
+        $response->assertUnprocessable();
+        $this->assertDatabaseHas('pedidos', ['id' => $pedido->id, 'estado' => 'listo']);
+    }
 }

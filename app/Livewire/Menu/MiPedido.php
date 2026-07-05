@@ -5,6 +5,7 @@ namespace App\Livewire\Menu;
 use App\Models\ItemPedido;
 use App\Models\Pedido;
 use App\Models\Producto;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
 use Livewire\Attributes\Computed;
@@ -108,60 +109,75 @@ class MiPedido extends Component
             return;
         }
 
-        // Antes de cobrar, se recalcula cada precio contra la base de datos ACTUAL:
-        // si el admin cambio un precio (o desactivo un producto) mientras el carrito
-        // esperaba, el pedido se guarda con los valores vigentes, no con los viejos
-        $items = $this->prepararItemsConPreciosActuales();
+        // Candado por usuario: un doble click (o dos pestañas confirmando a la
+        // vez) antes de que la sesion vacie el carrito podria crear el mismo
+        // pedido dos veces. Si ya hay una confirmacion en curso para este
+        // mismo usuario, esta segunda llamada no hace nada (get() no espera)
+        $candado = Cache::lock('checkout:'.auth()->id(), 10);
 
-        if (empty($items)) {
-            session()->flash('mensaje', 'Los productos de tu pedido ya no están disponibles.');
-            Session::forget('carrito');
-
+        if (! $candado->get()) {
             return;
         }
 
-        $total = array_sum(array_map(
-            fn (array $item) => $item['precio_unitario'] * $item['cantidad'],
-            $items
-        ));
+        try {
+            // Antes de cobrar, se recalcula cada precio contra la base de datos ACTUAL:
+            // si el admin cambio un precio (o desactivo un producto) mientras el carrito
+            // esperaba, el pedido se guarda con los valores vigentes, no con los viejos
+            $items = $this->prepararItemsConPreciosActuales();
 
-        // DB::transaction agrupa todas las escrituras: si algo falla a mitad de camino,
-        // se deshace todo (no queda un Pedido sin items, ni items sueltos).
-        // El closure DEVUELVE el pedido creado para poder redirigir a su pantalla de exito
-        $pedido = DB::transaction(function () use ($items, $total): Pedido {
-            $pedido = Pedido::create([
-                'user_id' => auth()->id(),
-                'total' => $total,
-                'estado' => 'pendiente',
-                'observaciones' => $this->observaciones,
-            ]);
+            if (empty($items)) {
+                session()->flash('mensaje', 'Los productos de tu pedido ya no están disponibles.');
+                Session::forget('carrito');
 
-            foreach ($items as $item) {
-                ItemPedido::create([
-                    'pedido_id' => $pedido->id,
-                    'producto_id' => $item['producto_id'],
-                    'cantidad' => $item['cantidad'],
-                    'precio_unitario' => $item['precio_unitario'],
-                    'ingredientes_elegidos' => $item['ingredientes_elegidos'],
-                ]);
+                return;
             }
 
-            return $pedido;
-        });
+            $total = array_sum(array_map(
+                fn (array $item) => $item['precio_unitario'] * $item['cantidad'],
+                $items
+            ));
 
-        // Vaciamos el carrito de la sesion: el pedido ya vive en la base de datos
-        Session::forget('carrito');
-        $this->dispatch('carrito-actualizado');
+            // DB::transaction agrupa todas las escrituras: si algo falla a mitad de camino,
+            // se deshace todo (no queda un Pedido sin items, ni items sueltos).
+            // El closure DEVUELVE el pedido creado para poder redirigir a su pantalla de exito
+            $pedido = DB::transaction(function () use ($items, $total): Pedido {
+                $pedido = Pedido::create([
+                    'user_id' => auth()->id(),
+                    'total' => $total,
+                    'estado' => 'pendiente',
+                    'observaciones' => $this->observaciones,
+                ]);
 
-        // El momento mas importante de la compra merece su propia pantalla de exito
-        $this->redirect(route('cliente.pedidos.exito', $pedido, absolute: false), navigate: true);
+                foreach ($items as $item) {
+                    ItemPedido::create([
+                        'pedido_id' => $pedido->id,
+                        'producto_id' => $item['producto_id'],
+                        'nombre_producto' => $item['nombre_producto'],
+                        'cantidad' => $item['cantidad'],
+                        'precio_unitario' => $item['precio_unitario'],
+                        'ingredientes_elegidos' => $item['ingredientes_elegidos'],
+                    ]);
+                }
+
+                return $pedido;
+            });
+
+            // Vaciamos el carrito de la sesion: el pedido ya vive en la base de datos
+            Session::forget('carrito');
+            $this->dispatch('carrito-actualizado');
+
+            // El momento mas importante de la compra merece su propia pantalla de exito
+            $this->redirect(route('cliente.pedidos.exito', $pedido, absolute: false), navigate: true);
+        } finally {
+            $candado->release();
+        }
     }
 
     /**
      * Recorre el carrito y devuelve los items con el precio recalculado desde la BD.
      * Los productos que ya no existen o fueron desactivados se descartan.
      *
-     * @return array<int, array{producto_id: int, cantidad: int, precio_unitario: float, ingredientes_elegidos: array<int>}>
+     * @return array<int, array{producto_id: int, nombre_producto: string, cantidad: int, precio_unitario: float, ingredientes_elegidos: array<int>}>
      */
     private function prepararItemsConPreciosActuales(): array
     {
@@ -186,6 +202,9 @@ class MiPedido extends Component
 
             $items[] = [
                 'producto_id' => $producto->id,
+                // Snapshot del nombre AL MOMENTO DE CONFIRMAR: si el admin lo
+                // renombra despues, este pedido no debe mostrar el nombre nuevo
+                'nombre_producto' => $producto->nombre,
                 'cantidad' => $item['cantidad'],
                 'precio_unitario' => $vigente['precio_unitario'],
                 'ingredientes_elegidos' => $vigente['ingredientes']->pluck('id')->values()->all(),

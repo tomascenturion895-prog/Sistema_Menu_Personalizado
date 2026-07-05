@@ -98,4 +98,26 @@ class ProfileTest extends TestCase
 
         $this->assertNotNull($user->fresh());
     }
+
+    public function test_los_campos_del_perfil_arrancan_bloqueados_hasta_apretar_modificar(): void
+    {
+        // Regresion: un bug de sintaxis Blade (@disabled() puesto directo sobre
+        // la etiqueta de un componente x-text-input) rompia el compilador y
+        // dejaba el input entero sin renderizar. Este test verifica el HTML
+        // real, no solo el estado interno del componente.
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $componente = Volt::test('profile.update-profile-information-form');
+
+        $this->assertTrue($componente->get('editando') === false);
+        $componente->assertSeeHtml('disabled');
+        $componente->assertDontSeeHtml('Guardar cambios');
+
+        $componente->call('habilitarEdicion');
+
+        $this->assertTrue($componente->get('editando') === true);
+        $componente->assertDontSeeHtml('disabled');
+        $componente->assertSeeHtml('Guardar cambios');
+    }
 }

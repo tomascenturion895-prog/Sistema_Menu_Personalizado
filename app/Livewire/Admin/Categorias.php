@@ -5,6 +5,7 @@ namespace App\Livewire\Admin;
 use App\Livewire\Concerns\InteractsWithModals;
 use App\Livewire\Concerns\UsaPaginacionPropia;
 use App\Models\Categoria;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
@@ -116,7 +117,26 @@ class Categorias extends Component
      */
     public function eliminar(): void
     {
-        Categoria::findOrFail($this->categoriaAEliminar)->delete();
+        // findOrFail sobre un id ya borrado (doble click en "Eliminar") lanza
+        // ModelNotFoundException: se ignora en vez de mostrar una pantalla de error
+        try {
+            $categoria = Categoria::findOrFail($this->categoriaAEliminar);
+        } catch (ModelNotFoundException) {
+            $this->closeModal('categoria-confirmar-eliminar');
+
+            return;
+        }
+
+        // Borrar la categoria borraria en cascada sus productos (y esos, si ya
+        // tienen ventas, ni siquiera se pueden borrar por la FK restrictOnDelete):
+        // mejor pedir que se vacie/mueva la categoria primero, con un mensaje claro
+        if ($categoria->productos()->exists()) {
+            $this->addError('eliminar', 'Esta categoría todavía tiene productos cargados. Movelos o eliminalos antes de borrar la categoría.');
+
+            return;
+        }
+
+        $categoria->delete();
         $this->categoriaAEliminar = null;
         $this->closeModal('categoria-confirmar-eliminar');
     }

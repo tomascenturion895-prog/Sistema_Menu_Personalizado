@@ -35,7 +35,7 @@ class Producto extends Model
      */
     public static function conIngredientesPorIds(iterable $ids): Collection
     {
-        return static::with('ingredientes')->whereIn('id', $ids)->get()->keyBy('id');
+        return static::with('ingredientes', 'categoria')->whereIn('id', $ids)->get()->keyBy('id');
     }
 
     /**
@@ -53,7 +53,10 @@ class Producto extends Model
      */
     public function calcularItemVigente(array $ingredientesElegidos): ?array
     {
-        if (! $this->activo) {
+        // Un producto de una categoria desactivada no deberia poder comprarse,
+        // aunque el producto en si siga marcado como activo (ej. el admin
+        // apaga toda la categoria "Veganas" de una sola vez)
+        if (! $this->activo || ! $this->categoria->activo) {
             return null;
         }
 
@@ -80,5 +83,16 @@ class Producto extends Model
     public function itemPedidos(): HasMany
     {
         return $this->hasMany(ItemPedido::class);
+    }
+
+    /**
+     * Si el producto ya fue vendido alguna vez, no se puede borrar (la FK de
+     * item_pedidos.producto_id es restrictOnDelete): borrarlo destruiria el
+     * historial de esos pedidos. Para dar de baja un producto vendido se usa
+     * "activo=false", nunca un hard delete.
+     */
+    public function tieneVentasAsociadas(): bool
+    {
+        return $this->itemPedidos()->exists();
     }
 }

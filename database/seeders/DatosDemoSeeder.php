@@ -5,18 +5,20 @@ namespace Database\Seeders;
 use App\Models\Categoria;
 use App\Models\Ingrediente;
 use App\Models\Producto;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 /**
  * Carga datos realistas de la hamburgueseria para demostrar el sistema:
  * categorias por dieta, ingredientes de cada tipo y productos con sus
  * ingredientes disponibles ya asociados.
+ *
+ * A proposito NO usa WithoutModelEvents: los ingredientes de aca abajo pasan
+ * por Ingrediente::updateOrCreate(), y necesitamos que el hook booted()/saving()
+ * (stock 0 => activo false) siga funcionando si algun ingrediente nuevo se
+ * carga sin stock por error.
  */
 class DatosDemoSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
     public function run(): void
     {
         // ------------------------------------------------------------

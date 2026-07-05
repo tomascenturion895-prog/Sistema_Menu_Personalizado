@@ -17,6 +17,9 @@ class ItemPedidoResource extends JsonResource
         return [
             'id' => $this->id,
             'producto' => new ProductoResource($this->whenLoaded('producto')),
+            // Snapshot del nombre al momento de la compra: no cambia aunque el
+            // producto se renombre despues (a diferencia de producto.nombre)
+            'nombre_producto' => $this->nombre_producto,
             'cantidad' => $this->cantidad,
             'precio_unitario' => (float) $this->precio_unitario,
             'subtotal' => (float) $this->precio_unitario * $this->cantidad,
