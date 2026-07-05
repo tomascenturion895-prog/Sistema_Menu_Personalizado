@@ -88,7 +88,7 @@ resalten de verdad. Funciona para visitantes y logueados via @auth / @guest --}}
                         <x-slot name="trigger">
                             <button
                                 class="btn-retro rounded-full gap-1 px-4 py-1.5 bg-white text-sm text-terminal-950 focus:outline-none">
-                                <div x-data="{{ json_encode(['name' => auth()->user()->name]) }}" x-text="name"
+                                <div x-data="{{ json_encode(['name' => auth()->user()->nombre_completo]) }}" x-text="name"
                                     x-on:profile-updated.window="name = $event.detail.name"></div>
 
                                 <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -185,7 +185,7 @@ resalten de verdad. Funciona para visitantes y logueados via @auth / @guest --}}
             @auth
                 <div class="px-1">
                     <div class="font-semibold text-base text-terminal-950"
-                        x-data="{{ json_encode(['name' => auth()->user()->name]) }}" x-text="name"
+                        x-data="{{ json_encode(['name' => auth()->user()->nombre_completo]) }}" x-text="name"
                         x-on:profile-updated.window="name = $event.detail.name"></div>
                     <div class="font-medium text-sm text-terminal-950/60">{{ auth()->user()->email }}</div>
                 </div>

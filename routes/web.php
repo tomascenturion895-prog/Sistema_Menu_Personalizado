@@ -23,6 +23,9 @@ Route::get('/', InicioController::class)->name('home');
 // no requiere estar logueado, igual que la info de contacto del negocio
 Route::get('equipo', EquipoController::class)->name('equipo');
 
+// Pagina estatica de terminos y condiciones: la enlaza el checkbox del registro
+Route::view('terminos', 'terminos')->name('terminos');
+
 // La URL es /inicio (en español, como pide la consigna) pero el nombre interno
 // sigue siendo "dashboard" porque Breeze y sus tests lo referencian asi.
 // Sin 'verified': el .env no tiene un mailer real (MAIL_MAILER=log), asi que

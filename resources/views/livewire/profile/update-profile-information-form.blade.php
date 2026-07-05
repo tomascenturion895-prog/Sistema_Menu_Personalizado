@@ -9,7 +9,9 @@ use Livewire\Volt\Component;
 new class extends Component
 {
     public string $name = '';
+    public string $apellido = '';
     public string $email = '';
+    public string $telefono = '';
 
     /**
      * Mount the component.
@@ -17,7 +19,9 @@ new class extends Component
     public function mount(): void
     {
         $this->name = Auth::user()->name;
+        $this->apellido = Auth::user()->apellido ?? '';
         $this->email = Auth::user()->email;
+        $this->telefono = Auth::user()->telefono ?? '';
     }
 
     /**
@@ -28,8 +32,14 @@ new class extends Component
         $user = Auth::user();
 
         $validated = $this->validate([
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:255', 'regex:/^[\p{L}\s]+$/u'],
+            'apellido' => ['required', 'string', 'max:255', 'regex:/^[\p{L}\s]+$/u'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
+            'telefono' => ['required', 'string', 'max:20', 'regex:/^[0-9\-\+\s()]{6,20}$/'],
+        ], [
+            'name.regex' => 'El nombre solo puede contener letras y espacios.',
+            'apellido.regex' => 'El apellido solo puede contener letras y espacios.',
+            'telefono.regex' => 'Ingresá un teléfono válido (solo números, espacios, guiones o paréntesis).',
         ]);
 
         $user->fill($validated);
@@ -40,7 +50,7 @@ new class extends Component
 
         $user->save();
 
-        $this->dispatch('profile-updated', name: $user->name);
+        $this->dispatch('profile-updated', name: $user->nombre_completo);
     }
 
     /**
@@ -69,15 +79,29 @@ new class extends Component
         </h2>
 
         <p class="mt-1 text-sm text-gray-600">
-            Actualizá tu nombre y tu dirección de correo.
+            Actualizá tus datos personales y tu dirección de correo.
         </p>
     </header>
 
     <form wire:submit="updateProfileInformation" class="mt-6 space-y-6">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+                <x-input-label for="name" value="Nombre" />
+                <x-text-input wire:model="name" id="name" name="name" type="text" class="mt-1 block w-full" required autofocus autocomplete="given-name" />
+                <x-input-error class="mt-2" :messages="$errors->get('name')" />
+            </div>
+
+            <div>
+                <x-input-label for="apellido" value="Apellido" />
+                <x-text-input wire:model="apellido" id="apellido" name="apellido" type="text" class="mt-1 block w-full" required autocomplete="family-name" />
+                <x-input-error class="mt-2" :messages="$errors->get('apellido')" />
+            </div>
+        </div>
+
         <div>
-            <x-input-label for="name" value="Nombre" />
-            <x-text-input wire:model="name" id="name" name="name" type="text" class="mt-1 block w-full" required autofocus autocomplete="name" />
-            <x-input-error class="mt-2" :messages="$errors->get('name')" />
+            <x-input-label for="telefono" value="Teléfono" />
+            <x-text-input wire:model="telefono" id="telefono" name="telefono" type="tel" class="mt-1 block w-full" required placeholder="3644-123456" autocomplete="tel" />
+            <x-input-error class="mt-2" :messages="$errors->get('telefono')" />
         </div>
 
         <div>
