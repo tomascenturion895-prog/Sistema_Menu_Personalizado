@@ -179,16 +179,18 @@ class MiPedido extends Component
                 continue;
             }
 
-            // Precio vigente = precio base actual + extras actuales de los ingredientes elegidos
-            $extras = $producto->ingredientes
+            // Solo se conservan los ingredientes que siguen activos (si uno se quedo
+            // sin stock entre que se arma el carrito y se confirma el pedido, se
+            // descarta aca en vez de cobrarlo/guardarlo igual)
+            $ingredientesVigentes = $producto->ingredientes
                 ->whereIn('id', $item['ingredientes_elegidos'])
-                ->sum('precio_extra');
+                ->where('activo', true);
 
             $items[] = [
                 'producto_id' => $producto->id,
                 'cantidad' => $item['cantidad'],
-                'precio_unitario' => (float) $producto->precio + (float) $extras,
-                'ingredientes_elegidos' => $item['ingredientes_elegidos'],
+                'precio_unitario' => (float) $producto->precio + (float) $ingredientesVigentes->sum('precio_extra'),
+                'ingredientes_elegidos' => $ingredientesVigentes->pluck('id')->values()->all(),
             ];
         }
 

@@ -18,8 +18,8 @@ class Categorias extends Component
     // InteractsWithModals nos da los metodos openModal()/closeModal() para no repetir
     // el dispatch() de eventos en cada CRUD (ver app/Livewire/Concerns/InteractsWithModals.php)
     use InteractsWithModals;
-
     use UsaPaginacionPropia;
+
     // WithPagination agrega el metodo paginate() y mantiene la pagina actual en la URL.
     // UsaPaginacionPropia hace que use la vista de paginacion del sistema, no la de Livewire
     use WithPagination;
