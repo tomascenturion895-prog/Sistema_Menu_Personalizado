@@ -35,8 +35,9 @@ Route::get('inicio', InicioController::class)
     ->middleware(['auth'])
     ->name('dashboard');
 
-// Historial de pedidos del cliente (controlador clasico, patron MVC completo)
-Route::middleware(['auth'])->prefix('mis-pedidos')->name('cliente.pedidos.')->group(function () {
+// Historial de pedidos del cliente (controlador clasico, patron MVC completo).
+// 'cliente' bloquea al admin: su cuenta es de gestion, no compra para si mismo
+Route::middleware(['auth', 'cliente'])->prefix('mis-pedidos')->name('cliente.pedidos.')->group(function () {
     Route::get('/', [PedidoController::class, 'index'])->name('index');
 
     // La ruta fija va ANTES que la variable {pedido}, para que "exito" no se
@@ -51,18 +52,19 @@ Route::middleware(['auth'])->prefix('mis-pedidos')->name('cliente.pedidos.')->gr
 });
 
 // Menu PUBLICO: cualquiera puede ver la carta y armar su hamburguesa sin registrarse.
-// El login se exige recien al momento de agregar al pedido (dentro de los componentes)
-Route::get('menu', MenuIndex::class)->name('menu.index');
+// El login se exige recien al momento de agregar al pedido (dentro de los componentes).
+// 'cliente' no bloquea invitados (solo actua si hay un usuario admin logueado)
+Route::get('menu', MenuIndex::class)->middleware('cliente')->name('menu.index');
 
 // {producto} se resuelve automaticamente a una instancia de Producto gracias al
 // route model binding: Laravel busca el id en la URL y lo inyecta en el componente
-Route::get('menu/productos/{producto}', Personalizar::class)->name('menu.personalizar');
+Route::get('menu/productos/{producto}', Personalizar::class)->middleware('cliente')->name('menu.personalizar');
 
 // Carrito del cliente: revisa lo elegido y confirma el pedido (lo guarda en la BD).
 // Esto si requiere estar logueado: aca ya se esta comprando (sin 'verified',
 // por la misma razon que las rutas de arriba)
 Route::get('mi-pedido', MiPedido::class)
-    ->middleware(['auth'])
+    ->middleware(['auth', 'cliente'])
     ->name('menu.mi-pedido');
 
 Route::view('perfil', 'profile')

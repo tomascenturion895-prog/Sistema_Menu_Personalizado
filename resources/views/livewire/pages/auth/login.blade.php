@@ -20,13 +20,17 @@ new #[Layout('layouts.guest')] class extends Component
 
         Session::regenerate();
 
-        // Segun el rol del usuario logueado, lo mandamos a una pantalla distinta:
-        // admin -> panel de administracion, cliente -> menu publico para armar su pedido
-        $destino = auth()->user()->esAdmin()
-            ? route('admin.dashboard', absolute: false)
-            : route('menu.index', absolute: false);
+        // El admin SIEMPRE entra directo al dashboard (acceso rapido a la gestion):
+        // se ignora cualquier URL "intended" que hubiera quedado en la sesion
+        // (ej. si antes de loguearse habia intentado entrar a /mi-pedido).
+        // El cliente si respeta esa URL intended, para volver a lo que estaba haciendo.
+        if (auth()->user()->esAdmin()) {
+            $this->redirect(route('admin.dashboard', absolute: false), navigate: true);
 
-        $this->redirectIntended(default: $destino, navigate: true);
+            return;
+        }
+
+        $this->redirectIntended(default: route('menu.index', absolute: false), navigate: true);
     }
 }; ?>
 

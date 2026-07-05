@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\EsAdmin;
+use App\Http\Middleware\EsCliente;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -14,9 +15,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        // Alias "admin" para usar como middleware('admin') en las rutas protegidas
+        // Alias para usar como middleware('admin') / middleware('cliente') en las rutas
         $middleware->alias([
             'admin' => EsAdmin::class,
+            'cliente' => EsCliente::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

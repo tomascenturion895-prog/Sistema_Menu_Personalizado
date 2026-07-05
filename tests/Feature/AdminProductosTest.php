@@ -66,4 +66,44 @@ class AdminProductosTest extends TestCase
             'imagen' => 'storage/productos/foto-original.jpg',
         ]);
     }
+
+    public function test_los_productos_se_agrupan_por_categoria(): void
+    {
+        $admin = User::factory()->create(['rol' => 'admin']);
+        $clasicas = Categoria::factory()->create(['nombre' => 'Clásicas']);
+        $sinTacc = Categoria::factory()->create(['nombre' => 'Sin TACC']);
+
+        Producto::factory()->create(['categoria_id' => $clasicas->id, 'nombre' => 'La Clásica Capa8']);
+        Producto::factory()->create(['categoria_id' => $sinTacc->id, 'nombre' => 'Sin Gluten Sin Bugs']);
+
+        $response = $this->actingAs($admin)->get(route('admin.productos'));
+
+        // Cada producto aparece dentro de la seccion de su propia categoria
+        $response
+            ->assertOk()
+            ->assertSeeInOrder(['Clásicas', 'La Clásica Capa8', 'Sin TACC', 'Sin Gluten Sin Bugs']);
+    }
+
+    public function test_una_categoria_sin_productos_muestra_el_estado_vacio(): void
+    {
+        $admin = User::factory()->create(['rol' => 'admin']);
+        Categoria::factory()->create(['nombre' => 'Veganas']);
+
+        $response = $this->actingAs($admin)->get(route('admin.productos'));
+
+        $response
+            ->assertOk()
+            ->assertSee('Todavía no hay productos en esta categoría.');
+    }
+
+    public function test_el_boton_de_una_categoria_precarga_esa_categoria_en_el_formulario(): void
+    {
+        $admin = User::factory()->create(['rol' => 'admin']);
+        $sinTacc = Categoria::factory()->create();
+
+        Livewire::actingAs($admin)
+            ->test(Productos::class)
+            ->call('abrirModalCrear', $sinTacc->id)
+            ->assertSet('categoria_id', $sinTacc->id);
+    }
 }

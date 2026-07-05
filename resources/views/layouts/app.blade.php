@@ -26,11 +26,9 @@
         <x-loader-navegacion />
 
         <div class="min-h-screen bg-brand-50">
-            {{-- Cinta de marca, la misma que abre la landing. Solo en las paginas del cliente:
-                 en el back-office del admin la animacion permanente distrae del trabajo --}}
-            @unless (request()->routeIs('admin.*'))
-                <x-marquee />
-            @endunless
+            {{-- Cinta de marca, la misma que abre la landing. El admin ya no usa este
+                 layout (tiene el suyo propio con sidebar, ver layouts/admin.blade.php) --}}
+            <x-marquee />
 
             <livewire:layout.navigation />
 
@@ -49,10 +47,10 @@
             </main>
 
             {{-- Footer con info del negocio: sin esto, un usuario logueado no tenia
-                 forma de volver a ver direccion/horario/contacto. Se omite en el
-                 admin (zona de trabajo) y en "home"/"dashboard" porque esa pagina
-                 ya incluye su propia seccion completa de contacto y ubicacion --}}
-            @unless (request()->routeIs('admin.*') || request()->routeIs('home') || request()->routeIs('dashboard'))
+                 forma de volver a ver direccion/horario/contacto. Se omite en
+                 "home"/"dashboard" porque esa pagina ya incluye su propia
+                 seccion completa de contacto y ubicacion --}}
+            @unless (request()->routeIs('home') || request()->routeIs('dashboard'))
                 <x-footer-sitio />
             @endunless
         </div>

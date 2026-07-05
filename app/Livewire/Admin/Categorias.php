@@ -11,7 +11,7 @@ use Livewire\WithPagination;
 
 // El atributo #[Layout] envuelve la vista de este componente con layouts.app
 // (el mismo layout que usa el dashboard de Breeze), para que se vea el menu de navegacion
-#[Layout('layouts.app')]
+#[Layout('layouts.admin')]
 class Categorias extends Component
 {
     // InteractsWithModals nos da los metodos openModal()/closeModal() para no repetir
