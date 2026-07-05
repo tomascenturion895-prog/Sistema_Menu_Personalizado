@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Oculta elementos con x-cloak hasta que Alpine termina de inicializar,
+   asi el panel de terminos y condiciones no "flashea" visible al cargar */
+[x-cloak] {
+    display: none !important;
+}
+
 /* ============================================================
    CLASES DE COMPONENTE — patrones que se repiten en varias vistas.
    Se definen una sola vez aca con @apply (que "pega" utilidades de
