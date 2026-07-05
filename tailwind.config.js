@@ -22,17 +22,21 @@ export default {
                 // Color principal de la marca: naranja "a la parrilla".
                 // Escala completa 50 (mas claro) a 950 (mas oscuro), igual que las de Tailwind.
                 brand: {
-                    50: '#fff8ed',
-                    100: '#ffefd4',
-                    200: '#ffdba8',
-                    300: '#ffc170',
-                    400: '#ff9c37',
-                    500: '#ff7f11', // <- tono base de la marca (botones, links, tabs activas)
-                    600: '#f06305',
-                    700: '#c74a08',
-                    800: '#9e3b0f',
-                    900: '#7f3210',
-                    950: '#451706',
+                    // Escala suavizada (menos saturada que un naranja puro tipo "ff7f11",
+                    // pero con mas fuerza que un primer intento demasiado palido/lavado):
+                    // sigue siendo un naranja "a la parrilla" con caracter. Un solo cambio
+                    // aca afecta a toda la app (botones, tabs activas, hero, badges).
+                    50: '#fff7ed',
+                    100: '#ffecd1',
+                    200: '#fed3a0',
+                    300: '#fdb168',
+                    400: '#fa8f3f',
+                    500: '#f37522', // <- tono base de la marca (botones, links, tabs activas)
+                    600: '#dd5d10',
+                    700: '#b8470c',
+                    800: '#933a14',
+                    900: '#773014',
+                    950: '#421c0f',
                 },
 
                 // Paleta oscura "terminal": para navbar, footer, panel admin y fondos oscuros.

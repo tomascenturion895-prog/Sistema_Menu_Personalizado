@@ -12,19 +12,24 @@
         <meta property="og:type" content="website">
     </x-slot>
 
-    {{-- ============ HERO ============ --}}
+    {{-- ============ HERO ============
+         Fondo brand-500 (el mismo naranja ya suavizado que usa el panel de
+         preferencia de /menu): el hero recupera color propio y distinto de la
+         seccion "las mas pedidas" de abajo (que usa brand-50, mucho mas clara),
+         asi no pierde jerarquia. Como el fondo ya es naranja, "tus reglas" pasa
+         a blanco (si fuera brand-500 sobre brand-500 desaparecería). --}}
     <header class="relative overflow-hidden border-b-2 border-terminal-950 bg-brand-500 text-terminal-950">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
 
             <div>
                 <p class="font-mono text-sm font-semibold mb-4">$ hamburguesería en Resistencia, Chaco</p>
 
-                <h1 class="font-display text-6xl sm:text-7xl lg:text-8xl leading-[0.9] uppercase">
+                <h1 class="font-display text-5xl sm:text-6xl lg:text-7xl leading-[0.95] uppercase">
                     Tu burger,<br>
-                    <span class="text-white" style="text-shadow: 3px 3px 0 #14171b;">tus reglas</span>
+                    <span class="text-white" style="text-shadow: 1px 1px 0 #14171b;">tus reglas</span>
                 </h1>
 
-                <p class="text-terminal-950/80 text-lg mt-6 max-w-md leading-relaxed font-medium">
+                <p class="text-terminal-950/80 text-lg mt-5 max-w-md leading-relaxed font-medium">
                     Probá nuestros combos de la casa, o armá tu hamburguesa desde cero:
                     pan, medallones, toppings, salsas y acompañamiento. Vos decidís todo.
                 </p>
@@ -42,7 +47,7 @@
                     @endif
                 @endauth
 
-                <div class="flex flex-wrap gap-4 mt-8">
+                <div class="flex flex-wrap gap-4 mt-6">
                     {{-- La accion principal es VER EL MENU: es publico, sin registro --}}
                     <a href="{{ route('menu.index') }}"
                         class="btn-retro shadow-retro px-7 py-3.5 bg-terminal-950 text-white">
@@ -58,7 +63,7 @@
                 </div>
 
                 {{-- Dietas disponibles, con su punto de color identificatorio --}}
-                <div class="flex flex-wrap gap-4 mt-10 text-sm font-medium text-terminal-950/80">
+                <div class="flex flex-wrap gap-4 mt-8 text-sm font-medium text-terminal-950/80">
                     @foreach (['normal' => 'Clásicas', 'vegetariano' => 'Vegetarianas', 'vegano' => 'Veganas', 'celiaco' => 'Sin TACC'] as $dieta => $etiqueta)
                         <span class="inline-flex items-center gap-2"><x-punto-dieta :dieta="$dieta" /> {{ $etiqueta }}</span>
                     @endforeach
@@ -66,9 +71,9 @@
             </div>
 
             {{-- La hamburguesa de 8 capas con el sticker de promo --}}
-            <div class="relative max-w-md mx-auto w-full">
-                <div class="tarjeta shadow-retro p-8">
-                    <x-burger-capas class="max-w-[280px] mx-auto" />
+            <div class="relative max-w-sm mx-auto w-full">
+                <div class="tarjeta shadow-retro p-6">
+                    <x-burger-capas class="max-w-[240px] mx-auto" />
                     <p class="font-mono text-xs text-center text-terminal-500 mt-4">// 8 capas. la última la ponés vos.</p>
                 </div>
 
