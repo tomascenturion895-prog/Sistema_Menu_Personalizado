@@ -7,6 +7,7 @@ use App\Http\Resources\PedidoResource;
 use App\Models\Pedido;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\Gate;
 
 /**
  * Version API del historial de pedidos del cliente logueado (equivalente a
@@ -25,11 +26,11 @@ class PedidoController extends Controller
         );
     }
 
-    public function show(Request $request, Pedido $pedido): PedidoResource
+    public function show(Pedido $pedido): PedidoResource
     {
-        // Misma proteccion IDOR que el controlador web: un cliente no puede
+        // Misma PedidoPolicy que usa el controlador web: un cliente no puede
         // ver el pedido de otro usuario cambiando el id en la URL
-        abort_unless($pedido->user_id === $request->user()->id, 403);
+        Gate::authorize('view', $pedido);
 
         return new PedidoResource($pedido->load('items.producto.ingredientes'));
     }

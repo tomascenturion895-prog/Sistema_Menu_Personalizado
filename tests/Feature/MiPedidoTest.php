@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Livewire\Menu\MiPedido;
 use App\Models\Ingrediente;
+use App\Models\ItemPedido;
 use App\Models\Pedido;
 use App\Models\Producto;
 use App\Models\User;
@@ -87,6 +88,39 @@ class MiPedidoTest extends TestCase
         // Se cobra el precio ACTUAL de la base (8000), no el viejo del carrito (5000)
         $this->assertDatabaseHas('pedidos', ['total' => 8000]);
         $this->assertDatabaseHas('item_pedidos', ['precio_unitario' => 8000]);
+    }
+
+    public function test_confirmar_descarta_ingredientes_que_se_quedaron_sin_stock(): void
+    {
+        $user = User::factory()->create();
+        $producto = Producto::factory()->create(['precio' => 5000, 'activo' => true]);
+        // Cuando se armo el carrito el ingrediente estaba disponible; entre eso y
+        // confirmar el pedido se quedo sin stock (booted() de Ingrediente lo desactiva)
+        $ingrediente = Ingrediente::factory()->create(['precio_extra' => 500, 'stock' => 0]);
+        $producto->ingredientes()->sync([$ingrediente->id]);
+
+        session()->put('carrito', [
+            [
+                'producto_id' => $producto->id,
+                'nombre' => $producto->nombre,
+                'cantidad' => 1,
+                'precio_unitario' => 5500.0,
+                'ingredientes_elegidos' => [$ingrediente->id],
+                'ingredientes_nombres' => [$ingrediente->nombre],
+            ],
+        ]);
+
+        Livewire::actingAs($user)
+            ->test(MiPedido::class)
+            ->call('confirmarPedido');
+
+        // Se cobra solo el precio base del producto, sin el extra del ingrediente agotado
+        $this->assertDatabaseHas('pedidos', ['total' => 5000]);
+        $this->assertDatabaseHas('item_pedidos', ['precio_unitario' => 5000]);
+
+        // Y el ingrediente agotado no queda guardado como "elegido" en el item
+        $item = ItemPedido::first();
+        $this->assertSame([], $item->ingredientes_elegidos);
     }
 
     public function test_confirmar_descarta_productos_desactivados(): void

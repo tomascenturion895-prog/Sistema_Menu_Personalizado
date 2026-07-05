@@ -168,10 +168,7 @@ class MiPedido extends Component
         // Una sola consulta para TODOS los productos del carrito (antes se pedia
         // uno por uno dentro del foreach: N consultas para un carrito de N items,
         // justo en el paso critico de confirmar el pedido)
-        $productos = Producto::with('ingredientes')
-            ->whereIn('id', collect($this->carrito)->pluck('producto_id'))
-            ->get()
-            ->keyBy('id');
+        $productos = Producto::conIngredientesPorIds(collect($this->carrito)->pluck('producto_id'));
 
         $items = [];
 
@@ -182,16 +179,18 @@ class MiPedido extends Component
                 continue;
             }
 
-            // Precio vigente = precio base actual + extras actuales de los ingredientes elegidos
-            $extras = $producto->ingredientes
+            // Solo se conservan los ingredientes que siguen activos (si uno se quedo
+            // sin stock entre que se arma el carrito y se confirma el pedido, se
+            // descarta aca en vez de cobrarlo/guardarlo igual)
+            $ingredientesVigentes = $producto->ingredientes
                 ->whereIn('id', $item['ingredientes_elegidos'])
-                ->sum('precio_extra');
+                ->where('activo', true);
 
             $items[] = [
                 'producto_id' => $producto->id,
                 'cantidad' => $item['cantidad'],
-                'precio_unitario' => (float) $producto->precio + (float) $extras,
-                'ingredientes_elegidos' => $item['ingredientes_elegidos'],
+                'precio_unitario' => (float) $producto->precio + (float) $ingredientesVigentes->sum('precio_extra'),
+                'ingredientes_elegidos' => $ingredientesVigentes->pluck('id')->values()->all(),
             ];
         }
 

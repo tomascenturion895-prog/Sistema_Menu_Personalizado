@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Database\Factories\ItemPedidoFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -10,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 #[Fillable(['pedido_id', 'producto_id', 'cantidad', 'precio_unitario', 'ingredientes_elegidos'])]
 class ItemPedido extends Model
 {
-    /** @use HasFactory<\Database\Factories\ItemPedidoFactory> */
+    /** @use HasFactory<ItemPedidoFactory> */
     use HasFactory;
 
     protected function casts(): array
