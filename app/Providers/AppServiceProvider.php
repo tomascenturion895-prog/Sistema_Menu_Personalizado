@@ -7,6 +7,7 @@ use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Blade;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Validation\Rules\Password;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -39,5 +40,10 @@ class AppServiceProvider extends ServiceProvider
         RateLimiter::for('api', function ($request) {
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
         });
+
+        // Politica de contraseñas para TODO el sistema (registro web y donde se
+        // use Password::defaults()): minimo 8 caracteres, mezclando letras y
+        // numeros, para que no se puedan crear cuentas con contraseñas debiles
+        Password::defaults(fn (): Password => Password::min(8)->letters()->numbers());
     }
 }

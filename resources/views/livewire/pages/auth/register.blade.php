@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\User;
+use App\Rules\CorreoDeProveedorConocido;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -44,6 +45,7 @@ new #[Layout('layouts.guest')] class extends Component
                 'email',
                 'max:255',
                 'unique:'.User::class,
+                new CorreoDeProveedorConocido,
             ],
             'telefono' => [
                 'required',
@@ -183,6 +185,7 @@ new #[Layout('layouts.guest')] class extends Component
                 <x-input-password wire:model="password" id="password" name="password" required autocomplete="new-password" />
             </div>
 
+            <p class="text-xs text-gray-500 mt-1">Mínimo 8 caracteres, combinando letras y números.</p>
             <x-input-error :messages="$errors->get('password')" class="mt-2" />
         </div>
 
