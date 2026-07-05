@@ -90,6 +90,24 @@ class AuthenticationTest extends TestCase
         $this->assertAuthenticated();
     }
 
+    public function test_un_admin_va_al_dashboard_aunque_haya_una_url_intended_pendiente(): void
+    {
+        $admin = User::factory()->create(['rol' => 'admin']);
+
+        // Simula que antes de loguearse habia intentado entrar a una pagina protegida
+        session(['url.intended' => '/mi-pedido']);
+
+        $component = Volt::test('pages.auth.login')
+            ->set('form.email', $admin->email)
+            ->set('form.password', 'password');
+
+        $component->call('login');
+
+        // El admin va SIEMPRE al dashboard: acceso rapido a la gestion, no a lo
+        // que hubiera intentado abrir antes de loguearse
+        $component->assertRedirect(route('admin.dashboard', absolute: false));
+    }
+
     public function test_users_can_not_authenticate_with_invalid_password(): void
     {
         $user = User::factory()->create();
