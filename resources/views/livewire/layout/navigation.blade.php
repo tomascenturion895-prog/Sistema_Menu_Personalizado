@@ -13,7 +13,7 @@ new class extends Component
     {
         $logout();
 
-        $this->redirect('/', navigate: true);
+        $this->redirect(route('home', absolute: false), navigate: true);
     }
 
     /**

@@ -165,10 +165,18 @@ class MiPedido extends Component
      */
     private function prepararItemsConPreciosActuales(): array
     {
+        // Una sola consulta para TODOS los productos del carrito (antes se pedia
+        // uno por uno dentro del foreach: N consultas para un carrito de N items,
+        // justo en el paso critico de confirmar el pedido)
+        $productos = Producto::with('ingredientes')
+            ->whereIn('id', collect($this->carrito)->pluck('producto_id'))
+            ->get()
+            ->keyBy('id');
+
         $items = [];
 
         foreach ($this->carrito as $item) {
-            $producto = Producto::with('ingredientes')->find($item['producto_id']);
+            $producto = $productos->get($item['producto_id']);
 
             if (! $producto || ! $producto->activo) {
                 continue;

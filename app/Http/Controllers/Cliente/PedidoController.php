@@ -44,7 +44,10 @@ class PedidoController extends Controller
         abort_unless($pedido->user_id === $request->user()->id, 403);
 
         return view('cliente.pedidos.show', [
-            'pedido' => $pedido->load('items.producto'),
+            // La vista traduce ingredientes_elegidos (ids) a nombres leyendo
+            // producto.ingredientes: si no se precarga aca, cada item del pedido
+            // dispara su propia consulta al renderizar (N+1 real, ya detectado)
+            'pedido' => $pedido->load('items.producto.ingredientes'),
         ]);
     }
 
@@ -90,8 +93,15 @@ class PedidoController extends Controller
         $carrito = session('carrito', []);
         $agregados = 0;
 
+        // Una sola consulta para TODOS los productos del pedido (antes se pedia
+        // uno por uno dentro del foreach: N consultas para un pedido de N items)
+        $productos = Producto::with('ingredientes')
+            ->whereIn('id', $pedido->items->pluck('producto_id'))
+            ->get()
+            ->keyBy('id');
+
         foreach ($pedido->items as $item) {
-            $producto = Producto::with('ingredientes')->find($item->producto_id);
+            $producto = $productos->get($item->producto_id);
 
             // Los productos eliminados o desactivados desde aquel pedido se saltean
             if (! $producto || ! $producto->activo) {
