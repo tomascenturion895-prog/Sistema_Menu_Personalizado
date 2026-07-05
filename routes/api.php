@@ -29,6 +29,9 @@ Route::prefix('v1')->name('api.')->group(function () {
         // Historial de pedidos del cliente autenticado (equivalente a /mis-pedidos)
         Route::get('pedidos', [ClientePedidoController::class, 'index'])->name('pedidos.index');
         Route::get('pedidos/{pedido}', [ClientePedidoController::class, 'show'])->name('pedidos.show');
+        // Checkout por API: equivalente a MiPedido@confirmarPedido, pero recibiendo
+        // los items en el body en vez de leerlos de un carrito de sesion
+        Route::post('pedidos', [ClientePedidoController::class, 'store'])->name('pedidos.store');
 
         // Administracion: mismo middleware 'admin' que usa el panel Livewire
         Route::middleware('admin')->prefix('admin')->name('admin.')->group(function () {

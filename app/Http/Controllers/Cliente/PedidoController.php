@@ -109,24 +109,22 @@ class PedidoController extends Controller
         foreach ($pedido->items as $item) {
             $producto = $productos->get($item->producto_id);
 
-            // Los productos eliminados o desactivados desde aquel pedido se saltean
-            if (! $producto || ! $producto->activo) {
+            // calcularItemVigente() descarta el producto (null) si esta desactivado,
+            // y filtra los ingredientes que el producto ya no ofrece o se quedaron sin stock
+            $vigente = $producto?->calcularItemVigente($item->ingredientes_elegidos ?? []);
+
+            if (! $vigente) {
                 continue;
             }
-
-            // Se conservan solo los ingredientes que el producto sigue ofreciendo
-            $ingredientesVigentes = $producto->ingredientes
-                ->whereIn('id', $item->ingredientes_elegidos ?? [])
-                ->where('activo', true);
 
             $carrito[] = [
                 'producto_id' => $producto->id,
                 'nombre' => $producto->nombre,
                 'cantidad' => $item->cantidad,
                 // Precio recalculado al valor de HOY, no al del pedido original
-                'precio_unitario' => (float) $producto->precio + (float) $ingredientesVigentes->sum('precio_extra'),
-                'ingredientes_elegidos' => $ingredientesVigentes->pluck('id')->values()->all(),
-                'ingredientes_nombres' => $ingredientesVigentes->pluck('nombre')->values()->all() ?: ['Receta de la casa'],
+                'precio_unitario' => $vigente['precio_unitario'],
+                'ingredientes_elegidos' => $vigente['ingredientes']->pluck('id')->values()->all(),
+                'ingredientes_nombres' => $vigente['ingredientes']->pluck('nombre')->values()->all() ?: ['Receta de la casa'],
             ];
 
             $agregados++;

@@ -38,6 +38,35 @@ class Producto extends Model
         return static::with('ingredientes')->whereIn('id', $ids)->get()->keyBy('id');
     }
 
+    /**
+     * Recalcula el precio vigente de ESTE producto (ya con sus ingredientes
+     * precargados) contra una lista de ingredientes elegidos, descartando los
+     * que ya no pertenecen al producto o dejaron de estar activos (por ejemplo,
+     * se quedaron sin stock). Devuelve null si el producto en si ya no esta
+     * disponible.
+     *
+     * Centraliza el calculo que antes estaba repetido en MiPedido@confirmarPedido,
+     * PedidoController@repetir y el checkout de la API.
+     *
+     * @param  array<int>  $ingredientesElegidos
+     * @return array{precio_unitario: float, ingredientes: Collection<int, Ingrediente>}|null
+     */
+    public function calcularItemVigente(array $ingredientesElegidos): ?array
+    {
+        if (! $this->activo) {
+            return null;
+        }
+
+        $vigentes = $this->ingredientes
+            ->whereIn('id', $ingredientesElegidos)
+            ->where('activo', true);
+
+        return [
+            'precio_unitario' => (float) $this->precio + (float) $vigentes->sum('precio_extra'),
+            'ingredientes' => $vigentes,
+        ];
+    }
+
     public function categoria(): BelongsTo
     {
         return $this->belongsTo(Categoria::class);
