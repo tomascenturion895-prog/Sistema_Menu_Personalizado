@@ -13,6 +13,10 @@ new class extends Component
     public string $email = '';
     public string $telefono = '';
 
+    // Los campos arrancan bloqueados: hay que apretar "Modificar" antes de poder
+    // tocarlos, para evitar ediciones accidentales al entrar a la pantalla
+    public bool $editando = false;
+
     /**
      * Mount the component.
      */
@@ -22,6 +26,14 @@ new class extends Component
         $this->apellido = Auth::user()->apellido ?? '';
         $this->email = Auth::user()->email;
         $this->telefono = Auth::user()->telefono ?? '';
+    }
+
+    /**
+     * Desbloquea los campos para poder editarlos.
+     */
+    public function habilitarEdicion(): void
+    {
+        $this->editando = true;
     }
 
     /**
@@ -49,6 +61,9 @@ new class extends Component
         }
 
         $user->save();
+
+        // Guardado: los campos se vuelven a bloquear hasta la proxima vez que se apriete "Modificar"
+        $this->editando = false;
 
         $this->dispatch('profile-updated', name: $user->nombre_completo);
     }
@@ -87,26 +102,26 @@ new class extends Component
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
                 <x-input-label for="name" value="Nombre" />
-                <x-text-input wire:model="name" id="name" name="name" type="text" class="mt-1 block w-full" required autofocus autocomplete="given-name" />
+                <x-text-input wire:model="name" id="name" name="name" type="text" class="mt-1 block w-full" required autofocus autocomplete="given-name" :disabled="! $editando" />
                 <x-input-error class="mt-2" :messages="$errors->get('name')" />
             </div>
 
             <div>
                 <x-input-label for="apellido" value="Apellido" />
-                <x-text-input wire:model="apellido" id="apellido" name="apellido" type="text" class="mt-1 block w-full" required autocomplete="family-name" />
+                <x-text-input wire:model="apellido" id="apellido" name="apellido" type="text" class="mt-1 block w-full" required autocomplete="family-name" :disabled="! $editando" />
                 <x-input-error class="mt-2" :messages="$errors->get('apellido')" />
             </div>
         </div>
 
         <div>
             <x-input-label for="telefono" value="Teléfono" />
-            <x-text-input wire:model="telefono" id="telefono" name="telefono" type="tel" class="mt-1 block w-full" required placeholder="3644-123456" autocomplete="tel" />
+            <x-text-input wire:model="telefono" id="telefono" name="telefono" type="tel" class="mt-1 block w-full" required placeholder="3644-123456" autocomplete="tel" :disabled="! $editando" />
             <x-input-error class="mt-2" :messages="$errors->get('telefono')" />
         </div>
 
         <div>
             <x-input-label for="email" value="Correo electrónico" />
-            <x-text-input wire:model="email" id="email" name="email" type="email" class="mt-1 block w-full" required autocomplete="username" />
+            <x-text-input wire:model="email" id="email" name="email" type="email" class="mt-1 block w-full" required autocomplete="username" :disabled="! $editando" />
             <x-input-error class="mt-2" :messages="$errors->get('email')" />
 
             @if (auth()->user() instanceof \Illuminate\Contracts\Auth\MustVerifyEmail && ! auth()->user()->hasVerifiedEmail())
@@ -129,7 +144,13 @@ new class extends Component
         </div>
 
         <div class="flex items-center gap-4">
-            <x-primary-button>Guardar</x-primary-button>
+            {{-- Sin apretar "Modificar" antes, los campos de arriba estan bloqueados
+                 y no hay boton de guardar: evita ediciones accidentales al entrar --}}
+            @if ($editando)
+                <x-primary-button>Guardar cambios</x-primary-button>
+            @else
+                <x-secondary-button type="button" wire:click="habilitarEdicion">Modificar</x-secondary-button>
+            @endif
 
             <x-action-message class="me-3" on="profile-updated">
                 Guardado.
