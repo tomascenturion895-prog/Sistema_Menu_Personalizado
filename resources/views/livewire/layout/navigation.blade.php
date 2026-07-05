@@ -87,23 +87,63 @@ resalten de verdad. Funciona para visitantes y logueados via @auth / @guest --}}
                 </x-nav-link>
 
                 {{-- Icono de carrito (en vez del texto "Carrito"): es la forma que la
-                     gente ya conoce de cualquier tienda online, con su contador de items --}}
+                     gente ya conoce de cualquier tienda online. Al hacer click despliega
+                     una vista previa (mini-carrito) en vez de navegar directo, para poder
+                     chequear que hay cargado sin perder la pagina en la que estabas --}}
                 @auth
                     @unless (auth()->user()->esAdmin())
-                        <a href="{{ route('menu.mi-pedido') }}" wire:navigate aria-label="Carrito"
-                            class="relative inline-flex items-center p-2 rounded-md text-terminal-950 hover:bg-terminal-950/5 {{ request()->routeIs('menu.mi-pedido') ? 'bg-brand-100' : '' }}">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
-                                stroke="currentColor" class="h-6 w-6">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 1.98-4.706 2.545-7.187.075-.323-.154-.65-.483-.65H5.25M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
-                            </svg>
+                        @php
+                            $itemsCarrito = collect(session('carrito', []));
+                        @endphp
 
-                            {{-- Contador de items del carrito, solo se muestra si hay algo cargado --}}
-                            @if (count(session('carrito', [])) > 0)
-                                <span
-                                    class="absolute -top-1 -right-1 bg-brand-500 text-terminal-950 text-xs font-mono font-semibold rounded-full h-4 min-w-4 px-1 flex items-center justify-center">{{ count(session('carrito', [])) }}</span>
-                            @endif
-                        </a>
+                        <x-dropdown align="right" width="w-80" content-classes="bg-white">
+                            <x-slot name="trigger">
+                                <button type="button" aria-label="Carrito"
+                                    class="relative inline-flex items-center p-2 rounded-md text-terminal-950 hover:bg-terminal-950/5 {{ request()->routeIs('menu.mi-pedido') ? 'bg-brand-100' : '' }}">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                                        stroke-width="1.5" stroke="currentColor" class="h-6 w-6">
+                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                            d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 1.98-4.706 2.545-7.187.075-.323-.154-.65-.483-.65H5.25M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+                                    </svg>
+
+                                    {{-- Contador de items del carrito, solo se muestra si hay algo cargado --}}
+                                    @if ($itemsCarrito->isNotEmpty())
+                                        <span
+                                            class="absolute -top-1 -right-1 bg-brand-500 text-terminal-950 text-xs font-mono font-semibold rounded-full h-4 min-w-4 px-1 flex items-center justify-center">{{ $itemsCarrito->count() }}</span>
+                                    @endif
+                                </button>
+                            </x-slot>
+
+                            <x-slot name="content">
+                                <div class="p-4">
+                                    @if ($itemsCarrito->isEmpty())
+                                        <p class="text-sm text-gray-500 text-center py-2">Tu carrito está vacío.</p>
+                                    @else
+                                        <ul class="space-y-3 max-h-72 overflow-y-auto">
+                                            @foreach ($itemsCarrito as $item)
+                                                <li class="flex items-start justify-between gap-3 text-sm">
+                                                    <div>
+                                                        <p class="font-semibold text-terminal-950">{{ $item['nombre'] }}</p>
+                                                        <p class="text-gray-500 font-mono text-xs">{{ $item['cantidad'] }} x @precio($item['precio_unitario'])</p>
+                                                    </div>
+                                                    <span class="precio text-sm shrink-0">@precio($item['precio_unitario'] * $item['cantidad'])</span>
+                                                </li>
+                                            @endforeach
+                                        </ul>
+
+                                        <div class="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between">
+                                            <span class="text-sm font-semibold text-terminal-950">Total</span>
+                                            <span class="precio text-base">@precio($itemsCarrito->sum(fn (array $item) => $item['precio_unitario'] * $item['cantidad']))</span>
+                                        </div>
+
+                                        <a href="{{ route('menu.mi-pedido') }}" wire:navigate
+                                            class="btn-retro mt-4 w-full flex items-center justify-center px-4 py-2 bg-brand-500 text-terminal-950 text-sm">
+                                            Finalizar compra
+                                        </a>
+                                    @endif
+                                </div>
+                            </x-slot>
+                        </x-dropdown>
                     @endunless
                 @endauth
 
