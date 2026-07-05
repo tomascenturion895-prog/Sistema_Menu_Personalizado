@@ -3,7 +3,9 @@
 namespace Tests\Feature;
 
 use App\Livewire\Admin\Ingredientes;
+use App\Models\Categoria;
 use App\Models\Ingrediente;
+use App\Models\Producto;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Livewire\Livewire;
@@ -62,6 +64,54 @@ class AdminIngredientesTest extends TestCase
         $response = $this->actingAs($admin)->get(route('admin.ingredientes'));
 
         $response->assertOk()->assertSee('Sin stock');
+    }
+
+    public function test_guardar_con_stock_cero_fuerza_el_ingrediente_a_inactivo(): void
+    {
+        $admin = User::factory()->create(['rol' => 'admin']);
+
+        // El admin tilda "activo" a pesar de dejar el stock en 0: la regla de
+        // negocio del modelo tiene que ganarle a lo que puso en el checkbox
+        Livewire::actingAs($admin)
+            ->test(Ingredientes::class)
+            ->set('nombre', 'Salsa BBQ')
+            ->set('tipo', 'salsa')
+            ->set('precio_extra', '200')
+            ->set('stock', '0')
+            ->set('activo', true)
+            ->call('guardar')
+            ->assertHasNoErrors();
+
+        $this->assertDatabaseHas('ingredientes', ['nombre' => 'Salsa BBQ', 'stock' => 0, 'activo' => false]);
+    }
+
+    public function test_editar_un_ingrediente_activo_y_vaciar_su_stock_lo_desactiva(): void
+    {
+        $admin = User::factory()->create(['rol' => 'admin']);
+        $ingrediente = Ingrediente::factory()->create(['stock' => 10, 'activo' => true]);
+
+        Livewire::actingAs($admin)
+            ->test(Ingredientes::class)
+            ->call('abrirModalEditar', $ingrediente->id)
+            ->set('stock', '0')
+            ->call('guardar')
+            ->assertHasNoErrors();
+
+        $this->assertDatabaseHas('ingredientes', ['id' => $ingrediente->id, 'stock' => 0, 'activo' => false]);
+    }
+
+    public function test_un_ingrediente_sin_stock_no_aparece_disponible_para_personalizar(): void
+    {
+        // Regla real de negocio: sin stock, el cliente no debe poder elegirlo
+        // al armar su hamburguesa (esto es lo que de verdad importa, no solo el admin)
+        $categoria = Categoria::factory()->create();
+        $producto = Producto::factory()->create(['categoria_id' => $categoria->id]);
+        $ingrediente = Ingrediente::factory()->create(['stock' => 0, 'activo' => false, 'nombre' => 'Queso agotado']);
+        $producto->ingredientes()->attach($ingrediente);
+
+        $response = $this->get(route('menu.personalizar', $producto));
+
+        $response->assertOk()->assertDontSee('Queso agotado');
     }
 
     public function test_la_paginacion_usa_el_diseño_propio_del_sistema(): void

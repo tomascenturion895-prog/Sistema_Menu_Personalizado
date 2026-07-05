@@ -10,7 +10,9 @@
      como en una vista Blade clasica sin Livewire (cliente/pedidos/index), y
      un href funciona en los dos casos por igual. --}}
 @if ($paginator->hasPages())
-    <nav role="navigation" aria-label="Paginación" class="flex flex-wrap items-center justify-between gap-4">
+    {{-- Centrado (no justify-between): texto arriba, botones abajo, los dos
+         centrados como un solo bloque en vez de repartidos a los extremos --}}
+    <nav role="navigation" aria-label="Paginación" class="flex flex-col items-center gap-3">
         <p class="text-sm text-gray-500">
             Mostrando <span class="font-mono font-semibold text-terminal-950">{{ $paginator->firstItem() }}</span>
             a <span class="font-mono font-semibold text-terminal-950">{{ $paginator->lastItem() }}</span>

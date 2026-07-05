@@ -47,6 +47,22 @@ class Ingrediente extends Model
         return $this->stock <= 0;
     }
 
+    /**
+     * Regla de negocio: sin stock, el ingrediente NUNCA puede quedar activo
+     * (no se le puede ofrecer a un cliente algo que no hay para preparar).
+     * Se fuerza aca (evento del modelo) y no en el formulario del admin para
+     * que se cumpla sin importar desde donde se actualice el ingrediente
+     * (panel admin o API).
+     */
+    protected static function booted(): void
+    {
+        static::saving(function (self $ingrediente): void {
+            if ($ingrediente->stock <= 0) {
+                $ingrediente->activo = false;
+            }
+        });
+    }
+
     public function productos(): BelongsToMany
     {
         return $this->belongsToMany(Producto::class, 'ingrediente_producto');

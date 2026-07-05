@@ -21,7 +21,10 @@ class IngredienteFactory extends Factory
             'nombre' => fake()->word(),
             'tipo' => fake()->randomElement(array_keys(Ingrediente::TIPOS)),
             'precio_extra' => fake()->randomFloat(2, 0, 1500),
-            'stock' => fake()->numberBetween(0, 100),
+            // Arranca en 1 (no 0): "sin stock" es un estado que los tests fuerzan
+            // a proposito, no algo que deberia salir al azar y desactivar el
+            // ingrediente por sorpresa (Ingrediente::booted() lo fuerza a inactivo)
+            'stock' => fake()->numberBetween(1, 100),
             'es_vegetariano' => fake()->boolean(),
             'es_vegano' => fake()->boolean(),
             'sin_gluten' => fake()->boolean(),
