@@ -83,10 +83,11 @@ resalten de verdad. Funciona para visitantes y logueados via @auth / @guest --}}
 
             <!-- Lado derecho: menu de usuario (logueado) o accesos de entrada (visitante) -->
             <div class="hidden sm:flex sm:items-center sm:ms-6 sm:gap-3">
-                {{-- Publico, visible para todos: va pegado al bloque de perfil/login, no en los links principales --}}
-                <a href="{{ route('equipo') }}" wire:navigate class="text-sm font-semibold text-terminal-600 hover:text-terminal-950 hover:underline underline-offset-4 {{ request()->routeIs('equipo') ? 'text-terminal-950 underline' : '' }}">
+                {{-- Publico, visible para todos: va pegado al bloque de perfil/login, no en los links principales.
+                     Mismo componente x-nav-link que Menu/Carrito/Mis pedidos, para que tenga el mismo diseño de pildora --}}
+                <x-nav-link :href="route('equipo')" :active="request()->routeIs('equipo')" wire:navigate>
                     {{ __('Equipo') }}
-                </a>
+                </x-nav-link>
 
                 @auth
                     <x-dropdown align="right" width="48">
