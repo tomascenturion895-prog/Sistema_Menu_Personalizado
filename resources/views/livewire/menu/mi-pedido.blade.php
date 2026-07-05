@@ -4,13 +4,13 @@
     <a href="{{ route('menu.index') }}" wire:navigate class="text-sm text-brand-600 hover:underline">&larr; Seguir eligiendo</a>
 
     <div class="mt-3 mb-6">
-        <span class="eyebrow">// mi pedido</span>
-        <h2 class="text-3xl font-semibold text-gray-900">Mi pedido</h2>
+        <span class="eyebrow">// carrito</span>
+        <h2 class="text-3xl font-semibold text-gray-900">Carrito</h2>
     </div>
 
     @if (empty($this->carrito))
         <div class="tarjeta shadow-retro p-10 text-center">
-            <p class="font-display text-xl uppercase text-terminal-950">Tu pedido está vacío</p>
+            <p class="font-display text-xl uppercase text-terminal-950">Tu carrito está vacío</p>
             <p class="text-sm text-gray-500 mt-2">Andá al menú y elegí tu primera burger.</p>
             <a href="{{ route('menu.index') }}" wire:navigate
                 class="btn-retro mt-5 px-5 py-2.5 bg-brand-500 text-terminal-950 text-sm">

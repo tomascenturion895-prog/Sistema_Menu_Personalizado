@@ -58,7 +58,7 @@ resalten de verdad. Funciona para visitantes y logueados via @auth / @guest --}}
                     @auth
                         <x-nav-link :href="route('menu.mi-pedido')" :active="request()->routeIs('menu.mi-pedido')"
                             wire:navigate>
-                            {{ __('Mi pedido') }}
+                            {{ __('Carrito') }}
                             {{-- Contador de items del carrito, solo se muestra si hay algo cargado --}}
                             @if (count(session('carrito', [])) > 0)
                                 <span
@@ -163,7 +163,7 @@ resalten de verdad. Funciona para visitantes y logueados via @auth / @guest --}}
             @auth
                 <x-responsive-nav-link :href="route('menu.mi-pedido')" :active="request()->routeIs('menu.mi-pedido')"
                     wire:navigate>
-                    {{ __('Mi pedido') }}
+                    {{ __('Carrito') }}
                 </x-responsive-nav-link>
 
                 @if (auth()->user()->esAdmin())

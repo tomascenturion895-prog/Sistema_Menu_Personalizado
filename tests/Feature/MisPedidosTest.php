@@ -65,6 +65,28 @@ class MisPedidosTest extends TestCase
         $response->assertForbidden();
     }
 
+    public function test_el_historial_destaca_el_pedido_mas_reciente_y_no_lo_repite_en_la_lista(): void
+    {
+        $cliente = User::factory()->create();
+
+        $viejo = Pedido::factory()->create(['user_id' => $cliente->id, 'created_at' => now()->subDay()]);
+        $reciente = Pedido::factory()->create(['user_id' => $cliente->id, 'created_at' => now()]);
+
+        $response = $this->actingAs($cliente)->get('/mis-pedidos');
+
+        $response
+            ->assertOk()
+            // El mas reciente se muestra en la tarjeta destacada, con estado en vivo
+            ->assertSee($reciente->numero)
+            ->assertSeeLivewire(EstadoPedido::class)
+            // El viejo sigue apareciendo en el historial de abajo
+            ->assertSee($viejo->numero);
+
+        // El numero del pedido reciente aparece UNA sola vez (destacado arriba),
+        // no se repite tambien en la lista de historial
+        $this->assertSame(1, substr_count($response->getContent(), $reciente->numero));
+    }
+
     public function test_el_inicio_muestra_el_estado_del_ultimo_pedido(): void
     {
         $cliente = User::factory()->create();

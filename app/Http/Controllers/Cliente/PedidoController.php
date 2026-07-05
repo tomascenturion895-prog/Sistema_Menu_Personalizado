@@ -21,13 +21,21 @@ class PedidoController extends Controller
 {
     /**
      * Lista los pedidos del usuario logueado, del mas reciente al mas viejo.
+     * Ademas destaca el ultimo pedido aparte, para que la vista principal
+     * responda primero "como va mi pedido" y el historial completo quede abajo.
      */
     public function index(Request $request): View
     {
+        $pedidoActual = $request->user()->pedidos()->latest()->first();
+
         return view('cliente.pedidos.index', [
+            'pedidoActual' => $pedidoActual,
+
             // Se piden SOLO los pedidos del usuario autenticado (nunca los de otros),
-            // con eager loading anidado para evitar el problema N+1
+            // con eager loading anidado para evitar el problema N+1. Se excluye el
+            // pedido actual: ya se destaca arriba, no hace falta repetirlo en la lista
             'pedidos' => $request->user()->pedidos()
+                ->when($pedidoActual, fn ($query) => $query->whereKeyNot($pedidoActual->id))
                 ->with('items.producto')
                 ->latest()
                 ->paginate(10),
