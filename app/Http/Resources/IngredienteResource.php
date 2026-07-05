@@ -21,6 +21,7 @@ class IngredienteResource extends JsonResource
             'tipo' => $this->tipo,
             'tipo_legible' => Ingrediente::TIPOS[$this->tipo] ?? $this->tipo,
             'precio_extra' => (float) $this->precio_extra,
+            'stock' => $this->stock,
             'es_vegetariano' => $this->es_vegetariano,
             'es_vegano' => $this->es_vegano,
             'sin_gluten' => $this->sin_gluten,

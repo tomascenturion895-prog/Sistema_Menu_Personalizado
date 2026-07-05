@@ -70,7 +70,9 @@ class DatosDemoSeeder extends Seeder
         foreach ($ingredientes as $datos) {
             Ingrediente::updateOrCreate(
                 ['nombre' => $datos['nombre'], 'tipo' => $datos['tipo']],
-                [...$datos, 'activo' => true]
+                // Stock de demostracion (50 unidades) salvo que el ingrediente ya
+                // especifique el suyo propio: evita repetir "stock" en las 26 lineas de arriba
+                [...$datos, 'stock' => $datos['stock'] ?? 50, 'activo' => true]
             );
         }
 

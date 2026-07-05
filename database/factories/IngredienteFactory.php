@@ -21,6 +21,7 @@ class IngredienteFactory extends Factory
             'nombre' => fake()->word(),
             'tipo' => fake()->randomElement(array_keys(Ingrediente::TIPOS)),
             'precio_extra' => fake()->randomFloat(2, 0, 1500),
+            'stock' => fake()->numberBetween(0, 100),
             'es_vegetariano' => fake()->boolean(),
             'es_vegano' => fake()->boolean(),
             'sin_gluten' => fake()->boolean(),

@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Admin;
 
+use App\Livewire\Concerns\UsaPaginacionPropia;
 use App\Models\Pedido;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Url;
@@ -11,6 +12,7 @@ use Livewire\WithPagination;
 #[Layout('layouts.admin')]
 class Pedidos extends Component
 {
+    use UsaPaginacionPropia;
     use WithPagination;
 
     // Filtro por estado, sincronizado con la URL (ej: /admin/pedidos?estado=pendiente)

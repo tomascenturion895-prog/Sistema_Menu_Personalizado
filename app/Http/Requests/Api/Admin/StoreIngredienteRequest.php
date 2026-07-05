@@ -28,6 +28,8 @@ class StoreIngredienteRequest extends FormRequest
             'nombre' => ['required', 'string', 'max:255'],
             'tipo' => ['required', Rule::in(array_keys(Ingrediente::TIPOS))],
             'precio_extra' => ['required', 'numeric', 'min:0'],
+            // Opcional: si no se manda, la columna default (0) se encarga
+            'stock' => ['nullable', 'integer', 'min:0'],
             'es_vegetariano' => ['boolean'],
             'es_vegano' => ['boolean'],
             'sin_gluten' => ['boolean'],

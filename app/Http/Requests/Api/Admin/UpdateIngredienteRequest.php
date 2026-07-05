@@ -28,6 +28,7 @@ class UpdateIngredienteRequest extends FormRequest
             'nombre' => ['sometimes', 'required', 'string', 'max:255'],
             'tipo' => ['sometimes', 'required', Rule::in(array_keys(Ingrediente::TIPOS))],
             'precio_extra' => ['sometimes', 'required', 'numeric', 'min:0'],
+            'stock' => ['sometimes', 'nullable', 'integer', 'min:0'],
             'es_vegetariano' => ['sometimes', 'boolean'],
             'es_vegano' => ['sometimes', 'boolean'],
             'sin_gluten' => ['sometimes', 'boolean'],

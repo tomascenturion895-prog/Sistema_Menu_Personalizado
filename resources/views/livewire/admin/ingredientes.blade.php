@@ -19,6 +19,7 @@
                     <th class="px-6 py-3 text-left text-xs font-mono font-medium text-terminal-300 uppercase">Nombre</th>
                     <th class="px-6 py-3 text-left text-xs font-mono font-medium text-terminal-300 uppercase">Tipo</th>
                     <th class="px-6 py-3 text-left text-xs font-mono font-medium text-terminal-300 uppercase">Precio extra</th>
+                    <th class="px-6 py-3 text-left text-xs font-mono font-medium text-terminal-300 uppercase">Stock</th>
                     <th class="px-6 py-3 text-left text-xs font-mono font-medium text-terminal-300 uppercase">Dieta</th>
                     <th class="px-6 py-3 text-left text-xs font-mono font-medium text-terminal-300 uppercase">Estado</th>
                     <th class="px-6 py-3 text-right text-xs font-mono font-medium text-terminal-300 uppercase">Acciones</th>
@@ -30,6 +31,15 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $ingrediente->nombre }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600 capitalize">{{ $ingrediente->tipo }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm"><span class="precio">@precio($ingrediente->precio_extra)</span></td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            {{-- Sin stock resalta en rojo: es lo primero que el admin necesita notar --}}
+                            <span class="font-mono font-semibold {{ $ingrediente->sinStock() ? 'text-tomate-600' : 'text-terminal-950' }}">
+                                {{ $ingrediente->stock }}
+                            </span>
+                            @if ($ingrediente->sinStock())
+                                <span class="badge bg-tomate-100 text-tomate-700 ml-1">Sin stock</span>
+                            @endif
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap text-xs space-x-1">
                             @if ($ingrediente->es_vegetariano)
                                 <span class="inline-flex px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">Vegetariano</span>
@@ -80,6 +90,12 @@
                     <x-text-input wire:model="precio_extra" id="precio_extra" class="block mt-1 w-full" type="number" step="0.01" min="0" />
                     <x-input-error :messages="$errors->get('precio_extra')" class="mt-2" />
                 </div>
+            </div>
+
+            <div class="mt-4">
+                <x-input-label for="stock" value="Stock disponible (unidades)" />
+                <x-text-input wire:model="stock" id="stock" class="block mt-1 w-full sm:w-1/2" type="number" step="1" min="0" />
+                <x-input-error :messages="$errors->get('stock')" class="mt-2" />
             </div>
 
             <div class="mt-4">

@@ -1,0 +1,30 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::table('ingredientes', function (Blueprint $table) {
+            // Unidades disponibles en stock. Default 0 (no negativo): un ingrediente
+            // recien creado no tiene stock cargado todavia hasta que el admin lo declare
+            $table->unsignedInteger('stock')->default(0)->after('precio_extra');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('ingredientes', function (Blueprint $table) {
+            $table->dropColumn('stock');
+        });
+    }
+};
