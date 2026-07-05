@@ -62,16 +62,6 @@ resalten de verdad. Funciona para visitantes y logueados via @auth / @guest --}}
 
                     @auth
                         @unless (auth()->user()->esAdmin())
-                            <x-nav-link :href="route('menu.mi-pedido')" :active="request()->routeIs('menu.mi-pedido')"
-                                wire:navigate>
-                                {{ __('Carrito') }}
-                                {{-- Contador de items del carrito, solo se muestra si hay algo cargado --}}
-                                @if (count(session('carrito', [])) > 0)
-                                    <span
-                                        class="ml-1.5 bg-terminal-950 text-white text-xs font-mono font-semibold rounded-full px-1.5">{{ count(session('carrito', [])) }}</span>
-                                @endif
-                            </x-nav-link>
-
                             {{-- Acceso directo al estado del pedido + historial, sin pasar por el dropdown --}}
                             <x-nav-link :href="route('cliente.pedidos.index')" :active="request()->routeIs('cliente.pedidos.*')" wire:navigate>
                                 {{ __('Mis pedidos') }}
@@ -95,6 +85,27 @@ resalten de verdad. Funciona para visitantes y logueados via @auth / @guest --}}
                 <x-nav-link :href="route('equipo')" :active="request()->routeIs('equipo')" wire:navigate>
                     {{ __('Equipo') }}
                 </x-nav-link>
+
+                {{-- Icono de carrito (en vez del texto "Carrito"): es la forma que la
+                     gente ya conoce de cualquier tienda online, con su contador de items --}}
+                @auth
+                    @unless (auth()->user()->esAdmin())
+                        <a href="{{ route('menu.mi-pedido') }}" wire:navigate aria-label="Carrito"
+                            class="relative inline-flex items-center p-2 rounded-md text-terminal-950 hover:bg-terminal-950/5 {{ request()->routeIs('menu.mi-pedido') ? 'bg-brand-100' : '' }}">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="h-6 w-6">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 1.98-4.706 2.545-7.187.075-.323-.154-.65-.483-.65H5.25M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+                            </svg>
+
+                            {{-- Contador de items del carrito, solo se muestra si hay algo cargado --}}
+                            @if (count(session('carrito', [])) > 0)
+                                <span
+                                    class="absolute -top-1 -right-1 bg-brand-500 text-terminal-950 text-xs font-mono font-semibold rounded-full h-4 min-w-4 px-1 flex items-center justify-center">{{ count(session('carrito', [])) }}</span>
+                            @endif
+                        </a>
+                    @endunless
+                @endauth
 
                 @auth
                     <x-dropdown align="right" width="48">
@@ -173,11 +184,6 @@ resalten de verdad. Funciona para visitantes y logueados via @auth / @guest --}}
 
             @auth
                 @unless (auth()->user()->esAdmin())
-                    <x-responsive-nav-link :href="route('menu.mi-pedido')" :active="request()->routeIs('menu.mi-pedido')"
-                        wire:navigate>
-                        {{ __('Carrito') }}
-                    </x-responsive-nav-link>
-
                     <x-responsive-nav-link :href="route('cliente.pedidos.index')" :active="request()->routeIs('cliente.pedidos.*')" wire:navigate>
                         {{ __('Mis pedidos') }}
                     </x-responsive-nav-link>
@@ -198,6 +204,25 @@ resalten de verdad. Funciona para visitantes y logueados via @auth / @guest --}}
             <x-responsive-nav-link :href="route('equipo')" :active="request()->routeIs('equipo')" wire:navigate>
                 {{ __('Equipo') }}
             </x-responsive-nav-link>
+
+            {{-- Icono de carrito, mismo criterio que en desktop: entre Equipo y el bloque de perfil --}}
+            @auth
+                @unless (auth()->user()->esAdmin())
+                    <x-responsive-nav-link :href="route('menu.mi-pedido')" :active="request()->routeIs('menu.mi-pedido')" wire:navigate>
+                        <span class="inline-flex items-center gap-2">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                stroke="currentColor" class="h-5 w-5">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 1.98-4.706 2.545-7.187.075-.323-.154-.65-.483-.65H5.25M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+                            </svg>
+                            {{ __('Carrito') }}
+                            @if (count(session('carrito', [])) > 0)
+                                <span class="bg-brand-500 text-terminal-950 text-xs font-mono font-semibold rounded-full h-4 min-w-4 px-1 flex items-center justify-center">{{ count(session('carrito', [])) }}</span>
+                            @endif
+                        </span>
+                    </x-responsive-nav-link>
+                @endunless
+            @endauth
 
             @auth
                 <div class="px-1">
