@@ -58,12 +58,17 @@ resalten de verdad. Funciona para visitantes y logueados via @auth / @guest --}}
                     @auth
                         <x-nav-link :href="route('menu.mi-pedido')" :active="request()->routeIs('menu.mi-pedido')"
                             wire:navigate>
-                            {{ __('Mi pedido') }}
+                            {{ __('Carrito') }}
                             {{-- Contador de items del carrito, solo se muestra si hay algo cargado --}}
                             @if (count(session('carrito', [])) > 0)
                                 <span
                                     class="ml-1.5 bg-terminal-950 text-white text-xs font-mono font-semibold rounded-full px-1.5">{{ count(session('carrito', [])) }}</span>
                             @endif
+                        </x-nav-link>
+
+                        {{-- Acceso directo al estado del pedido + historial, sin pasar por el dropdown --}}
+                        <x-nav-link :href="route('cliente.pedidos.index')" :active="request()->routeIs('cliente.pedidos.*')" wire:navigate>
+                            {{ __('Mis pedidos') }}
                         </x-nav-link>
 
                         {{-- Este link solo se muestra si el usuario logueado tiene rol admin --}}
@@ -100,10 +105,6 @@ resalten de verdad. Funciona para visitantes y logueados via @auth / @guest --}}
                         </x-slot>
 
                         <x-slot name="content">
-                            <x-dropdown-link :href="route('cliente.pedidos.index')" wire:navigate>
-                                {{ __('Mis pedidos') }}
-                            </x-dropdown-link>
-
                             <x-dropdown-link :href="route('profile')" wire:navigate>
                                 {{ __('Perfil') }}
                             </x-dropdown-link>
@@ -163,7 +164,11 @@ resalten de verdad. Funciona para visitantes y logueados via @auth / @guest --}}
             @auth
                 <x-responsive-nav-link :href="route('menu.mi-pedido')" :active="request()->routeIs('menu.mi-pedido')"
                     wire:navigate>
-                    {{ __('Mi pedido') }}
+                    {{ __('Carrito') }}
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('cliente.pedidos.index')" :active="request()->routeIs('cliente.pedidos.*')" wire:navigate>
+                    {{ __('Mis pedidos') }}
                 </x-responsive-nav-link>
 
                 @if (auth()->user()->esAdmin())
@@ -191,10 +196,6 @@ resalten de verdad. Funciona para visitantes y logueados via @auth / @guest --}}
                 </div>
 
                 <div class="mt-3 space-y-1.5">
-                    <x-responsive-nav-link :href="route('cliente.pedidos.index')" wire:navigate>
-                        {{ __('Mis pedidos') }}
-                    </x-responsive-nav-link>
-
                     <x-responsive-nav-link :href="route('profile')" wire:navigate>
                         {{ __('Perfil') }}
                     </x-responsive-nav-link>
