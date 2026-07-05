@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin;
 
 use App\Livewire\Concerns\InteractsWithModals;
+use App\Livewire\Concerns\UsaPaginacionPropia;
 use App\Models\Ingrediente;
 use Illuminate\Validation\Rule;
 use Livewire\Attributes\Layout;
@@ -14,6 +15,7 @@ use Livewire\WithPagination;
 class Ingredientes extends Component
 {
     use InteractsWithModals;
+    use UsaPaginacionPropia;
     use WithPagination;
 
     #[Validate('required|string|max:255')]
@@ -25,6 +27,9 @@ class Ingredientes extends Component
 
     #[Validate('required|numeric|min:0')]
     public string $precio_extra = '0';
+
+    #[Validate('required|integer|min:0')]
+    public string $stock = '0';
 
     #[Validate('boolean')]
     public bool $es_vegetariano = false;
@@ -65,9 +70,10 @@ class Ingredientes extends Component
     public function abrirModalCrear(): void
     {
         $this->resetValidation();
-        $this->reset(['nombre', 'tipo', 'precio_extra', 'es_vegetariano', 'es_vegano', 'sin_gluten', 'activo', 'ingredienteId']);
+        $this->reset(['nombre', 'tipo', 'precio_extra', 'stock', 'es_vegetariano', 'es_vegano', 'sin_gluten', 'activo', 'ingredienteId']);
         $this->tipo = 'topping';
         $this->precio_extra = '0';
+        $this->stock = '0';
         $this->activo = true;
 
         $this->openModal('ingrediente-form');
@@ -81,6 +87,7 @@ class Ingredientes extends Component
         $this->nombre = $ingrediente->nombre;
         $this->tipo = $ingrediente->tipo;
         $this->precio_extra = (string) $ingrediente->precio_extra;
+        $this->stock = (string) $ingrediente->stock;
         $this->es_vegetariano = $ingrediente->es_vegetariano;
         $this->es_vegano = $ingrediente->es_vegano;
         $this->sin_gluten = $ingrediente->sin_gluten;

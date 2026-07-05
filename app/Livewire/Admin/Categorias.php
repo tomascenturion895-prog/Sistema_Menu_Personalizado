@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin;
 
 use App\Livewire\Concerns\InteractsWithModals;
+use App\Livewire\Concerns\UsaPaginacionPropia;
 use App\Models\Categoria;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Validate;
@@ -18,7 +19,9 @@ class Categorias extends Component
     // el dispatch() de eventos en cada CRUD (ver app/Livewire/Concerns/InteractsWithModals.php)
     use InteractsWithModals;
 
-    // WithPagination agrega el metodo paginate() y mantiene la pagina actual en la URL
+    use UsaPaginacionPropia;
+    // WithPagination agrega el metodo paginate() y mantiene la pagina actual en la URL.
+    // UsaPaginacionPropia hace que use la vista de paginacion del sistema, no la de Livewire
     use WithPagination;
 
     // Campos del formulario. El atributo #[Validate] define las reglas de validacion
