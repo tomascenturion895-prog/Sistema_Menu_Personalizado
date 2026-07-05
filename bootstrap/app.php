@@ -20,6 +20,13 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => EsAdmin::class,
             'cliente' => EsCliente::class,
         ]);
+
+        // El grupo "api" de Laravel 13 ya no trae throttle por defecto (antes si);
+        // sin esto, hasta los endpoints publicos del menu quedaban sin limite de
+        // requests. El limiter "api" se define en AppServiceProvider::boot()
+        $middleware->api(prepend: [
+            'throttle:api',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

@@ -2,8 +2,10 @@
 
 namespace Tests\Feature\Api\Cliente;
 
+use App\Models\Ingrediente;
 use App\Models\ItemPedido;
 use App\Models\Pedido;
+use App\Models\Producto;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Sanctum\Sanctum;
@@ -56,5 +58,94 @@ class PedidosTest extends TestCase
         $response
             ->assertOk()
             ->assertJsonFragment(['nombre' => $item->producto->nombre]);
+    }
+
+    public function test_puede_confirmar_un_pedido_con_items(): void
+    {
+        $cliente = User::factory()->create();
+        $producto = Producto::factory()->create(['precio' => 5000, 'activo' => true]);
+        $ingrediente = Ingrediente::factory()->create(['precio_extra' => 500, 'activo' => true]);
+        $producto->ingredientes()->sync([$ingrediente->id]);
+
+        Sanctum::actingAs($cliente);
+
+        $response = $this->postJson('/api/v1/pedidos', [
+            'items' => [
+                [
+                    'producto_id' => $producto->id,
+                    'cantidad' => 2,
+                    'ingredientes_elegidos' => [$ingrediente->id],
+                ],
+            ],
+            'observaciones' => 'Sin sal',
+        ]);
+
+        // (5000 + 500) x 2
+        $response->assertCreated()->assertJsonFragment(['total' => 11000.0]);
+
+        $this->assertDatabaseHas('pedidos', [
+            'user_id' => $cliente->id,
+            'total' => 11000,
+            'estado' => 'pendiente',
+            'observaciones' => 'Sin sal',
+        ]);
+    }
+
+    public function test_descarta_ingredientes_sin_stock_al_confirmar_por_api(): void
+    {
+        $cliente = User::factory()->create();
+        $producto = Producto::factory()->create(['precio' => 5000, 'activo' => true]);
+        $ingrediente = Ingrediente::factory()->create(['precio_extra' => 500, 'stock' => 0]);
+        $producto->ingredientes()->sync([$ingrediente->id]);
+
+        Sanctum::actingAs($cliente);
+
+        $response = $this->postJson('/api/v1/pedidos', [
+            'items' => [
+                ['producto_id' => $producto->id, 'cantidad' => 1, 'ingredientes_elegidos' => [$ingrediente->id]],
+            ],
+        ]);
+
+        // Se cobra solo el precio base, sin el extra del ingrediente agotado
+        $response->assertCreated()->assertJsonFragment(['total' => 5000.0]);
+    }
+
+    public function test_no_confirma_un_pedido_con_producto_desactivado(): void
+    {
+        $cliente = User::factory()->create();
+        $inactivo = Producto::factory()->create(['activo' => false]);
+
+        Sanctum::actingAs($cliente);
+
+        $response = $this->postJson('/api/v1/pedidos', [
+            'items' => [
+                ['producto_id' => $inactivo->id, 'cantidad' => 1],
+            ],
+        ]);
+
+        $response->assertUnprocessable();
+        $this->assertDatabaseCount('pedidos', 0);
+    }
+
+    public function test_no_confirma_sin_items(): void
+    {
+        $cliente = User::factory()->create();
+        Sanctum::actingAs($cliente);
+
+        $response = $this->postJson('/api/v1/pedidos', ['items' => []]);
+
+        $response->assertUnprocessable();
+        $response->assertJsonValidationErrors('items');
+    }
+
+    public function test_requiere_autenticacion_para_confirmar_un_pedido(): void
+    {
+        $producto = Producto::factory()->create();
+
+        $response = $this->postJson('/api/v1/pedidos', [
+            'items' => [['producto_id' => $producto->id, 'cantidad' => 1]],
+        ]);
+
+        $response->assertUnauthorized();
     }
 }

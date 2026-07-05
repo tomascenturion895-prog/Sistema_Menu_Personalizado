@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Blade;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -30,5 +32,12 @@ class AppServiceProvider extends ServiceProvider
         // Vista de paginacion propia (retro/editorial) en vez de la generica de
         // Tailwind: se aplica a TODAS las tablas paginadas de una sola vez
         Paginator::defaultView('vendor.pagination.capa8');
+
+        // Limite general de la API (60 req/min por usuario logueado, o por IP si
+        // es un endpoint publico como el menu). Usado por el middleware
+        // "throttle:api" que se prepend-ea al grupo "api" en bootstrap/app.php
+        RateLimiter::for('api', function ($request) {
+            return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
+        });
     }
 }

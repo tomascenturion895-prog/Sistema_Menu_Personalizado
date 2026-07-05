@@ -3,10 +3,15 @@
 namespace App\Http\Controllers\Api\Cliente;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Api\StorePedidoRequest;
 use App\Http\Resources\PedidoResource;
+use App\Models\ItemPedido;
 use App\Models\Pedido;
+use App\Models\Producto;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
 
 /**
@@ -33,5 +38,76 @@ class PedidoController extends Controller
         Gate::authorize('view', $pedido);
 
         return new PedidoResource($pedido->load('items.producto.ingredientes'));
+    }
+
+    /**
+     * Equivalente API de MiPedido@confirmarPedido: recibe los items directo
+     * en el body (la API no tiene un carrito de sesion) y los persiste con
+     * los precios e ingredientes VIGENTES, no los que mando el cliente.
+     */
+    public function store(StorePedidoRequest $request): JsonResponse
+    {
+        $itemsSolicitados = $request->validated('items');
+
+        $productos = Producto::conIngredientesPorIds(
+            collect($itemsSolicitados)->pluck('producto_id')
+        );
+
+        $items = [];
+
+        foreach ($itemsSolicitados as $itemSolicitado) {
+            $producto = $productos->get($itemSolicitado['producto_id']);
+
+            // calcularItemVigente() descarta el producto (null) si esta desactivado,
+            // y filtra los ingredientes que se quedaron sin stock o ya no existen
+            $vigente = $producto?->calcularItemVigente($itemSolicitado['ingredientes_elegidos'] ?? []);
+
+            if (! $vigente) {
+                continue;
+            }
+
+            $items[] = [
+                'producto_id' => $producto->id,
+                'cantidad' => $itemSolicitado['cantidad'],
+                'precio_unitario' => $vigente['precio_unitario'],
+                'ingredientes_elegidos' => $vigente['ingredientes']->pluck('id')->values()->all(),
+            ];
+        }
+
+        if (empty($items)) {
+            return response()->json([
+                'mensaje' => 'Los productos elegidos ya no están disponibles.',
+            ], 422);
+        }
+
+        $total = array_sum(array_map(
+            fn (array $item) => $item['precio_unitario'] * $item['cantidad'],
+            $items
+        ));
+
+        $pedido = DB::transaction(function () use ($request, $items, $total): Pedido {
+            $pedido = Pedido::create([
+                'user_id' => $request->user()->id,
+                'total' => $total,
+                'estado' => 'pendiente',
+                'observaciones' => $request->validated('observaciones'),
+            ]);
+
+            foreach ($items as $item) {
+                ItemPedido::create([
+                    'pedido_id' => $pedido->id,
+                    'producto_id' => $item['producto_id'],
+                    'cantidad' => $item['cantidad'],
+                    'precio_unitario' => $item['precio_unitario'],
+                    'ingredientes_elegidos' => $item['ingredientes_elegidos'],
+                ]);
+            }
+
+            return $pedido;
+        });
+
+        return (new PedidoResource($pedido->load('items.producto.ingredientes')))
+            ->response()
+            ->setStatusCode(201);
     }
 }

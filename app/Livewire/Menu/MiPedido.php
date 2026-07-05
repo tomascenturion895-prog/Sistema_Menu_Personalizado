@@ -175,22 +175,20 @@ class MiPedido extends Component
         foreach ($this->carrito as $item) {
             $producto = $productos->get($item['producto_id']);
 
-            if (! $producto || ! $producto->activo) {
+            // calcularItemVigente() descarta el producto (null) si esta desactivado,
+            // y ademas filtra los ingredientes que se quedaron sin stock mientras
+            // el carrito esperaba
+            $vigente = $producto?->calcularItemVigente($item['ingredientes_elegidos']);
+
+            if (! $vigente) {
                 continue;
             }
-
-            // Solo se conservan los ingredientes que siguen activos (si uno se quedo
-            // sin stock entre que se arma el carrito y se confirma el pedido, se
-            // descarta aca en vez de cobrarlo/guardarlo igual)
-            $ingredientesVigentes = $producto->ingredientes
-                ->whereIn('id', $item['ingredientes_elegidos'])
-                ->where('activo', true);
 
             $items[] = [
                 'producto_id' => $producto->id,
                 'cantidad' => $item['cantidad'],
-                'precio_unitario' => (float) $producto->precio + (float) $ingredientesVigentes->sum('precio_extra'),
-                'ingredientes_elegidos' => $ingredientesVigentes->pluck('id')->values()->all(),
+                'precio_unitario' => $vigente['precio_unitario'],
+                'ingredientes_elegidos' => $vigente['ingredientes']->pluck('id')->values()->all(),
             ];
         }
 
