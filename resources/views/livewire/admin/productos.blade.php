@@ -100,7 +100,7 @@
                 @if ($foto)
                     <p class="text-xs text-exito-700 mt-1">Foto nueva seleccionada: se guardará al confirmar.</p>
                 @elseif ($imagenActual)
-                    <img src="{{ asset('storage/'.$imagenActual) }}" alt="Foto actual" class="mt-2 h-16 rounded-md border border-gray-200 object-cover">
+                    <img src="{{ asset($imagenActual) }}" alt="Foto actual" class="mt-2 h-16 rounded-md border border-gray-200 object-cover">
                 @endif
                 <x-input-error :messages="$errors->get('foto')" class="mt-2" />
             </div>

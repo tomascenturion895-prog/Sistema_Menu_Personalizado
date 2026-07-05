@@ -101,10 +101,13 @@ class Productos extends Component
         $ingredientes = $datos['ingredientesSeleccionados'];
         unset($datos['ingredientesSeleccionados'], $datos['foto']);
 
-        // Si se subio una foto nueva, se guarda en storage/app/public/productos y se
-        // persiste su ruta. Si no, el producto conserva la imagen que ya tenia
+        // Si se subio una foto nueva, se guarda en storage/app/public/productos. Se
+        // persiste la ruta COMPLETA desde public/ (prefijo "storage/"), asi el
+        // componente que la muestra (x-foto-producto) hace un asset() directo sin
+        // importar si la foto vino del panel o se puso a mano en public/images.
+        // Si no se subio nada, el producto conserva la imagen que ya tenia
         if ($this->foto) {
-            $datos['imagen'] = $this->foto->store('productos', 'public');
+            $datos['imagen'] = 'storage/'.$this->foto->store('productos', 'public');
         }
 
         $producto = Producto::updateOrCreate(['id' => $this->productoId], $datos);

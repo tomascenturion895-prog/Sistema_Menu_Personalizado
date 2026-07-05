@@ -36,9 +36,11 @@ class AdminProductosTest extends TestCase
 
         $producto = Producto::where('nombre', 'La Fotogénica')->first();
 
-        // El producto quedo creado con una ruta de imagen, y el archivo existe en el disco
+        // El producto quedo creado con una ruta de imagen (prefijada "storage/", el
+        // formato que asset() necesita), y el archivo existe en el disco real
         $this->assertNotNull($producto->imagen);
-        Storage::disk('public')->assertExists($producto->imagen);
+        $this->assertStringStartsWith('storage/', $producto->imagen);
+        Storage::disk('public')->assertExists(str($producto->imagen)->after('storage/')->toString());
     }
 
     public function test_editar_sin_subir_foto_conserva_la_imagen_existente(): void
@@ -47,7 +49,7 @@ class AdminProductosTest extends TestCase
         $categoria = Categoria::factory()->create();
         $producto = Producto::factory()->create([
             'categoria_id' => $categoria->id,
-            'imagen' => 'productos/foto-original.jpg',
+            'imagen' => 'storage/productos/foto-original.jpg',
         ]);
 
         Livewire::actingAs($admin)
@@ -61,7 +63,7 @@ class AdminProductosTest extends TestCase
         $this->assertDatabaseHas('productos', [
             'id' => $producto->id,
             'nombre' => 'Nombre nuevo',
-            'imagen' => 'productos/foto-original.jpg',
+            'imagen' => 'storage/productos/foto-original.jpg',
         ]);
     }
 }
