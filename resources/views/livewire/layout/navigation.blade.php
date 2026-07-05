@@ -66,6 +66,11 @@ resalten de verdad. Funciona para visitantes y logueados via @auth / @guest --}}
                             @endif
                         </x-nav-link>
 
+                        {{-- Acceso directo al estado del pedido + historial, sin pasar por el dropdown --}}
+                        <x-nav-link :href="route('cliente.pedidos.index')" :active="request()->routeIs('cliente.pedidos.*')" wire:navigate>
+                            {{ __('Mis pedidos') }}
+                        </x-nav-link>
+
                         {{-- Este link solo se muestra si el usuario logueado tiene rol admin --}}
                         @if (auth()->user()->esAdmin())
                             <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')" wire:navigate>
@@ -100,10 +105,6 @@ resalten de verdad. Funciona para visitantes y logueados via @auth / @guest --}}
                         </x-slot>
 
                         <x-slot name="content">
-                            <x-dropdown-link :href="route('cliente.pedidos.index')" wire:navigate>
-                                {{ __('Mis pedidos') }}
-                            </x-dropdown-link>
-
                             <x-dropdown-link :href="route('profile')" wire:navigate>
                                 {{ __('Perfil') }}
                             </x-dropdown-link>
@@ -166,6 +167,10 @@ resalten de verdad. Funciona para visitantes y logueados via @auth / @guest --}}
                     {{ __('Carrito') }}
                 </x-responsive-nav-link>
 
+                <x-responsive-nav-link :href="route('cliente.pedidos.index')" :active="request()->routeIs('cliente.pedidos.*')" wire:navigate>
+                    {{ __('Mis pedidos') }}
+                </x-responsive-nav-link>
+
                 @if (auth()->user()->esAdmin())
                     <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')"
                         wire:navigate>
@@ -191,10 +196,6 @@ resalten de verdad. Funciona para visitantes y logueados via @auth / @guest --}}
                 </div>
 
                 <div class="mt-3 space-y-1.5">
-                    <x-responsive-nav-link :href="route('cliente.pedidos.index')" wire:navigate>
-                        {{ __('Mis pedidos') }}
-                    </x-responsive-nav-link>
-
                     <x-responsive-nav-link :href="route('profile')" wire:navigate>
                         {{ __('Perfil') }}
                     </x-responsive-nav-link>
