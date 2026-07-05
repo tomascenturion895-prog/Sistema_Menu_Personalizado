@@ -8,6 +8,7 @@ use App\Models\Producto;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 /**
  * Controlador del historial de pedidos del cliente ("Mis pedidos").
@@ -45,11 +46,11 @@ class PedidoController extends Controller
     /**
      * Muestra el detalle de un pedido puntual.
      */
-    public function show(Request $request, Pedido $pedido): View
+    public function show(Pedido $pedido): View
     {
-        // Autorizacion: un cliente solo puede ver SUS pedidos. Si intenta abrir
-        // el pedido de otro usuario (cambiando el id de la URL), recibe un 403
-        abort_unless($pedido->user_id === $request->user()->id, 403);
+        // Autorizacion centralizada en PedidoPolicy: un cliente solo puede ver
+        // SUS pedidos. Si intenta abrir el de otro usuario, recibe un 403
+        Gate::authorize('view', $pedido);
 
         return view('cliente.pedidos.show', [
             // La vista traduce ingredientes_elegidos (ids) a nombres leyendo
@@ -63,9 +64,9 @@ class PedidoController extends Controller
      * Pantalla de exito: se muestra una sola vez, justo despues de confirmar.
      * El momento mas importante de la compra merece su propia pagina.
      */
-    public function exito(Request $request, Pedido $pedido): View
+    public function exito(Pedido $pedido): View
     {
-        abort_unless($pedido->user_id === $request->user()->id, 403);
+        Gate::authorize('view', $pedido);
 
         return view('cliente.pedidos.exito', [
             'pedido' => $pedido,
@@ -75,10 +76,10 @@ class PedidoController extends Controller
     /**
      * Cancela un pedido, solo si sigue pendiente (la cocina aun no lo tomo).
      */
-    public function cancelar(Request $request, Pedido $pedido): RedirectResponse
+    public function cancelar(Pedido $pedido): RedirectResponse
     {
         // Misma proteccion IDOR que en show(): solo el dueño puede cancelar
-        abort_unless($pedido->user_id === $request->user()->id, 403);
+        Gate::authorize('view', $pedido);
 
         // Regla de negocio: una vez que la cocina lo confirmo, ya no se puede cancelar
         abort_unless($pedido->esCancelable(), 403, 'Este pedido ya está en preparación y no se puede cancelar.');
@@ -94,19 +95,16 @@ class PedidoController extends Controller
      * Vuelve a cargar en el carrito los items de un pedido anterior,
      * con los precios e ingredientes VIGENTES (no los del pedido viejo).
      */
-    public function repetir(Request $request, Pedido $pedido): RedirectResponse
+    public function repetir(Pedido $pedido): RedirectResponse
     {
-        abort_unless($pedido->user_id === $request->user()->id, 403);
+        Gate::authorize('view', $pedido);
 
         $carrito = session('carrito', []);
         $agregados = 0;
 
         // Una sola consulta para TODOS los productos del pedido (antes se pedia
         // uno por uno dentro del foreach: N consultas para un pedido de N items)
-        $productos = Producto::with('ingredientes')
-            ->whereIn('id', $pedido->items->pluck('producto_id'))
-            ->get()
-            ->keyBy('id');
+        $productos = Producto::conIngredientesPorIds($pedido->items->pluck('producto_id'));
 
         foreach ($pedido->items as $item) {
             $producto = $productos->get($item->producto_id);

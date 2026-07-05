@@ -168,10 +168,7 @@ class MiPedido extends Component
         // Una sola consulta para TODOS los productos del carrito (antes se pedia
         // uno por uno dentro del foreach: N consultas para un carrito de N items,
         // justo en el paso critico de confirmar el pedido)
-        $productos = Producto::with('ingredientes')
-            ->whereIn('id', collect($this->carrito)->pluck('producto_id'))
-            ->get()
-            ->keyBy('id');
+        $productos = Producto::conIngredientesPorIds(collect($this->carrito)->pluck('producto_id'));
 
         $items = [];
 
