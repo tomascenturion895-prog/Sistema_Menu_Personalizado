@@ -78,6 +78,11 @@ resalten de verdad. Funciona para visitantes y logueados via @auth / @guest --}}
 
             <!-- Lado derecho: menu de usuario (logueado) o accesos de entrada (visitante) -->
             <div class="hidden sm:flex sm:items-center sm:ms-6 sm:gap-3">
+                {{-- Publico, visible para todos: va pegado al bloque de perfil/login, no en los links principales --}}
+                <a href="{{ route('equipo') }}" wire:navigate class="text-sm font-semibold text-terminal-600 hover:text-terminal-950 hover:underline underline-offset-4 {{ request()->routeIs('equipo') ? 'text-terminal-950 underline' : '' }}">
+                    {{ __('Equipo') }}
+                </a>
+
                 @auth
                     <x-dropdown align="right" width="48">
                         <x-slot name="trigger">
@@ -172,6 +177,11 @@ resalten de verdad. Funciona para visitantes y logueados via @auth / @guest --}}
 
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-4 border-t-2 border-terminal-950/20 px-4">
+            {{-- Publico, visible para todos: va junto al bloque de perfil/login, no en los links principales --}}
+            <x-responsive-nav-link :href="route('equipo')" :active="request()->routeIs('equipo')" wire:navigate>
+                {{ __('Equipo') }}
+            </x-responsive-nav-link>
+
             @auth
                 <div class="px-1">
                     <div class="font-semibold text-base text-terminal-950"

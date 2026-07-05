@@ -33,10 +33,15 @@
         <div class="flex flex-col sm:flex-row items-center justify-between gap-3 mt-8 pt-6 border-t border-terminal-800">
             <x-application-logo class="text-sm text-white" />
 
-            {{-- Vuelve a la landing publica: el unico lugar donde antes vivia toda esta info --}}
-            <a href="{{ route('home') }}#contacto" class="text-sm font-semibold text-brand-400 hover:text-brand-300 hover:underline underline-offset-4">
-                Conocé más sobre nosotros →
-            </a>
+            <div class="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm font-semibold">
+                {{-- Vuelve a la landing publica: el unico lugar donde antes vivia toda esta info --}}
+                <a href="{{ route('home') }}#contacto" class="text-brand-400 hover:text-brand-300 hover:underline underline-offset-4">
+                    Conocé más sobre nosotros →
+                </a>
+                <a href="{{ route('equipo') }}" wire:navigate class="text-brand-400 hover:text-brand-300 hover:underline underline-offset-4">
+                    Nuestro equipo →
+                </a>
+            </div>
         </div>
     </div>
 </footer>
