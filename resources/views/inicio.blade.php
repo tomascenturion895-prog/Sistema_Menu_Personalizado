@@ -171,6 +171,10 @@
                     de garbanzos, de lentejas y plant based, pan común, integral y sin TACC.
                     Nadie se queda sin su burger.
                 </p>
+
+                <a href="{{ route('equipo') }}" wire:navigate class="inline-block font-semibold text-terminal-950 underline underline-offset-4 hover:text-brand-600 mt-4">
+                    Conocé al equipo que lo hizo →
+                </a>
             </div>
 
             <div class="tarjeta shadow-retro p-8">

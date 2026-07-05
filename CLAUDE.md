@@ -188,3 +188,121 @@ This project has domain-specific skills available in `**/skills/**`. You MUST ac
 - To filter on a particular test name: `php artisan test --compact --filter=testName` (recommended after making a change to a related file).
 
 </laravel-boost-guidelines>
+
+<!-- ==================================================================== -->
+<!-- RESUMEN DEL PROYECTO — Capa8Burger (actualizado 2026-07-05)          -->
+<!-- ==================================================================== -->
+
+# Capa8Burger — Resumen del proyecto
+
+Proyecto final de **Programación III (Tecnicatura Universitaria en Programación, UTN)**:
+sistema de pedidos de hamburguesas 100% personalizables. Stack: Laravel 13 +
+Livewire v3 + Volt + Breeze + Tailwind v3 + MySQL.
+
+## Reglas de trabajo con el usuario (fijas, no cambian)
+
+- **Los commits y PRs los hace el usuario a mano en VS Code.** Nunca ejecutar
+  `git commit`, `git push` ni crear PRs. Solo avisar cuando algo está listo,
+  con un mensaje de commit sugerido **en español**.
+- **Dejar comentarios `//` en el código** explicando qué hace cada cosa: el
+  usuario está aprendiendo Laravel haciendo este proyecto conmigo (esta regla
+  de proyecto tiene prioridad sobre la convención general de "no comentar").
+  Preferir `//` línea a línea antes que bloques PHPDoc largos, salvo en
+  headers explicativos de un archivo.
+- **Explicar siempre el paso a paso y el porqué** de lo que se hace, en
+  español, con fines de aprendizaje.
+- **No testear cada mejora visual menor.** El usuario pidió explícitamente no
+  hacer captura/verificación por cada cambio puramente estético, pero sí
+  correr pruebas reales (tests, navegador) cuando el cambio es importante
+  (bugs, checkout, seguridad).
+- **Alcance del usuario: solo lado cliente.** El panel de administración
+  (`App\Http\Controllers\Admin\*`, componentes Livewire `App\Livewire\Admin\*`)
+  lo está construyendo un compañero de equipo — no tocar ni construir nada ahí
+  salvo pedido explícito.
+
+## Requisitos de la consigna (PDF) y estado
+
+| Requisito | Estado |
+|---|---|
+| Laravel + Livewire + Blade + Tailwind, MySQL | ✅ |
+| Auth con accesos diferenciados (cliente/admin) | ✅ (Breeze + middleware `admin`) |
+| 4+ modelos con relaciones/migraciones | ✅ (Producto, Ingrediente, Pedido, ItemPedido, Categoria, User) |
+| CRUD de 4+ modelos | ✅ (admin, hecho por el compañero) |
+| 6+ vistas | ✅ |
+| Vista con tabla relacional entre modelos | ✅ |
+| Perfiles de los desarrolladores | ✅ (`/equipo`, ver detalle abajo) |
+| Diseño responsive (mobile/tablet/desktop) | ✅ |
+| Contenido en español | ✅ |
+| API con endpoints | ⏳ **pendiente — próximo paso** |
+| Deploy en hosting | ⏳ pendiente |
+| Export de la base de datos | ⏳ pendiente |
+| Documento PDF entregable (capturas, esquema DB, etc.) | ⏳ pendiente |
+
+## Arquitectura y convenciones ya establecidas
+
+- **MVC de punta a punta.** Rutas solo enrutan; controladores clásicos
+  consultan/validan; vistas solo presentan. Los componentes Livewire actúan
+  legítimamente como "C" cuando la interacción es reactiva.
+- **`/` y `/inicio` son la misma página** (mismo `InicioController`, misma
+  vista `inicio.blade.php`), con la misma navbar Livewire compartida
+  (`livewire.layout.navigation`) en toda la app. Loguearse solo desbloquea
+  poder comprar, no nuevas secciones de navbar. Esto se hizo para resolver un
+  bug de continuidad de navegación (invitado vs logueado veían cosas
+  distintas).
+- **Config como "modelo" para datos estáticos no administrables**:
+  `config/negocio.php` (info del local) y `config/equipo.php` (perfiles de
+  developers) — mismo patrón, evita crear tablas para datos que no cambian
+  por CRUD.
+- **Sistema de diseño editorial retro** (evitar "card-itis"): tokens Tailwind
+  custom (`brand`, `terminal`, `exito`, `tomate`, `cheddar`, `dieta.*`),
+  utilidades `.tarjeta`, `.tarjeta-hover`, `.btn-retro`, `.eyebrow`, `.badge-*`,
+  `.precio`. Layouts con líneas/reglas en vez de encerrar todo en cards.
+  Excepciones puntuales donde SÍ se usa `.tarjeta` (ej. perfiles de equipo)
+  porque ahí tiene sentido visual.
+- **Componentes Blade reutilizables** para evitar duplicación:
+  `<x-mensaje-flash>`, `<x-foto-producto>` (con fallback si no hay imagen),
+  `<x-avatar-iniciales>` (fallback de foto para developers), `<x-badge-estado>`,
+  `<x-barra-carrito>`, `<x-punto-dieta>`.
+- **Directiva Blade `@precio`** (en `AppServiceProvider::boot()`) y accessor
+  `Pedido::numero` para centralizar formato repetido.
+- **Prevención de N+1**: siempre eager-load (`with()`) o batch-load con
+  `whereIn()->get()->keyBy('id')` en vez de consultar dentro de un `foreach`.
+- **Gotcha de Livewire `#[Computed]`**: el cache dura todo el request. Si una
+  acción muta la sesión (ej. carrito) y el mismo render necesita reflejar el
+  cambio, hay que invalidar con `unset($this->prop)` antes de que se vuelva a
+  leer.
+- **`verified` middleware removido** de las rutas de checkout (`/inicio`,
+  `/mi-pedido`, `/mis-pedidos/*`): el `.env` usa `MAIL_MAILER=log` (no hay
+  mailer real), así que exigir email verificado dejaría a cualquier cliente
+  nuevo sin poder comprar. Se mantiene `auth`.
+- **Fotos de producto y de developers**: el usuario las va a cargar a mano más
+  adelante. Mientras tanto, todo tiene un fallback (`<x-foto-producto>`,
+  `<x-avatar-iniciales>`) para que nunca se rompa un `<img>` o quede un
+  espacio vacío feo.
+
+## Feature más reciente: perfiles de desarrolladores (`/equipo`)
+
+Página pública (no requiere login), accesible desde el footer compartido y
+desde la sección "Quiénes somos" del inicio.
+
+- `config/equipo.php` — nombre, rol, github/linkedin (`null` = todavía no
+  cargado).
+- `App\Http\Controllers\EquipoController` (invokable) — lee la config, la
+  pasa a la vista.
+- `resources/views/equipo.blade.php` — usa `<x-app-layout>`; por cada
+  desarrollador muestra `<x-avatar-iniciales>`, nombre, rol como badge, e
+  íconos de GitHub/LinkedIn que se muestran "apagados" (`<span>` gris, sin
+  `href`) si el link todavía no existe, para nunca generar un `href=""` roto.
+  Ya cargados como `null`: se completan más adelante sin tocar la vista.
+- Los 3 developers actuales: Centurion Tomas (Backend), Benitez Apolo
+  (Frontend), Benitez Antonia (Base de datos).
+- `tests/Feature/EquipoTest.php` — 3 tests: página pública muestra a los 3,
+  no genera `href=""` roto, el inicio enlaza a `/equipo`. Usa
+  `RefreshDatabase` (el inicio consulta productos destacados).
+- Suite completa verificada: **71/71 tests, 183 assertions.**
+
+## Próximo paso
+
+Construir la **API REST con endpoints** (Eloquent API Resources) — es el
+último requisito grande pendiente de la consigna, dentro del alcance del
+usuario (no es parte del panel admin).

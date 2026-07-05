@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\PanelController as AdminPanelController;
 use App\Http\Controllers\Cliente\PedidoController;
+use App\Http\Controllers\EquipoController;
 use App\Http\Controllers\InicioController;
 use App\Livewire\Admin\Categorias;
 use App\Livewire\Admin\Ingredientes;
@@ -17,6 +18,10 @@ use Illuminate\Support\Facades\Route;
 // lo mismo. La unica diferencia posible (el banner del ultimo pedido) la
 // resuelve la propia vista con @auth, no una vista distinta.
 Route::get('/', InicioController::class)->name('home');
+
+// Perfiles de los desarrolladores (requisito de la consigna): pagina publica,
+// no requiere estar logueado, igual que la info de contacto del negocio
+Route::get('equipo', EquipoController::class)->name('equipo');
 
 // La URL es /inicio (en español, como pide la consigna) pero el nombre interno
 // sigue siendo "dashboard" porque Breeze y sus tests lo referencian asi.
