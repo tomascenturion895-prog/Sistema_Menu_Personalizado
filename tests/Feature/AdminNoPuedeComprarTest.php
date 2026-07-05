@@ -70,4 +70,30 @@ class AdminNoPuedeComprarTest extends TestCase
         $this->actingAs($cliente)->get('/mi-pedido')->assertOk();
         $this->actingAs($cliente)->get('/mis-pedidos')->assertOk();
     }
+
+    public function test_el_admin_no_ve_menu_carrito_ni_mis_pedidos_en_la_navbar(): void
+    {
+        $admin = User::factory()->create(['rol' => 'admin']);
+
+        // "/" es una de las pocas paginas de cliente a las que el admin SI puede
+        // entrar (no esta bloqueada por el middleware 'cliente'), asi que sirve
+        // para confirmar que la navbar compartida le oculta estos links
+        $this->actingAs($admin)->get('/')
+            ->assertOk()
+            ->assertDontSee(__('Menú'))
+            ->assertDontSee(__('Carrito'))
+            ->assertDontSee(__('Mis pedidos'))
+            ->assertSee('Panel Admin');
+    }
+
+    public function test_un_cliente_normal_si_ve_menu_carrito_y_mis_pedidos_en_la_navbar(): void
+    {
+        $cliente = User::factory()->create(['rol' => 'cliente']);
+
+        $this->actingAs($cliente)->get('/')
+            ->assertOk()
+            ->assertSee(__('Menú'))
+            ->assertSee(__('Carrito'))
+            ->assertSee(__('Mis pedidos'));
+    }
 }

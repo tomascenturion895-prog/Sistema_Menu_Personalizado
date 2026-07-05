@@ -51,25 +51,32 @@ resalten de verdad. Funciona para visitantes y logueados via @auth / @guest --}}
                         </x-nav-link>
                     @endauth
 
-                    <x-nav-link :href="route('menu.index')" :active="request()->routeIs('menu.index') || request()->routeIs('menu.personalizar')" wire:navigate>
-                        {{ __('Menú') }}
-                    </x-nav-link>
+                    {{-- Menu/Carrito/Mis pedidos son cosas de CLIENTE: un admin no compra
+                         para si mismo, asi que ni siquiera ve estos links (ademas de estar
+                         bloqueados por el middleware 'cliente' si entra por URL directa) --}}
+                    @unless (auth()->user()?->esAdmin())
+                        <x-nav-link :href="route('menu.index')" :active="request()->routeIs('menu.index') || request()->routeIs('menu.personalizar')" wire:navigate>
+                            {{ __('Menú') }}
+                        </x-nav-link>
+                    @endunless
 
                     @auth
-                        <x-nav-link :href="route('menu.mi-pedido')" :active="request()->routeIs('menu.mi-pedido')"
-                            wire:navigate>
-                            {{ __('Carrito') }}
-                            {{-- Contador de items del carrito, solo se muestra si hay algo cargado --}}
-                            @if (count(session('carrito', [])) > 0)
-                                <span
-                                    class="ml-1.5 bg-terminal-950 text-white text-xs font-mono font-semibold rounded-full px-1.5">{{ count(session('carrito', [])) }}</span>
-                            @endif
-                        </x-nav-link>
+                        @unless (auth()->user()->esAdmin())
+                            <x-nav-link :href="route('menu.mi-pedido')" :active="request()->routeIs('menu.mi-pedido')"
+                                wire:navigate>
+                                {{ __('Carrito') }}
+                                {{-- Contador de items del carrito, solo se muestra si hay algo cargado --}}
+                                @if (count(session('carrito', [])) > 0)
+                                    <span
+                                        class="ml-1.5 bg-terminal-950 text-white text-xs font-mono font-semibold rounded-full px-1.5">{{ count(session('carrito', [])) }}</span>
+                                @endif
+                            </x-nav-link>
 
-                        {{-- Acceso directo al estado del pedido + historial, sin pasar por el dropdown --}}
-                        <x-nav-link :href="route('cliente.pedidos.index')" :active="request()->routeIs('cliente.pedidos.*')" wire:navigate>
-                            {{ __('Mis pedidos') }}
-                        </x-nav-link>
+                            {{-- Acceso directo al estado del pedido + historial, sin pasar por el dropdown --}}
+                            <x-nav-link :href="route('cliente.pedidos.index')" :active="request()->routeIs('cliente.pedidos.*')" wire:navigate>
+                                {{ __('Mis pedidos') }}
+                            </x-nav-link>
+                        @endunless
 
                         {{-- Este link solo se muestra si el usuario logueado tiene rol admin --}}
                         @if (auth()->user()->esAdmin())
@@ -158,19 +165,23 @@ resalten de verdad. Funciona para visitantes y logueados via @auth / @guest --}}
                 </x-responsive-nav-link>
             @endauth
 
-            <x-responsive-nav-link :href="route('menu.index')" :active="request()->routeIs('menu.index') || request()->routeIs('menu.personalizar')" wire:navigate>
-                {{ __('Menú') }}
-            </x-responsive-nav-link>
+            @unless (auth()->user()?->esAdmin())
+                <x-responsive-nav-link :href="route('menu.index')" :active="request()->routeIs('menu.index') || request()->routeIs('menu.personalizar')" wire:navigate>
+                    {{ __('Menú') }}
+                </x-responsive-nav-link>
+            @endunless
 
             @auth
-                <x-responsive-nav-link :href="route('menu.mi-pedido')" :active="request()->routeIs('menu.mi-pedido')"
-                    wire:navigate>
-                    {{ __('Carrito') }}
-                </x-responsive-nav-link>
+                @unless (auth()->user()->esAdmin())
+                    <x-responsive-nav-link :href="route('menu.mi-pedido')" :active="request()->routeIs('menu.mi-pedido')"
+                        wire:navigate>
+                        {{ __('Carrito') }}
+                    </x-responsive-nav-link>
 
-                <x-responsive-nav-link :href="route('cliente.pedidos.index')" :active="request()->routeIs('cliente.pedidos.*')" wire:navigate>
-                    {{ __('Mis pedidos') }}
-                </x-responsive-nav-link>
+                    <x-responsive-nav-link :href="route('cliente.pedidos.index')" :active="request()->routeIs('cliente.pedidos.*')" wire:navigate>
+                        {{ __('Mis pedidos') }}
+                    </x-responsive-nav-link>
+                @endunless
 
                 @if (auth()->user()->esAdmin())
                     <x-responsive-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')"
