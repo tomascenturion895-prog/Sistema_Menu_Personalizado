@@ -10,7 +10,7 @@
              (description, Open Graph) sin necesitar un <head> propio duplicado. --}}
         <title>{{ $titulo ?? config('app.name', 'Capa8Burger') }}</title>
 
-        <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+        <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
         {{ $meta ?? '' }}
 
         <!-- Fuentes: Figtree para texto general, JetBrains Mono para precios y acentos "de codigo" -->

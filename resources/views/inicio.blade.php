@@ -70,10 +70,12 @@
                 </div>
             </div>
 
-            {{-- La hamburguesa de 8 capas con el sticker de promo --}}
+            {{-- Imagen del hero con el sticker de promo --}}
             <div class="relative max-w-sm mx-auto w-full">
                 <div class="tarjeta shadow-retro p-6">
-                    <x-burger-capas class="max-w-[240px] mx-auto" />
+                    <img src="{{ asset('images/Imagen_Inicio.png') }}"
+                         alt="Hamburguesa Capa8Burger"
+                         class="w-full mx-auto">
                     <p class="font-mono text-xs text-center text-terminal-500 mt-4">// 8 capas. la última la ponés vos.</p>
                 </div>
 

@@ -36,7 +36,8 @@ resalten de verdad. Funciona para visitantes y logueados via @auth / @guest --}}
         <div class="flex justify-between h-16 items-center">
             <div class="flex items-center">
                 <!-- Logo: para visitantes lleva a la landing, para logueados al inicio -->
-                <div class="shrink-0 flex items-center">
+                <div class="shrink-0 flex items-center gap-2">
+                    <img src="{{ asset('images/Navbar_Capa8Burger.png') }}" alt="Capa8Burger" class="h-12 w-auto">
                     <a href="{{ auth()->check() ? route('dashboard') : route('home') }}" wire:navigate>
                         {{-- Sobre fondo blanco el acento naranja del logo resalta solo --}}
                         <x-application-logo class="text-lg text-terminal-950" />

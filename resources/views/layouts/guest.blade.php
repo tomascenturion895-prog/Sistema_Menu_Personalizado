@@ -7,7 +7,7 @@
 
         <title>{{ config('app.name', 'Capa8Burger') }}</title>
 
-        <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+        <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
 
         <!-- Fuentes: Figtree para texto general, JetBrains Mono para precios y acentos "de codigo" -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -22,13 +22,11 @@
         <x-loader-navegacion />
 
         <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-brand-500 px-4">
-            <div>
-                <a href="/" wire:navigate>
-                    <x-application-logo variant="onbrand" class="text-2xl text-terminal-950" />
-                </a>
-            </div>
+            <a href="/" wire:navigate>
+                <img src="{{ asset('Login_Register.png') }}" alt="Capa8Burger" class="w-96">
+            </a>
 
-            <div class="w-full sm:max-w-md mt-6 px-6 py-6 bg-white border-2 border-terminal-950 shadow-retro overflow-hidden rounded-xl">
+            <div class="w-full sm:max-w-md mt-1 px-6 py-6 bg-white border-2 border-terminal-950 shadow-retro overflow-hidden rounded-xl">
                 {{ $slot }}
             </div>
 
