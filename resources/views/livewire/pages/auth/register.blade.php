@@ -86,8 +86,12 @@ new #[Layout('layouts.guest')] class extends Component
 
         Auth::login($user);
 
-        // Los registros nuevos siempre son clientes: van directo al menu a hacer su primer pedido
-        $this->redirect(route('menu.index', absolute: false), navigate: true);
+        // Si el registro paso porque el visitante intento confirmar su pedido
+        // sin estar logueado (redirigido a /register desde /mi-pedido), hay
+        // que devolverlo ahi -no perdio el carrito, seguia en la sesion, pero
+        // sin esto quedaba "perdido" en /menu sin ver que su pedido seguia ahi.
+        // Sin URL intendida (registro comun), va al menu a hacer su primer pedido
+        $this->redirectIntended(default: route('menu.index', absolute: false), navigate: true);
     }
 }; ?>
 

@@ -124,4 +124,27 @@ class AdminNoPuedeComprarTest extends TestCase
             ->assertSee('Finalizar compra')
             ->assertDontSee('Tu carrito está vacío.');
     }
+
+    public function test_un_invitado_tambien_ve_el_icono_del_carrito(): void
+    {
+        // El carrito vive en la sesion desde ANTES de loguearse (Personalizar no
+        // exige auth): un invitado con productos ya cargados tiene que poder
+        // verlos, no solo el cliente logueado
+        $producto = Producto::factory()->create(['nombre' => 'La Clásica Capa8', 'precio' => 5000]);
+
+        $this->withSession(['carrito' => [
+            ['producto_id' => $producto->id, 'nombre' => $producto->nombre, 'cantidad' => 1, 'precio_unitario' => 5000.0, 'ingredientes_elegidos' => [], 'ingredientes_nombres' => []],
+        ]])->get('/')
+            ->assertOk()
+            ->assertSee('aria-label="Carrito"', false)
+            ->assertSee('La Clásica Capa8')
+            ->assertSee('Finalizar compra');
+    }
+
+    public function test_un_invitado_ve_el_link_de_inicio_en_la_navbar(): void
+    {
+        // "/" e "/inicio" son la misma pagina: un invitado tambien deberia
+        // poder verla como un link explicito, no solo entrando por el logo
+        $this->get('/')->assertOk()->assertSee(__('Inicio'));
+    }
 }

@@ -39,6 +39,33 @@ class RegistrationTest extends TestCase
         $this->assertAuthenticated();
     }
 
+    public function test_el_registro_devuelve_al_visitante_a_la_pagina_que_intentaba_abrir(): void
+    {
+        // Un invitado con un carrito armado intenta confirmar su pedido: /mi-pedido
+        // exige login, y Laravel guarda esa URL como "intended" antes de mandarlo a /login
+        $this->withSession(['carrito' => [
+            ['producto_id' => 1, 'nombre' => 'A', 'cantidad' => 1, 'precio_unitario' => 100.0, 'ingredientes_elegidos' => [], 'ingredientes_nombres' => []],
+        ]])->get('/mi-pedido')->assertRedirect('/login');
+
+        $component = Volt::test('pages.auth.register')
+            ->set('name', 'Test')
+            ->set('apellido', 'User')
+            ->set('email', 'test@gmail.com')
+            ->set('telefono', '3644-123456')
+            ->set('fecha_nacimiento', '2000-01-01')
+            ->set('password', 'password123')
+            ->set('password_confirmation', 'password123')
+            ->set('terminos', true);
+
+        $component->call('register');
+
+        // En vez de mandarlo siempre a /menu, tiene que volver a /mi-pedido a
+        // terminar lo que estaba haciendo: el carrito seguia en la sesion,
+        // pero sin esto el cliente lo perdia de vista igual
+        $component->assertRedirect(route('menu.mi-pedido', absolute: false));
+        $this->assertNotEmpty(session('carrito'));
+    }
+
     public function test_no_se_puede_registrar_sin_aceptar_los_terminos(): void
     {
         $component = Volt::test('pages.auth.register')
