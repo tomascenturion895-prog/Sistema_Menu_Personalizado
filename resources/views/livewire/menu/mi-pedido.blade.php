@@ -1,5 +1,15 @@
 <div class="max-w-3xl mx-auto px-4 sm:px-6 py-10">
-    <x-mensaje-flash />
+    {{-- Notificacion inline: Alpine la oculta sola a los 5s o con el boton X --}}
+    @if ($mensajeFlash)
+        <div x-data
+             x-init="setTimeout(() => $wire.ocultarMensajeFlash(), 5000)"
+             class="mb-4 flex items-center justify-between gap-2 text-sm bg-exito-50 border border-exito-200 text-exito-700 rounded-md px-4 py-3">
+            <span>{{ $mensajeFlash }}</span>
+            <button type="button" wire:click="ocultarMensajeFlash"
+                    class="text-exito-400 hover:text-exito-700 leading-none text-base"
+                    aria-label="Cerrar">&times;</button>
+        </div>
+    @endif
 
     <a href="{{ route('menu.index') }}" wire:navigate class="text-sm text-brand-600 hover:underline">&larr; Seguir eligiendo</a>
 

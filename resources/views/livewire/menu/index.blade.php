@@ -1,7 +1,17 @@
 {{-- Contenedor de pagina: las paginas Livewire definen su propio ancho maximo y padding --}}
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 pb-28">
 
-    <x-mensaje-flash />
+    {{-- Notificacion inline: Alpine la oculta sola a los 5s o con el boton X --}}
+    @if ($mensajeFlash)
+        <div x-data
+             x-init="setTimeout(() => $wire.ocultarMensajeFlash(), 5000)"
+             class="mb-4 flex items-center justify-between gap-2 text-sm bg-exito-50 border border-exito-200 text-exito-700 rounded-md px-4 py-3">
+            <span>{{ $mensajeFlash }}</span>
+            <button type="button" wire:click="ocultarMensajeFlash"
+                    class="text-exito-400 hover:text-exito-700 leading-none text-base"
+                    aria-label="Cerrar">&times;</button>
+        </div>
+    @endif
 
     {{-- Encabezado del menu, siempre visible --}}
     <div class="mb-6 flex flex-wrap items-end justify-between gap-4">

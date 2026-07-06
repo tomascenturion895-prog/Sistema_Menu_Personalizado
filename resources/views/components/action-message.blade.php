@@ -1,7 +1,12 @@
 @props(['on'])
 
 {{-- Antes se cerraba solo a los 2s sin forma de cerrarlo antes; ahora dura 5s
-     (mismo criterio que <x-mensaje-flash>) y se puede cerrar con la cruz --}}
+     y se puede cerrar con la cruz. Esto SI usa Alpine (a diferencia de
+     <livewire:mensaje-flash>): este div esta SIEMPRE presente en el DOM desde
+     la carga inicial, nunca se inserta de cero via morph, asi que no sufre el
+     problema de x-init/x-show al insertar un nodo nuevo. Ademas reacciona a
+     un evento de Livewire en vivo (@this.on) sin recargar ni navegar, que es
+     justamente el caso de uso para el que Alpine esta pensado. --}}
 <div x-data="{ shown: false, timeout: null }"
      x-init="@this.on('{{ $on }}', () => { clearTimeout(timeout); shown = true; timeout = setTimeout(() => { shown = false }, 5000); })"
      x-show.transition.out.opacity.duration.1500ms="shown"

@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Menu;
 
+use App\Livewire\Concerns\ConMensajeFlash;
 use App\Models\ItemPedido;
 use App\Models\Pedido;
 use App\Models\Producto;
@@ -15,8 +16,16 @@ use Livewire\Component;
 #[Layout('layouts.app')]
 class MiPedido extends Component
 {
+    use ConMensajeFlash;
+
     // Observaciones opcionales que el cliente puede dejar para la cocina
     public string $observaciones = '';
+
+    public function mount(): void
+    {
+        // Recupera mensajes flasheados desde un redirect (ej. cuando el carrito quedo vacio)
+        $this->recuperarMensajeFlash();
+    }
 
     public function render()
     {
@@ -139,7 +148,7 @@ class MiPedido extends Component
             $items = $this->prepararItemsConPreciosActuales();
 
             if (empty($items)) {
-                session()->flash('mensaje', 'Los productos de tu pedido ya no están disponibles.');
+                $this->mostrarMensajeFlash('Los productos de tu pedido ya no están disponibles.');
                 Session::forget('carrito');
 
                 return;

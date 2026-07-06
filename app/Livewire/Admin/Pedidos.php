@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Admin;
 
+use App\Livewire\Concerns\ConMensajeFlash;
 use App\Livewire\Concerns\UsaPaginacionPropia;
 use App\Models\Pedido;
 use Livewire\Attributes\Layout;
@@ -12,6 +13,7 @@ use Livewire\WithPagination;
 #[Layout('layouts.admin')]
 class Pedidos extends Component
 {
+    use ConMensajeFlash;
     use UsaPaginacionPropia;
     use WithPagination;
 
@@ -52,7 +54,7 @@ class Pedidos extends Component
         // Ademas de ser un estado valido, tiene que ser una transicion valida
         // desde el estado actual (ej. no se puede "revivir" uno cancelado)
         if (! $pedido->puedeTransicionarA($nuevoEstado)) {
-            session()->flash('mensaje', 'Ese cambio de estado no es válido para este pedido.');
+            $this->mostrarMensajeFlash('Ese cambio de estado no es válido para este pedido.');
 
             return;
         }

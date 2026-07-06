@@ -10,7 +10,11 @@
 
     <div class="py-12">
         <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-            <x-mensaje-flash />
+            @if (session('mensaje'))
+                <div class="mb-4 text-sm bg-exito-50 border border-exito-200 text-exito-700 rounded-md px-4 py-3">
+                    {{ session('mensaje') }}
+                </div>
+            @endif
 
             <a href="{{ route('cliente.pedidos.index') }}" wire:navigate class="text-sm text-brand-600 hover:underline">&larr; Volver a mis pedidos</a>
 

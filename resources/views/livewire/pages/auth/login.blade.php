@@ -42,7 +42,11 @@ new #[Layout('layouts.guest')] class extends Component
     </div>
 
     <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+    @if (session('status'))
+        <div class="mb-4 text-sm font-medium text-exito-600">
+            {{ session('status') }}
+        </div>
+    @endif
 
     <form wire:submit="login">
         <!-- Correo -->

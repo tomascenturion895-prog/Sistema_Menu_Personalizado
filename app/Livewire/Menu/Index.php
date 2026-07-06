@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Menu;
 
+use App\Livewire\Concerns\ConMensajeFlash;
 use App\Models\Categoria;
 use App\Models\Producto;
 use Illuminate\Support\Facades\Session;
@@ -13,6 +14,8 @@ use Livewire\Component;
 #[Layout('layouts.app')]
 class Index extends Component
 {
+    use ConMensajeFlash;
+
     // #[Url] sincroniza esta propiedad con la URL (ej: /menu?dieta=vegano)
     #[Url]
     public string $dieta = 'todos';
@@ -27,6 +30,9 @@ class Index extends Component
      */
     public function mount(): void
     {
+        // Recupera mensajes flasheados desde un redirect (ej. PedidoController::repetir)
+        $this->recuperarMensajeFlash();
+
         if ($this->dieta === 'todos' && Session::has('preferencia_dieta')) {
             $this->dieta = Session::get('preferencia_dieta');
         }
@@ -113,6 +119,6 @@ class Index extends Component
         // para que el contador de "Mi pedido" se actualice al instante
         $this->dispatch('carrito-actualizado');
 
-        session()->flash('mensaje', "{$producto->nombre} se agregó a tu pedido.");
+        $this->mostrarMensajeFlash("{$producto->nombre} se agregó a tu pedido.");
     }
 }
