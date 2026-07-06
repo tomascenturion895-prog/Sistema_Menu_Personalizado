@@ -52,7 +52,7 @@ Route::middleware(['auth', 'cliente'])->prefix('mis-pedidos')->name('cliente.ped
 });
 
 // Menu PUBLICO: cualquiera puede ver la carta y armar su hamburguesa sin registrarse.
-// El login se exige recien al momento de agregar al pedido (dentro de los componentes).
+// El login se exige recien al momento de CONFIRMAR el pedido (dentro de MiPedido).
 // 'cliente' no bloquea invitados (solo actua si hay un usuario admin logueado)
 Route::get('menu', MenuIndex::class)->middleware('cliente')->name('menu.index');
 
@@ -60,11 +60,11 @@ Route::get('menu', MenuIndex::class)->middleware('cliente')->name('menu.index');
 // route model binding: Laravel busca el id en la URL y lo inyecta en el componente
 Route::get('menu/productos/{producto}', Personalizar::class)->middleware('cliente')->name('menu.personalizar');
 
-// Carrito del cliente: revisa lo elegido y confirma el pedido (lo guarda en la BD).
-// Esto si requiere estar logueado: aca ya se esta comprando (sin 'verified',
-// por la misma razon que las rutas de arriba)
+// Carrito del cliente: armar y revisar el carrito es libre para cualquiera (sin
+// 'auth'), igual que el resto del menu. El login se exige recien al hacer click
+// en "Confirmar pedido" (dentro de MiPedido@confirmarPedido), no para verlo.
 Route::get('mi-pedido', MiPedido::class)
-    ->middleware(['auth', 'cliente'])
+    ->middleware('cliente')
     ->name('menu.mi-pedido');
 
 Route::view('perfil', 'profile')

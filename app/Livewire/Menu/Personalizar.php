@@ -141,15 +141,9 @@ class Personalizar extends Component
      */
     public function agregarAlPedido(): void
     {
-        // Armar la hamburguesa es libre, pero para pedirla hay que tener cuenta:
-        // el visitante va al login y vuelve a esta misma pagina al autenticarse
-        if (! auth()->check()) {
-            session()->put('url.intended', route('menu.personalizar', $this->producto));
-
-            $this->redirect(route('login', absolute: false), navigate: true);
-
-            return;
-        }
+        // Armar la hamburguesa y agregarla al carrito es libre para cualquiera,
+        // incluso sin cuenta: el login se exige recien al confirmar el pedido
+        // (MiPedido@confirmarPedido), no en este paso.
 
         // Regla 1: cada grupo de eleccion unica disponible debe tener una opcion marcada
         foreach ($this->ingredientesPorTipo as $tipo => $opciones) {

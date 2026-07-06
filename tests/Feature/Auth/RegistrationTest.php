@@ -2,7 +2,9 @@
 
 namespace Tests\Feature\Auth;
 
+use App\Livewire\Menu\MiPedido;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Livewire\Livewire;
 use Livewire\Volt\Volt;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
@@ -41,11 +43,16 @@ class RegistrationTest extends TestCase
 
     public function test_el_registro_devuelve_al_visitante_a_la_pagina_que_intentaba_abrir(): void
     {
-        // Un invitado con un carrito armado intenta confirmar su pedido: /mi-pedido
-        // exige login, y Laravel guarda esa URL como "intended" antes de mandarlo a /login
+        // Un invitado con un carrito armado ve /mi-pedido sin problema (ya no
+        // exige login), pero al intentar CONFIRMAR el pedido si lo manda a
+        // loguearse, guardando esa pantalla como destino de vuelta
         $this->withSession(['carrito' => [
             ['producto_id' => 1, 'nombre' => 'A', 'cantidad' => 1, 'precio_unitario' => 100.0, 'ingredientes_elegidos' => [], 'ingredientes_nombres' => []],
-        ]])->get('/mi-pedido')->assertRedirect('/login');
+        ]]);
+
+        Livewire::test(MiPedido::class)
+            ->call('confirmarPedido')
+            ->assertRedirect(route('login', absolute: false));
 
         $component = Volt::test('pages.auth.register')
             ->set('name', 'Test')

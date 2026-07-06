@@ -89,21 +89,11 @@ class Index extends Component
 
     /**
      * Agrega un combo de la casa directo al carrito, tal como viene (sin personalizar).
-     * Mirar el menu es libre, pero comprar exige una cuenta: si es un visitante,
-     * lo mandamos a loguearse y guardamos esta pagina como destino de retorno.
+     * Agregar al carrito es libre para cualquiera, incluso sin cuenta: el login
+     * se exige recien al confirmar el pedido (MiPedido@confirmarPedido).
      */
     public function agregarCombo(int $productoId): void
     {
-        if (! auth()->check()) {
-            // 'url.intended' es la clave que Laravel usa para "volver a donde estabas"
-            // despues del login (el redirectIntended() de la pantalla de login la lee)
-            session()->put('url.intended', route('menu.index'));
-
-            $this->redirect(route('login', absolute: false), navigate: true);
-
-            return;
-        }
-
         $producto = Producto::where('activo', true)->findOrFail($productoId);
 
         $carrito = Session::get('carrito', []);

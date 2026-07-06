@@ -109,6 +109,19 @@ class MiPedido extends Component
             return;
         }
 
+        // Armar y revisar el carrito es libre para cualquiera; recien aca, al
+        // confirmar la compra, se exige cuenta. Se guarda esta misma pantalla
+        // como destino de vuelta: el carrito sigue intacto en la sesion, asi
+        // que despues de loguearse o registrarse el cliente cae directo acá
+        // con todo lo que ya tenia cargado, listo para confirmar de nuevo.
+        if (! auth()->check()) {
+            session()->put('url.intended', route('menu.mi-pedido'));
+
+            $this->redirect(route('login', absolute: false), navigate: true);
+
+            return;
+        }
+
         // Candado por usuario: un doble click (o dos pestañas confirmando a la
         // vez) antes de que la sesion vacie el carrito podria crear el mismo
         // pedido dos veces. Si ya hay una confirmacion en curso para este
