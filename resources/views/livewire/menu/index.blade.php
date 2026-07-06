@@ -98,8 +98,8 @@
                         <article class="flex gap-4 py-6 border-b border-gray-200" wire:key="producto-{{ $producto->id }}">
                             {{-- Miniatura: solo si el admin cargo foto (sin foto, la tipografia manda) --}}
                             @if ($producto->imagen)
-                                <div class="w-24 h-24 shrink-0 rounded-lg overflow-hidden border-2 border-terminal-950">
-                                    <x-foto-producto :producto="$producto" alto="h-24" />
+                                <div class="w-32 h-32 shrink-0 rounded-xl overflow-hidden shadow-sm">
+                                    <x-foto-producto :producto="$producto" alto="h-32" />
                                 </div>
                             @endif
 
