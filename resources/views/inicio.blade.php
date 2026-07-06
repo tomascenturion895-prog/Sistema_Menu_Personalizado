@@ -6,7 +6,7 @@
 <x-app-layout>
     <x-slot name="titulo">Capa8Burger — Tu burger, tus reglas</x-slot>
     <x-slot name="meta">
-        <meta name="description" content="Hamburguesería en Resistencia, Chaco. Combos de la casa o armá tu hamburguesa 100% personalizada: opciones clásicas, vegetarianas, veganas y sin TACC.">
+        <meta name="description" content="Hamburguesería en {{ config('negocio.ciudad') }}. Combos de la casa o armá tu hamburguesa 100% personalizada: opciones clásicas, vegetarianas, veganas y sin TACC.">
         <meta property="og:title" content="Capa8Burger — Tu burger, tus reglas">
         <meta property="og:description" content="Combos de la casa o armá tu hamburguesa capa por capa. Opciones para todas las dietas.">
         <meta property="og:type" content="website">
@@ -22,7 +22,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16 grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
 
             <div>
-                <p class="font-mono text-sm font-semibold mb-4">$ hamburguesería en Resistencia, Chaco</p>
+                <p class="font-mono text-sm font-semibold mb-4">$ hamburguesería en {{ config('negocio.ciudad') }}</p>
 
                 <h1 class="font-display text-5xl sm:text-6xl lg:text-7xl leading-[0.95] uppercase">
                     Tu burger,<br>
@@ -234,12 +234,26 @@
                     </div>
                 </div>
 
-                {{-- Mapa embebido de OpenStreetMap (no requiere API key) --}}
-                <iframe
-                    title="Mapa de la ubicación de Capa8Burger en Resistencia, Chaco"
-                    src="https://www.openstreetmap.org/export/embed.html?bbox=-59.0050%2C-27.4620%2C-58.9650%2C-27.4400&layer=mapnik&marker=-27.4510%2C-58.9850"
-                    class="w-full h-56 rounded-xl border-2 border-terminal-950 shadow-retro-sm"
-                    loading="lazy"></iframe>
+                {{-- Mapa embebido de OpenStreetMap (no requiere API key). Las coordenadas
+                     salen de geocodificar la direccion real via Nominatim (ver
+                     InicioController@ubicarDireccionDelNegocio), no estan hardcodeadas:
+                     si la direccion del negocio cambia, el mapa se actualiza solo --}}
+                @if ($ubicacion)
+                    <iframe
+                        title="Mapa de la ubicación de {{ config('negocio.nombre') }} en {{ config('negocio.ciudad') }}"
+                        src="https://www.openstreetmap.org/export/embed.html?bbox={{ $ubicacion['boundingbox'][2] }}%2C{{ $ubicacion['boundingbox'][0] }}%2C{{ $ubicacion['boundingbox'][3] }}%2C{{ $ubicacion['boundingbox'][1] }}&layer=mapnik&marker={{ $ubicacion['lat'] }}%2C{{ $ubicacion['lon'] }}"
+                        class="w-full h-56 rounded-xl border-2 border-terminal-950 shadow-retro-sm"
+                        loading="lazy"></iframe>
+                @else
+                    {{-- Si Nominatim no responde (o la direccion no se pudo ubicar),
+                         se muestra un aviso en vez de dejar un iframe roto --}}
+                    <div class="w-full h-56 rounded-xl border-2 border-terminal-950 shadow-retro-sm bg-brand-50 flex items-center justify-center text-center px-6">
+                        <p class="text-sm text-terminal-600">
+                            No pudimos cargar el mapa en este momento.<br>
+                            Encontranos en {{ config('negocio.direccion') }}, {{ config('negocio.ciudad') }}.
+                        </p>
+                    </div>
+                @endif
             </div>
         </div>
     </section>

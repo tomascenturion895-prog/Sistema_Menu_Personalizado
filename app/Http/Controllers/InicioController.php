@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Producto;
+use App\Services\Geocodificador;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 
@@ -15,7 +16,7 @@ use Illuminate\Http\Request;
  */
 class InicioController extends Controller
 {
-    public function __invoke(Request $request): View
+    public function __invoke(Request $request, Geocodificador $geocodificador): View
     {
         return view('inicio', [
             // Seleccion de productos destacados que se muestran como "las mas pedidas"
@@ -27,6 +28,12 @@ class InicioController extends Controller
             // Solo existe si hay un usuario logueado (operador ?-> evita el error
             // "call to a member function on null" cuando el visitante es un guest)
             'ultimoPedido' => $request->user()?->pedidos()->latest()->first(),
+
+            // Coordenadas reales de la direccion del negocio, para el mapa del footer.
+            // Geocodificador es reusable: el dia que otra pantalla necesite
+            // coordenadas (mapa del admin, distancia de envio, etc.) no duplica
+            // la llamada a Nominatim ni el manejo de errores
+            'ubicacion' => $geocodificador->ubicar(config('negocio.direccion').', '.config('negocio.ciudad')),
         ]);
     }
 }

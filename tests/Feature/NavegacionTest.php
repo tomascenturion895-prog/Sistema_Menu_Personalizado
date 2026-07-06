@@ -5,6 +5,8 @@ namespace Tests\Feature;
 use App\Models\Pedido;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 /**
@@ -33,7 +35,7 @@ class NavegacionTest extends TestCase
         $home = $this->get('/')->getContent();
 
         // El texto real en el HTML es minuscula; "TU BURGER" visual es puro CSS (uppercase)
-        $this->assertStringContainsString('hamburguesería en Resistencia, Chaco', $home);
+        $this->assertStringContainsString('hamburguesería en '.config('negocio.ciudad'), $home);
         $this->assertStringContainsString(config('negocio.direccion'), $home);
     }
 
@@ -45,8 +47,8 @@ class NavegacionTest extends TestCase
         $respuestaInicio = $this->actingAs($cliente)->get('/inicio')->getContent();
 
         // Mismo titular, mismos datos de contacto: es literalmente la misma pagina
-        $this->assertStringContainsString('hamburguesería en Resistencia, Chaco', $respuestaHome);
-        $this->assertStringContainsString('hamburguesería en Resistencia, Chaco', $respuestaInicio);
+        $this->assertStringContainsString('hamburguesería en '.config('negocio.ciudad'), $respuestaHome);
+        $this->assertStringContainsString('hamburguesería en '.config('negocio.ciudad'), $respuestaInicio);
         $this->assertStringContainsString(config('negocio.telefono'), $respuestaHome);
         $this->assertStringContainsString(config('negocio.telefono'), $respuestaInicio);
     }
@@ -94,6 +96,44 @@ class NavegacionTest extends TestCase
         $this->actingAs($sinVerificar)->get('/inicio')->assertOk();
         $this->actingAs($sinVerificar)->get('/mi-pedido')->assertOk();
         $this->actingAs($sinVerificar)->get('/mis-pedidos')->assertOk();
+    }
+
+    public function test_el_mapa_usa_las_coordenadas_reales_de_la_direccion_del_negocio(): void
+    {
+        // Cache::flush(): la geocodificacion se cachea por 30 dias segun la
+        // direccion; sin esto, un test anterior que ya haya geocodificado la
+        // MISMA direccion (la de config/negocio.php) contaminaria este test
+        Cache::flush();
+
+        // fakeHttp() (no Http::fake() directo): reemplaza el fake por defecto
+        // de TestCase en vez de acumularse arriba de el, para verificar que
+        // las coordenadas devueltas por Nominatim SI llegan al iframe
+        $this->fakeHttp([
+            'nominatim.openstreetmap.org/*' => Http::response([
+                ['lat' => '-26.1849', 'lon' => '-58.1731', 'boundingbox' => ['-26.1949', '-26.1749', '-58.1831', '-58.1631']],
+            ], 200),
+        ]);
+
+        $response = $this->get('/');
+
+        $response
+            ->assertOk()
+            ->assertSee('marker=-26.1849%2C-58.1731', false);
+    }
+
+    public function test_si_nominatim_no_responde_se_muestra_un_aviso_en_vez_de_romper_la_pagina(): void
+    {
+        Cache::flush();
+
+        $this->fakeHttp([
+            'nominatim.openstreetmap.org/*' => Http::response([], 500),
+        ]);
+
+        $response = $this->get('/');
+
+        $response
+            ->assertOk()
+            ->assertSee('No pudimos cargar el mapa en este momento.');
     }
 
     public function test_el_footer_no_aparece_en_el_panel_admin(): void

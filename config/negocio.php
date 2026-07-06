@@ -6,8 +6,8 @@
 // asi un dato no puede quedar desactualizado en un lugar y actualizado en otro.
 return [
     'nombre' => 'Capa8Burger',
-    'direccion' => 'Av. Sarmiento 1234',
-    'ciudad' => 'Resistencia, Chaco, Argentina',
+    'direccion' => 'Av. 25 de Mayo 625',
+    'ciudad' => 'Formosa, Formosa, Argentina',
     'horario_dias' => 'Martes a domingo',
     'horario_horas' => '19:30 — 00:30 hs',
     'telefono' => '(0362) 400-8080',
