@@ -15,7 +15,13 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-10">
             @foreach ($desarrolladores as $persona)
                 <div class="tarjeta shadow-retro-sm p-6 flex flex-col items-center text-center">
-                    <x-avatar-iniciales :nombre="$persona['nombre']" />
+                    @if (!empty($persona['foto']))
+                        <img src="{{ asset($persona['foto']) }}"
+                             alt="Foto de {{ $persona['nombre'] }}"
+                             class="w-32 h-32 rounded-full border-2 border-terminal-950 object-cover {{ $persona['foto_posicion'] ?? 'object-top' }} shrink-0 [image-rendering:high-quality]">
+                    @else
+                        <x-avatar-iniciales :nombre="$persona['nombre']" />
+                    @endif
 
                     <h2 class="font-semibold text-terminal-950 mt-4">{{ $persona['nombre'] }}</h2>
 
